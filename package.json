@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
-    "test": "mocha"
+    "test": "mocha --experimental-specifier-resolution=node"
   },
   "dependencies": {
     "rehype-raw": "^6.1.1",

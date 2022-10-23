@@ -11,7 +11,7 @@ import gfm from "remark-gfm";
 import {Root as MdastRoot} from "mdast";
 import {Root as HastRoot} from "hast";
 
-import Processor from "./Processor";
+import Processor from "./Processor.js";
 
 class MarkdownProcessor implements Processor<MdastRoot> {
 

@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "dist",
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "skipLibCheck": true,
-    "types": [ "node", "mocha" ],
-    "paths": {
-    }
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "esm": true
   }
 }

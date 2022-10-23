@@ -1,5 +1,4 @@
 {
-  "require": [ "ts-node/register", "tsconfig-paths/register" ],
   "loader": "ts-node/esm",
   "extensions": [ "ts" ],
   "spec": [

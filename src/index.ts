@@ -1,4 +1,4 @@
-import Processor from "./Processor";
-import MarkdownProcessor from "./MarkdownProcessor";
+import Processor from "./Processor.js";
+import MarkdownProcessor from "./MarkdownProcessor.js";
 
 export { Processor, MarkdownProcessor };

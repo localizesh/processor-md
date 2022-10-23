@@ -3,7 +3,7 @@ import {assert} from "chai";
 import fs from "fs";
 import path from "path";
 
-import MarkdownProcessor from "../src/MarkdownProcessor";
+import MarkdownProcessor from "../src/MarkdownProcessor.js";
 
 const processor = new MarkdownProcessor();
 

@@ -1,1 +1,1 @@
-# localize-core
+# core

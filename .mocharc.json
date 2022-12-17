@@ -3,8 +3,5 @@
   "extensions": [ "ts" ],
   "spec": [
     "test/**/*.spec.ts"
-  ],
-  "watch-files": [
-    "src"
   ]
 }

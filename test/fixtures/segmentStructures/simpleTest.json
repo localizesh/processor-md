@@ -1,0 +1,150 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "blockquote",
+        "properties": {},
+        "children": [
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "p",
+            "properties": {},
+            "children": [
+              {
+                "type": "segment",
+                "id": "0"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "blockquote",
+            "properties": {},
+            "children": [
+              {
+                "type": "text",
+                "value": "\n"
+              },
+              {
+                "type": "element",
+                "tagName": "p",
+                "properties": {},
+                "children": [
+                  {
+                    "type": "segment",
+                    "id": "1"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "value": "\n"
+              },
+              {
+                "type": "element",
+                "tagName": "blockquote",
+                "properties": {},
+                "children": [
+                  {
+                    "type": "text",
+                    "value": "\n"
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "p",
+                    "properties": {},
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "value": "\n"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "value": "\n"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+        "properties": {},
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+        "properties": {},
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "First citation level"
+    },
+    {
+      "id": "1",
+      "text": "Second level citation"
+    },
+    {
+      "id": "2",
+      "text": "Third level of citation"
+    },
+    {
+      "id": "3",
+      "text": "See code {code1}there, {/code1}after code {b2}{em3}after {/em3}{/b2}"
+    },
+    {
+      "id": "4",
+      "text": "Note: This document is meant to supplement the {a1}Google's developer\ndocumentation style guide{/a1}. If there are differences, the\nofficial style guide takes precedence unless otherwise specified.",
+      "attributes": {
+        "a1": {
+          "href": "/style/"
+        }
+      }
+    }
+  ]
+}

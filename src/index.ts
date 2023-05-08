@@ -1,4 +1,3 @@
-import Processor from "./Processor.js";
-import LocalizeProcessor from "./LocalizeProcessor";
+import MdProcessor from "./processor";
 
-export { Processor, LocalizeProcessor };
+export default MdProcessor;

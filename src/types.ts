@@ -31,12 +31,12 @@ export interface Layout {
   children: LayoutNode[];
 }
 
-export interface SegmentStructure {
-  layout: Layout;
+export interface Document {
   segments: Segment[];
+  layout: Layout;
 }
 
-export default interface Processor<T extends SegmentStructure> {
-  parse(doc: string): T;
-  stringify(tree: T): string;
+export interface Processor {
+  parse(doc: string): Document;
+  stringify(doc: Document): string;
 }

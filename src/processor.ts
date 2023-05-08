@@ -7,15 +7,16 @@ import remark2rehype from "remark-rehype";
 import raw from "rehype-raw";
 import sanitize from "rehype-sanitize";
 import { Root, RootContent } from "hast";
-import Processor, {
+import {
   Attributes,
   Layout,
   LayoutElement,
   LayoutNode,
   LayoutSegment,
   Segment,
-  SegmentStructure,
-} from "./Processor";
+  Document,
+  Processor
+} from "./types";
 
 const allowedTags = [
   "blockquote",
@@ -87,7 +88,7 @@ function mergeTextNodes(node: any): LayoutNode {
   return node as LayoutNode;
 }
 
-class LocalizeProcessor implements Processor<SegmentStructure> {
+class MdProcessor implements Processor {
   public parse(doc: string) {
     const mdast = unified().use(parse).use(gfm).parse(doc);
 
@@ -100,11 +101,11 @@ class LocalizeProcessor implements Processor<SegmentStructure> {
     return this.hastToSegments(hast);
   }
 
-  public stringify(tree: SegmentStructure) {
-    return JSON.stringify(tree);
+  public stringify(data: Document) {
+    return JSON.stringify(data);
   }
 
-  private hastToSegments(tree: Root): SegmentStructure {
+  private hastToSegments(tree: Root): Document {
     const segments: Segment[] = [];
     const layoutTemp: Layout = { type: "root", children: [] };
     const layout: Layout = { type: "root", children: [] };
@@ -158,4 +159,4 @@ class LocalizeProcessor implements Processor<SegmentStructure> {
   }
 }
 
-export default LocalizeProcessor;
+export default MdProcessor;

@@ -25,9 +25,6 @@ categories:
     collapse-after: 5
 
 autolabeler:
-  - label: 'documentation'
-    files:
-      - '*.md'
   - label: 'bugfix'
     branch:
       - '/fix\/.+/'

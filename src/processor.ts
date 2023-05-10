@@ -88,7 +88,7 @@ function mergeTextNodes(node: any): LayoutNode {
 }
 
 class MdProcessor implements Processor {
-  public parse(doc: string) {
+  public parse(doc: string): Document {
     const mdast = unified().use(parse).use(gfm).parse(doc);
 
     const hast = unified()
@@ -100,11 +100,8 @@ class MdProcessor implements Processor {
     return this.hastToSegments(hast);
   }
 
-  public stringify(data: Document) {
-
+  public stringify(doc: Document): string {
     throw new Error("Not implemented");
-
-    return JSON.stringify(data);
   }
 
   private hastToSegments(tree: Root): Document {

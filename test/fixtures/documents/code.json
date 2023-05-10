@@ -1,0 +1,527 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "5"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "6"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "7"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "8"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "9"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "10"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "11"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "12"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "13"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "14"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "15"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "16"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "17"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "18"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "19"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "20"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "21"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "22"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "23"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "24"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "25"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "26"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Sample code"
+    },
+    {
+      "id": "1",
+      "text": "If your contribution contains code, please make sure that it follows the\n{a1}Google coding style guide for JavaScript{/a1}.\nOtherwise, we will have to ask you to make changes, and that's no fun for anyone.",
+      "attributes": {
+        "a1": {
+          "href": "https://google.github.io/styleguide/javascriptguide.xml"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "text": "Inline code"
+    },
+    {
+      "id": "3",
+      "text": "To indicate a span of code, wrap it with backtick quotes (`). Unlike a\npre-formatted code block, a code span indicates code within a normal paragraph.\nFor example:"
+    },
+    {
+      "id": "4",
+      "text": "{code1}Use the `printf()` function.\n{/code1}"
+    },
+    {
+      "id": "5",
+      "text": "Will result in:"
+    },
+    {
+      "id": "6",
+      "text": "Use the {code1}printf(){/code1} function."
+    },
+    {
+      "id": "7",
+      "text": "Code blocks"
+    },
+    {
+      "id": "8",
+      "text": "To produce a code block in Markdown, simply indent every line of the block by\nat least 4 spaces or 1 tab. For example, given this input:"
+    },
+    {
+      "id": "9",
+      "text": "{code1}Here is an example of AppleScript:\n\n    tell application \"Foo\"\n        beep\n    end tell\n{/code1}"
+    },
+    {
+      "id": "10",
+      "text": "will result in:"
+    },
+    {
+      "id": "11",
+      "text": "Here is an example of AppleScript:"
+    },
+    {
+      "id": "12",
+      "text": "{code1}tell application \"Foo\"\n    beep\nend tell\n{/code1}"
+    },
+    {
+      "id": "13",
+      "text": "Within a code block, ampersands ({code1}&#x26;{/code1}) and angle brackets ({code2}&#x3C;{/code2} and {code3}>{/code3}) are\nautomatically converted into HTML entities. This makes it very easy to include\nexample HTML source code using Markdown -- just paste it and indent it, and\nMarkdown will handle the hassle of encoding the ampersands and angle brackets."
+    },
+    {
+      "id": "14",
+      "text": "Warning: Wrapping code blocks in {code1}&#x26;amp;&#x26;lt;&#x26;gt;{/code1} is not supported on\nDevSite. DevSite will not automatically style these blocks and our integration\ntests will fail."
+    },
+    {
+      "id": "15",
+      "text": "Highlighting"
+    },
+    {
+      "id": "16",
+      "text": "Use {code1}&#x3C;strong>{/code1} to call attention to content within a {code2}&#x3C;pre>{/code2} block. Doing so\nwill lighten the surrounding content to emphasize the section highlighted by\nthe {code3}&#x3C;strong>{/code3} block. For example:"
+    },
+    {
+      "id": "17",
+      "text": "{code1}// ...\n// ...\n// ...\nfor (i = 0; i &#x3C; 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    if (i % 3 == 0) {\n        someFunc(i);\n    }\n}\n// ...\n// ...\n// ...\n{/code1}"
+    },
+    {
+      "id": "18",
+      "text": "{code1}&#x3C;pre class=\"prettyprint\">\n// ...\n// ...\n// ...\nfor (i = 0; i &#x3C; 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    &#x3C;strong>if (i % 3 == 0) {\n        someFunc(i);\n    }&#x3C;/strong>\n}\n// ...\n// ...\n// ...\n&#x3C;/pre>\n{/code1}"
+    },
+    {
+      "id": "19",
+      "text": "Click to copy"
+    },
+    {
+      "id": "20",
+      "text": "Click to copy is automatically enabled for all code blocks."
+    },
+    {
+      "id": "21",
+      "text": "Special Case: Templates - {{}}"
+    },
+    {
+      "id": "22",
+      "text": "If you need to include templates in your code samples, be sure to escape them."
+    },
+    {
+      "id": "23",
+      "text": "For example:"
+    },
+    {
+      "id": "24",
+      "text": "{code1}&#x3C;pre class=\"prettyprint\">\n&#x26;lt;polymer-media-query query=\"max-width:640px\" queryMatches=\"&#x26;#123;{isPhone}}\">\n&#x3C;/pre>\n{/code1}"
+    },
+    {
+      "id": "25",
+      "text": "If it's inline, you'll need to wrap it in a {code1}&#x3C;code>{/code1} block instead of backticks."
+    },
+    {
+      "id": "26",
+      "text": "{code1}* Declarative two-way data-binding: &#x3C;code>&#x3C;input id=\"input\" value=\"&#x26;#123;{foo}}\">&#x3C;/code>\n{/code1}"
+    }
+  ]
+}

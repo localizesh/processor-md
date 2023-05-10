@@ -1,0 +1,785 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "5"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "6"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "7"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "8"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "9"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "10"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "11"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "12"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "13"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "14"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "15"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "16"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "17"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "18"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "19"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "20"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "21"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "22"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "23"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "24"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "25"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "26"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "27"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "28"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "29"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "30"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "31"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "blockquote",
+
+        "children": [
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "p",
+
+            "children": [
+              {
+                "type": "segment",
+                "id": "32"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "33"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "34"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "35"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "36"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "37"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "38"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "39"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Callouts"
+    },
+    {
+      "id": "1",
+      "text": "Note: This type of callout is an ordinary note or tip."
+    },
+    {
+      "id": "2",
+      "text": "Caution: This type of callout suggests proceeding with caution."
+    },
+    {
+      "id": "3",
+      "text": "Warning: This type of callout is stronger than a Caution; it means \"Don't do this.\""
+    },
+    {
+      "id": "4",
+      "text": "Success: This type of callout describes a successful action or an error-free status. Used only in interactive or dynamic content; don't use in ordinary static pages."
+    },
+    {
+      "id": "5",
+      "text": "Key Point: This type of callout defines an important concept."
+    },
+    {
+      "id": "6",
+      "text": "Key Term: This type of callout defines important terminology."
+    },
+    {
+      "id": "7",
+      "text": "Objective: This type of callout defines the goal of a procedure."
+    },
+    {
+      "id": "8",
+      "text": "Dogfood: This type of callout is for notes that apply temporarily during internal dogfood testing. Remove all Dogfood callouts before making a document publicly visible."
+    },
+    {
+      "id": "9",
+      "text": "Comparisons"
+    },
+    {
+      "id": "10",
+      "text": "Not recommended — indent with tabs"
+    },
+    {
+      "id": "11",
+      "text": "{code1}(bad sample code)\n{/code1}"
+    },
+    {
+      "id": "12",
+      "text": "Recommended — indent with spaces"
+    },
+    {
+      "id": "13",
+      "text": "{code1}(good sample code)\n{/code1}"
+    },
+    {
+      "id": "14",
+      "text": "Not allowed — indent with spaces"
+    },
+    {
+      "id": "15",
+      "text": "{code1}(very bad sample code)\n{/code1}"
+    },
+    {
+      "id": "16",
+      "text": "External links"
+    },
+    {
+      "id": "17",
+      "text": "To mark a link as external, use\n{code1}&#x3C;a href=\"https://www.google.com/\" class=\"external\">External Link&#x3C;/a>{/code1} when\nauthoring in HTML, or append {code2}{: .external}{/code2} to links when authoring in\nMarkdown."
+    },
+    {
+      "id": "18",
+      "text": "{a1}External Link{/a1}",
+      "attributes": {
+        "a1": {
+          "href": "https://www.google.com/"
+        }
+      }
+    },
+    {
+      "id": "19",
+      "text": "Custom attributes and named anchors"
+    },
+    {
+      "id": "20",
+      "text": "Markdown supports custom markup attributes for block level HTML elements and\nheaders."
+    },
+    {
+      "id": "21",
+      "text": "The format for this allows for a custom class, a custom ID, and/or custom\nattribute/value pairs in the same statement:"
+    },
+    {
+      "id": "22",
+      "text": "{code1}This is a paragraph.\n{: .customClass #custom_id attribute='value' }\n{/code1}"
+    },
+    {
+      "id": "23",
+      "text": "This generates this HTML:"
+    },
+    {
+      "id": "24",
+      "text": "{code1}&#x3C;p class=\"customClass\" id=\"custom_id\" attribute=\"value\">This is a paragraph.&#x3C;/p>\n{/code1}"
+    },
+    {
+      "id": "25",
+      "text": "Custom attributes on headers"
+    },
+    {
+      "id": "26",
+      "text": "As headers can only be defined in one line, the attributes list should be\ndefined at the end of the header definition:"
+    },
+    {
+      "id": "27",
+      "text": "{code1}## Header with custom ID {: #custom_id }\n{/code1}"
+    },
+    {
+      "id": "28",
+      "text": "Generates:"
+    },
+    {
+      "id": "29",
+      "text": "{code1}&#x3C;h2 id=\"custom_id\">Header with custom ID&#x3C;/h2>\n{/code1}"
+    },
+    {
+      "id": "30",
+      "text": "Block quote"
+    },
+    {
+      "id": "31",
+      "text": "{code1}> Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n{/code1}"
+    },
+    {
+      "id": "32",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    },
+    {
+      "id": "33",
+      "text": "Tooltips"
+    },
+    {
+      "id": "34",
+      "text": "Any element that has a {code1}title{/code1} attribute will show a tooltip (with the value\nof the attribute) on mouseover. For example: \"...someday screen\nPPI may increase further...\"\n(note that the dotted underline comes from the abbr element, not the tooltip)."
+    },
+    {
+      "id": "35",
+      "text": "{code1}...someday screen &#x3C;abbr title=\"pixels per inch\">PPI&#x3C;/abbr> may increase further...\n{/code1}"
+    },
+    {
+      "id": "36",
+      "text": "Warning: Be sure to use tooltips only for supplemental information—not essential text or primary user-experience features—since the presence of tooltips is not obvious and users on mobile devices will not see them at all."
+    },
+    {
+      "id": "37",
+      "text": "Miscellaneous classes"
+    },
+    {
+      "id": "38",
+      "text": "Use {code1}class=\"inline\"{/code1}, {code2}class=\"inline-block\"{/code2}, and {code3}class=\"block\"{/code3} to force\ninline, inline-block, or block layout, in the rare cases when it is necessary."
+    },
+    {
+      "id": "39",
+      "text": "Use {code1}class=\"clearfix\"{/code1} to clear a floated element, for example after using\n{code2}attempt-left{/code2} or {code3}attempt-right{/code3}."
+    }
+  ]
+}

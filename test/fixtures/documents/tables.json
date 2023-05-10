@@ -1,0 +1,1154 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "segment",
+        "id": "2"
+      },
+      {
+        "type": "element",
+        "tagName": "table",
+
+        "children": [
+          {
+            "type": "element",
+            "tagName": "thead",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "3"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "4"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "5"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "element",
+            "tagName": "tbody",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "6"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "7"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "8"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "9"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "10"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "11"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "12"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": []
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "13"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "14"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "15"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "16"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "17"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "18"
+          }
+        ]
+      },
+      {
+        "type": "segment",
+        "id": "19"
+      },
+      {
+        "type": "element",
+        "tagName": "table",
+
+        "children": [
+          {
+            "type": "element",
+            "tagName": "thead",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "20"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "element",
+            "tagName": "tbody",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "21"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "22"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "23"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "24"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "25"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "26"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "ul",
+
+        "children": [
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "li",
+
+            "children": [
+              {
+                "type": "segment",
+                "id": "27"
+              },
+              {
+                "type": "element",
+                "tagName": "em",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "strong",
+
+                    "children": [
+                      {
+                        "type": "segment",
+                        "id": "28"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "segment",
+                "id": "29"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "li",
+
+            "children": [
+              {
+                "type": "segment",
+                "id": "30"
+              },
+              {
+                "type": "element",
+                "tagName": "code",
+
+                "children": [
+                  {
+                    "type": "segment",
+                    "id": "31"
+                  }
+                ]
+              },
+              {
+                "type": "segment",
+                "id": "32"
+              },
+              {
+                "type": "element",
+                "tagName": "code",
+
+                "children": [
+                  {
+                    "type": "segment",
+                    "id": "33"
+                  }
+                ]
+              },
+              {
+                "type": "segment",
+                "id": "34"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          },
+          {
+            "type": "element",
+            "tagName": "li",
+
+            "children": [
+              {
+                "type": "segment",
+                "id": "35"
+              },
+              {
+                "type": "element",
+                "tagName": "code",
+
+                "children": [
+                  {
+                    "type": "segment",
+                    "id": "36"
+                  }
+                ]
+              },
+              {
+                "type": "segment",
+                "id": "37"
+              },
+              {
+                "type": "element",
+                "tagName": "code",
+
+                "children": [
+                  {
+                    "type": "segment",
+                    "id": "38"
+                  }
+                ]
+              },
+              {
+                "type": "segment",
+                "id": "39"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "value": "\n"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "40"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "41"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "42"
+          }
+        ]
+      },
+      {
+        "type": "segment",
+        "id": "43"
+      },
+      {
+        "type": "element",
+        "tagName": "table",
+
+        "children": [
+          {
+            "type": "element",
+            "tagName": "thead",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": []
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": []
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "th",
+
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "element",
+            "tagName": "tbody",
+
+            "children": [
+              {
+                "type": "element",
+                "tagName": "tr",
+
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "44"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "45"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "46"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "47"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "48"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "49"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "50"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "51"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "52"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "53"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "54"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "55"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "56"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "57"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "td",
+
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "58"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "59"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "60"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "61"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "62"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "segment",
+                        "id": "63"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "code",
+
+                        "children": [
+                          {
+                            "type": "segment",
+                            "id": "64"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "65"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Tables"
+    },
+    {
+      "id": "1",
+      "text": "Tables are supported with standard markup. Here's a typical table with a\nheading row, several regular rows, and a row marked up as {code1}&#x3C;tr class=\"alt\">{/code1},\nwhich produces a darker background that can be used as an alternate header."
+    },
+    {
+      "id": "2",
+      "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "id": "3",
+      "text": "One"
+    },
+    {
+      "id": "4",
+      "text": "Two"
+    },
+    {
+      "id": "5",
+      "text": "Three"
+    },
+    {
+      "id": "6",
+      "text": "1.0"
+    },
+    {
+      "id": "7",
+      "text": "2.0"
+    },
+    {
+      "id": "8",
+      "text": "3.0"
+    },
+    {
+      "id": "9",
+      "text": "1.1"
+    },
+    {
+      "id": "10",
+      "text": "2.1"
+    },
+    {
+      "id": "11",
+      "text": "3.1"
+    },
+    {
+      "id": "12",
+      "text": "Here come some numbers that end in .2!"
+    },
+    {
+      "id": "13",
+      "text": "1.2"
+    },
+    {
+      "id": "14",
+      "text": "2.2"
+    },
+    {
+      "id": "15",
+      "text": "3.2"
+    },
+    {
+      "id": "16",
+      "text": "{code1}&#x3C;table>\n  &#x3C;tr>&#x3C;th>One&#x3C;/th>&#x3C;th>Two&#x3C;/th>&#x3C;th>Three&#x3C;/th>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.0&#x3C;/td>&#x3C;td>2.0&#x3C;/td>&#x3C;td>3.0&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.1&#x3C;/td>&#x3C;td>2.1&#x3C;/td>&#x3C;td>3.1&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr class=\"alt\">&#x3C;td colspan=\"3\">Here come some numbers that end in .2!&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.2&#x3C;/td>&#x3C;td>2.2&#x3C;/td>&#x3C;td>3.2&#x3C;/td>&#x3C;/tr>\n&#x3C;/table>\n{/code1}"
+    },
+    {
+      "id": "17",
+      "text": "Responsive tables"
+    },
+    {
+      "id": "18",
+      "text": "To make a table responsive, add the {code1}responsive{/code1} class to the table."
+    },
+    {
+      "id": "19",
+      "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "id": "20",
+      "text": "Parameters"
+    },
+    {
+      "id": "21",
+      "text": "value"
+    },
+    {
+      "id": "22",
+      "text": "String"
+    },
+    {
+      "id": "23",
+      "text": " the choice's value, which respondents see as a label when viewing the form"
+    },
+    {
+      "id": "24",
+      "text": "navigationType"
+    },
+    {
+      "id": "25",
+      "text": "PageNavigationType"
+    },
+    {
+      "id": "26",
+      "text": " the choice's navigation type"
+    },
+    {
+      "id": "27",
+      "text": "There must be "
+    },
+    {
+      "id": "28",
+      "text": "only two columns"
+    },
+    {
+      "id": "29",
+      "text": " in the table: the first column for the things being defined (the key), and the second column for all information about that key, in multiple lines if necessary. This two-column restriction means that responsive tables cannot be used for truly two-dimensional tabular data, checkmark-based feature comparison, but they are well suited for reference information (or anything other data that could reasonably be expressed by a definition list instead of a table)."
+    },
+    {
+      "id": "30",
+      "text": "If there are multiple lines of information about the key — say, a type and a description — wrap each line in "
+    },
+    {
+      "id": "31",
+      "text": "<p>"
+    },
+    {
+      "id": "32",
+      "text": " to force line breaks (instead of "
+    },
+    {
+      "id": "33",
+      "text": "<br>"
+    },
+    {
+      "id": "34",
+      "text": ")."
+    },
+    {
+      "id": "35",
+      "text": "There must be only one cell in the header row. Use "
+    },
+    {
+      "id": "36",
+      "text": "<th colspan=\"2\">"
+    },
+    {
+      "id": "37",
+      "text": " to force it to span both columns. To remind you of this behavior, we automatically hides any "
+    },
+    {
+      "id": "38",
+      "text": "<th>"
+    },
+    {
+      "id": "39",
+      "text": " after the first (which intentionally looks very broken)."
+    },
+    {
+      "id": "40",
+      "text": "{code1}&#x3C;table class=\"responsive\">\n  &#x3C;tbody>\n    &#x3C;tr>\n      &#x3C;th colspan=2>Parameters&#x3C;/th>\n    &#x3C;/tr>\n    &#x3C;tr>\n      &#x3C;td>\n        &#x3C;code>value&#x3C;/code>\n      &#x3C;/td>\n      &#x3C;td>\n        &#x3C;code>String&#x3C;/code>&#x3C;br>\n        the choice's value, which respondents see as a label when viewing the form\n      &#x3C;/td>\n    &#x3C;/tr>\n    &#x3C;tr>\n      &#x3C;td>\n        &#x3C;code>navigationType&#x3C;/code>\n      &#x3C;/td>\n      &#x3C;td>\n        &#x3C;code>\n          &#x3C;a href=\"#\">PageNavigationType&#x3C;/a>\n        &#x3C;/code>\n        &#x3C;br>the choice's navigation type\n      &#x3C;/td>\n    &#x3C;/tr>\n  &#x3C;/tbody>\n&#x3C;/table>\n{/code1}"
+    },
+    {
+      "id": "41",
+      "text": "Invisible tables"
+    },
+    {
+      "id": "42",
+      "text": "You can arrange text in columns, or otherwise make a table invisible, using\n{code1}&#x3C;table class=\"columns\">...&#x3C;/table>{/code1}. This is typically used for arranging\nlong narrow lists."
+    },
+    {
+      "id": "43",
+      "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "id": "44",
+      "text": "auto"
+    },
+    {
+      "id": "45",
+      "text": " "
+    },
+    {
+      "id": "46",
+      "text": "break"
+    },
+    {
+      "id": "47",
+      "text": " "
+    },
+    {
+      "id": "48",
+      "text": "case"
+    },
+    {
+      "id": "49",
+      "text": " "
+    },
+    {
+      "id": "50",
+      "text": "char"
+    },
+    {
+      "id": "51",
+      "text": "const"
+    },
+    {
+      "id": "52",
+      "text": " "
+    },
+    {
+      "id": "53",
+      "text": "continue"
+    },
+    {
+      "id": "54",
+      "text": " "
+    },
+    {
+      "id": "55",
+      "text": "default"
+    },
+    {
+      "id": "56",
+      "text": " "
+    },
+    {
+      "id": "57",
+      "text": "do"
+    },
+    {
+      "id": "58",
+      "text": "double"
+    },
+    {
+      "id": "59",
+      "text": " "
+    },
+    {
+      "id": "60",
+      "text": "else"
+    },
+    {
+      "id": "61",
+      "text": " "
+    },
+    {
+      "id": "62",
+      "text": "enum"
+    },
+    {
+      "id": "63",
+      "text": " "
+    },
+    {
+      "id": "64",
+      "text": "extern"
+    },
+    {
+      "id": "65",
+      "text": "{code1}&#x3C;table class=\"columns\">\n  &#x3C;tr>\n    &#x3C;td>\n      &#x3C;code>auto&#x3C;/code>&#x3C;br />\n      &#x3C;code>break&#x3C;/code>&#x3C;br />\n      &#x3C;code>case&#x3C;/code>&#x3C;br />\n      &#x3C;code>char&#x3C;/code>\n    &#x3C;/td>\n    &#x3C;td>\n      &#x3C;code>const&#x3C;/code>&#x3C;br />\n      &#x3C;code>continue&#x3C;/code>&#x3C;br />\n      &#x3C;code>default&#x3C;/code>&#x3C;br />\n      &#x3C;code>do&#x3C;/code>\n    &#x3C;/td>\n    &#x3C;td>\n      &#x3C;code>double&#x3C;/code>&#x3C;br />\n      &#x3C;code>else&#x3C;/code>&#x3C;br />\n      &#x3C;code>enum&#x3C;/code>&#x3C;br />\n      &#x3C;code>extern&#x3C;/code>\n    &#x3C;/td>\n  &#x3C;/tr>\n&#x3C;/table>\n{/code1}"
+    }
+  ]
+}

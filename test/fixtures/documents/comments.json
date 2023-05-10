@@ -1,0 +1,157 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "5"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "6"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "7"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Comments"
+    },
+    {
+      "id": "1",
+      "text": "A one-line comment and a multi-line comment have different syntax. Both are\nremoved from the web pages that are produced when staging or publishing."
+    },
+    {
+      "id": "2",
+      "text": "One line comments"
+    },
+    {
+      "id": "3",
+      "text": "A one-line comment. Hash characters (#) used like this are reserved only for\none-line comments."
+    },
+    {
+      "id": "4",
+      "text": "{code1}{# Time travel is fun #}\n{/code1}"
+    },
+    {
+      "id": "5",
+      "text": "Multi-line comments"
+    },
+    {
+      "id": "6",
+      "text": "A multi-line comment, with start and end tags surrounding the comment."
+    },
+    {
+      "id": "7",
+      "text": "{code1}{% comment %}\nTime travel is fun.\nI do it literally all the time.\n{% endcomment %}\n{/code1}"
+    }
+  ]
+}

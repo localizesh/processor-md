@@ -1,0 +1,428 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "5"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "6"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "7"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "8"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "9"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "10"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "11"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "12"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "13"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "14"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "15"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "16"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "17"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "18"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "19"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "20"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Images"
+    },
+    {
+      "id": "1",
+      "text": "When adding a caption, wrap images in {code1}&#x3C;figure>{/code1} blocks, and ideally, use\nresponsive images with the {code2}scrset{/code2} attribute when possible. Be sure you\ninclude {code3}alt{/code3} attributes for your images as well."
+    },
+    {
+      "id": "2",
+      "text": "{img1}",
+      "attributes": {
+        "img1": {
+          "src": "https://placehold.it/350x150",
+          "alt": "sample image"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "text": "This caption should be used to describe the image."
+    },
+    {
+      "id": "4",
+      "text": "For example:"
+    },
+    {
+      "id": "5",
+      "text": "{code1}&#x3C;figure>\n  &#x3C;img src=\"https://placehold.it/350x150\" alt=\"sample image\">\n  &#x3C;figcaption>This caption should be used to describe the image.&#x3C;/figcaption>\n&#x3C;/figure>\n{/code1}"
+    },
+    {
+      "id": "6",
+      "text": "Note: Optimized images are served automatically only for {code1}index.yaml{/code1} pages,\nsimply provide a 2x version, and the server will do the rest."
+    },
+    {
+      "id": "7",
+      "text": "You can apply {code1}class=\"screenshot\"{/code1} to an image to give it a border that\noffsets it from nearby text. This is typically used for screenshots that have\nwhite backgrounds and otherwise get lost on the page. Don't use it for images\nthat don't need it."
+    },
+    {
+      "id": "8",
+      "text": "Floating images on the right"
+    },
+    {
+      "id": "9",
+      "text": "{img1}",
+      "attributes": {
+        "img1": {
+          "src": "https://placehold.it/350x150",
+          "alt": "Alert dialog"
+        }
+      }
+    },
+    {
+      "id": "10",
+      "text": "{strong1}Figure 1{/strong1}: Alert dialog"
+    },
+    {
+      "id": "11",
+      "text": "The image at right also has {code1}class=\"attempt-right\"{/code1}, which floats the image\nright on larger screens, but forces the image into vertical layout on smaller\nscreens, tablets and smaller, where floating right would cause problems. Also\navailable is {code2}class=\"attempt-left\"{/code2}. To use {code3}attempt-left{/code3} and {code4}attempt-right{/code4}\ntogether, make sure the {code5}attempt-left{/code5} element comes first."
+    },
+    {
+      "id": "12",
+      "text": "{code1}&#x3C;div class=\"attempt-right\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption>&#x3C;b>Figure 1&#x3C;/b>: Alert dialog&#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n{/code1}"
+    },
+    {
+      "id": "13",
+      "text": "Caution: When using {code1}attempt-left{/code1} and {code2}attempt-right{/code2}, it may be necessary to include a {code3}&#x3C;div class=\"clearfix\">&#x3C;/div>{/code3} block."
+    },
+    {
+      "id": "14",
+      "text": "Do and do not images"
+    },
+    {
+      "id": "15",
+      "text": "Add the class {code1}success{/code1} or {code2}warning{/code2} to the figure caption\nto indicate a good or bad example."
+    },
+    {
+      "id": "16",
+      "text": "{img1}",
+      "attributes": {
+        "img1": {
+          "src": "https://placehold.it/350x150",
+          "alt": "Alert dialog"
+        }
+      }
+    },
+    {
+      "id": "17",
+      "text": "{strong1}DO{/strong1}: This is the right thing to do"
+    },
+    {
+      "id": "18",
+      "text": "{img1}",
+      "attributes": {
+        "img1": {
+          "src": "https://placehold.it/350x150",
+          "alt": "Alert dialog"
+        }
+      }
+    },
+    {
+      "id": "19",
+      "text": "{strong1}DON'T{/strong1}: This is the wrong thing to do"
+    },
+    {
+      "id": "20",
+      "text": "{code1}&#x3C;div class=\"attempt-left\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption class=\"success\">\n      &#x3C;b>DO&#x3C;/b>: This is the right thing to do\n     &#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n&#x3C;div class=\"attempt-right\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption class=\"warning\">\n      &#x3C;b>DON'T&#x3C;/b>: This is the wrong thing to do\n     &#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n{/code1}"
+    }
+  ]
+}

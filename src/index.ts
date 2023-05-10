@@ -1,4 +1,3 @@
-import Processor from "./Processor.js";
-import MarkdownProcessor from "./MarkdownProcessor.js";
+import MdProcessor from "./processor";
 
-export { Processor, MarkdownProcessor };
+export default MdProcessor;

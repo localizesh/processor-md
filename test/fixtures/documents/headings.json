@@ -1,0 +1,324 @@
+{
+  "layout": {
+    "type": "root",
+    "children": [
+      {
+        "type": "element",
+        "tagName": "h1",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "0"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "3"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "4"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "5"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "6"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "7"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h2",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "8"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "9"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h3",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "10"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "p",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "11"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h4",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "12"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h5",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "13"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "h6",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "14"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "value": "\n"
+      },
+      {
+        "type": "element",
+        "tagName": "pre",
+
+        "children": [
+          {
+            "type": "segment",
+            "id": "15"
+          }
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "0",
+      "text": "Markdown syntax"
+    },
+    {
+      "id": "1",
+      "text": "Web{strong1}Fundamental{/strong1} provides a wide variety of styled elements and CSS\nclasses to use in documentation. Although you may supplement these styles with\ncustom CSS, you should only use custom CSS when strictly necessary. If you\nfind that you need to create a new style that will apply to more than a\nsingle page, please file an issue on GitHub so that other pages can use it\nas well. This ensures site-wide consistency."
+    },
+    {
+      "id": "2",
+      "text": "Note: This document is meant to supplement the {a1}Google's developer\ndocumentation style guide{/a1}. If there are differences, the\nofficial style guide takes precedence unless otherwise specified.",
+      "attributes": {
+        "a1": {
+          "href": "/style/"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "text": "Headings"
+    },
+    {
+      "id": "4",
+      "text": "The top-most heading of the page is the page's title. The page body must not\ncontain another level 1 heading, to avoid confusing non-visual browsers."
+    },
+    {
+      "id": "5",
+      "text": "{strong1}When should I capitalize headings?{/strong1}"
+    },
+    {
+      "id": "6",
+      "text": "Use {a1}sentence case{/a1},\nfor {strong2}all{/strong2} titles, and section headings.",
+      "attributes": {
+        "a1": {
+          "href": "/style/capitalization#capitalization-in-titles-and-headings"
+        }
+      }
+    },
+    {
+      "id": "7",
+      "text": "Yes, we're inconsistent about this, but we're trying to fix it, please do your\nbest to adhere to these guidelines."
+    },
+    {
+      "id": "8",
+      "text": "Heading 2"
+    },
+    {
+      "id": "9",
+      "text": "Caution: If you plan to link to specific headings\n{a1}&#x3C;{code2}a href=\"#heading-what-what\"{/code2}>{/a1} within your document,\nit is {strong3}strongly{/strong3} recommended you define them yourself with the\n{code4}{: #anchor-name }{/code4} syntax. This ensures that when documents are localized,\nthe anchor will still work, but also ensures that any difference between\nMarkdown processors are a non-issue.",
+      "attributes": {
+        "a1": {
+          "href": "#heading-what-what"
+        }
+      }
+    },
+    {
+      "id": "10",
+      "text": "Heading 3"
+    },
+    {
+      "id": "11",
+      "text": "DevSite will automatically add {code1}&#x3C;h2>{/code1} and {code2}&#x3C;h3>{/code2} elements\nto the table of contents. To keep one from being added (like these two here,\nwhich do not appear in the table of contents), apply {code3}class=\"hide-from-toc\"{/code3}.\nYou can also put an {code4}&#x3C;h2>{/code4} or {code5}&#x3C;h3>{/code5} inside a table header ({code6}&#x3C;th>{/code6}) to force\nthe table into the table of contents. Inside a table header, {code7}&#x3C;h2>{/code7} and {code8}&#x3C;h3>{/code8}\nare styled like regular text, so readers won't be able to tell."
+    },
+    {
+      "id": "12",
+      "text": "Heading 4"
+    },
+    {
+      "id": "13",
+      "text": "Heading 5"
+    },
+    {
+      "id": "14",
+      "text": "Heading 6"
+    },
+    {
+      "id": "15",
+      "text": "{code1}## Heading 2\n### Heading 3\n#### Heading 4\n##### Heading 5\n###### Heading 6\n{/code1}"
+    }
+  ]
+}

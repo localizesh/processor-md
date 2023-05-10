@@ -15,7 +15,6 @@ export interface LayoutElement {
   type: string;
   tagName: string;
   attributes?: Attributes;
-  properties: Properties;
   children: LayoutNode[];
 }
 

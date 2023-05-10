@@ -5,7 +5,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -20,7 +20,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -35,22 +35,22 @@
       {
         "type": "element",
         "tagName": "table",
-        "properties": {},
+
         "children": [
           {
             "type": "element",
             "tagName": "thead",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -61,7 +61,7 @@
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -72,7 +72,7 @@
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -87,17 +87,17 @@
           {
             "type": "element",
             "tagName": "tbody",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -108,7 +108,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -119,7 +119,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -132,12 +132,12 @@
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -148,7 +148,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -159,7 +159,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -172,12 +172,12 @@
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -188,13 +188,13 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": []
                   },
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": []
                   }
                 ]
@@ -202,12 +202,12 @@
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -218,7 +218,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -229,7 +229,7 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -250,7 +250,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -265,7 +265,7 @@
       {
         "type": "element",
         "tagName": "h3",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -280,7 +280,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -295,22 +295,22 @@
       {
         "type": "element",
         "tagName": "table",
-        "properties": {},
+
         "children": [
           {
             "type": "element",
             "tagName": "thead",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -321,7 +321,7 @@
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": []
                   }
                 ]
@@ -331,22 +331,22 @@
           {
             "type": "element",
             "tagName": "tbody",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -359,12 +359,12 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -383,17 +383,17 @@
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -406,12 +406,12 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -438,7 +438,7 @@
       {
         "type": "element",
         "tagName": "ul",
-        "properties": {},
+
         "children": [
           {
             "type": "text",
@@ -447,7 +447,7 @@
           {
             "type": "element",
             "tagName": "li",
-            "properties": {},
+
             "children": [
               {
                 "type": "segment",
@@ -456,12 +456,12 @@
               {
                 "type": "element",
                 "tagName": "em",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "strong",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "segment",
@@ -484,7 +484,7 @@
           {
             "type": "element",
             "tagName": "li",
-            "properties": {},
+
             "children": [
               {
                 "type": "segment",
@@ -493,7 +493,7 @@
               {
                 "type": "element",
                 "tagName": "code",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "segment",
@@ -508,7 +508,7 @@
               {
                 "type": "element",
                 "tagName": "code",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "segment",
@@ -529,7 +529,7 @@
           {
             "type": "element",
             "tagName": "li",
-            "properties": {},
+
             "children": [
               {
                 "type": "segment",
@@ -538,7 +538,7 @@
               {
                 "type": "element",
                 "tagName": "code",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "segment",
@@ -553,7 +553,7 @@
               {
                 "type": "element",
                 "tagName": "code",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "segment",
@@ -584,7 +584,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -599,7 +599,7 @@
       {
         "type": "element",
         "tagName": "h3",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -614,7 +614,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -629,34 +629,34 @@
       {
         "type": "element",
         "tagName": "table",
-        "properties": {},
+
         "children": [
           {
             "type": "element",
             "tagName": "thead",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": []
                   },
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": []
                   },
                   {
                     "type": "element",
                     "tagName": "th",
-                    "properties": {},
+
                     "children": []
                   }
                 ]
@@ -666,22 +666,22 @@
           {
             "type": "element",
             "tagName": "tbody",
-            "properties": {},
+
             "children": [
               {
                 "type": "element",
                 "tagName": "tr",
-                "properties": {},
+
                 "children": [
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -696,7 +696,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -711,7 +711,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -726,7 +726,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -739,12 +739,12 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -759,7 +759,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -774,7 +774,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -789,7 +789,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -802,12 +802,12 @@
                   {
                     "type": "element",
                     "tagName": "td",
-                    "properties": {},
+
                     "children": [
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -822,7 +822,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -837,7 +837,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -852,7 +852,7 @@
                       {
                         "type": "element",
                         "tagName": "code",
-                        "properties": {},
+
                         "children": [
                           {
                             "type": "segment",
@@ -875,7 +875,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",

@@ -5,7 +5,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -20,7 +20,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -35,7 +35,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -50,7 +50,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -65,7 +65,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -80,7 +80,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -95,7 +95,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -110,7 +110,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -125,7 +125,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -140,7 +140,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -155,7 +155,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -170,7 +170,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -185,7 +185,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -200,7 +200,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -215,7 +215,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -230,7 +230,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -245,7 +245,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -260,7 +260,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -275,7 +275,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -290,7 +290,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -305,7 +305,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -320,7 +320,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -335,7 +335,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -350,7 +350,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -365,7 +365,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -380,7 +380,7 @@
       {
         "type": "element",
         "tagName": "h3",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -395,7 +395,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -410,7 +410,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -425,7 +425,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -440,7 +440,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -455,7 +455,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -470,7 +470,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -485,7 +485,7 @@
       {
         "type": "element",
         "tagName": "blockquote",
-        "properties": {},
+
         "children": [
           {
             "type": "text",
@@ -494,7 +494,7 @@
           {
             "type": "element",
             "tagName": "p",
-            "properties": {},
+
             "children": [
               {
                 "type": "segment",
@@ -515,7 +515,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -530,7 +530,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -545,7 +545,7 @@
       {
         "type": "element",
         "tagName": "pre",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -560,7 +560,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -575,7 +575,7 @@
       {
         "type": "element",
         "tagName": "h2",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -590,7 +590,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",
@@ -605,7 +605,7 @@
       {
         "type": "element",
         "tagName": "p",
-        "properties": {},
+
         "children": [
           {
             "type": "segment",

@@ -12,7 +12,6 @@ import {
   Layout,
   LayoutElement,
   LayoutNode,
-  LayoutSegment,
   Segment,
   Document,
   Processor
@@ -123,7 +122,7 @@ class MdProcessor implements Processor {
       return segment.id;
     };
 
-    const convertNode = (node: LayoutNode): LayoutSegment | LayoutElement => {
+    const convertNode = (node: LayoutNode): LayoutNode => {
       if (node.type === "text" || node.type === "raw") {
         if (node.value === "\n") {
           return node;
@@ -139,7 +138,6 @@ class MdProcessor implements Processor {
           value: node.value,
           type: node.type,
           tagName: node.tagName,
-          properties: {},
           children: children,
         };
       }

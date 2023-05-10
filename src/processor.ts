@@ -101,6 +101,9 @@ class MdProcessor implements Processor {
   }
 
   public stringify(data: Document) {
+
+    throw new Error("Not implemented");
+
     return JSON.stringify(data);
   }
 

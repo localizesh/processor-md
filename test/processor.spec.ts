@@ -15,7 +15,7 @@ function processAndCompare(filename: string, filenameDocument: string) {
 
   const doc = processor.parse(inDoc);
 
-  const outDoc = processor.stringify(doc);
+  const outDoc = JSON.stringify(doc);
 
   assert.equal(outDoc, expectedDocument);
 

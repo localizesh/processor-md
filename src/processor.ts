@@ -28,6 +28,7 @@ const allowedTags = [
   "th",
   "tr",
   "td",
+  "hr"
 ];
 
 function replaceHTMLTags(text: string): string {
@@ -114,7 +115,7 @@ class MdProcessor implements Processor {
     let segmentCount: number = 0;
 
     const addSegment = (node: LayoutElement): string => {
-      let segment: Segment = { id: segmentCount.toString(), text: node.value };
+      let segment: Segment = { id: segmentCount.toString(), text: node.value || "" };
 
       if (node.attributes) {
         segment.attributes = node.attributes;
@@ -127,7 +128,7 @@ class MdProcessor implements Processor {
 
     const convertNode = (node: LayoutNode): LayoutNode => {
       if (node.type === "text" || node.type === "raw") {
-        if (node.value === "\n") {
+        if (node.value?.trim() === "") {
           return node;
         } else {
           return { type: "segment", id: addSegment(node) };
@@ -138,7 +139,6 @@ class MdProcessor implements Processor {
         const children = node.children.map(convertNode);
 
         return {
-          value: node.value,
           type: node.type,
           tagName: node.tagName,
           children: children,

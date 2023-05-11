@@ -11,7 +11,7 @@ export interface Segment {
 }
 
 export interface LayoutElement {
-  value: string;
+  value?: string;
   type: string;
   tagName: string;
   attributes?: Attributes;

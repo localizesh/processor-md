@@ -22,7 +22,8 @@
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
     "remark-stringify": "^10.0.2",
-    "unified": "10.1.2"
+    "unified": "10.1.2",
+    "unist-util-remove-position": "^4.0.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",

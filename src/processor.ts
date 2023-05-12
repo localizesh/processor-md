@@ -14,8 +14,9 @@ import {
   LayoutNode,
   Segment,
   Document,
-  Processor
+  Processor,
 } from "./types";
+import { removePosition } from "unist-util-remove-position";
 
 const allowedTags = [
   "blockquote",
@@ -28,7 +29,7 @@ const allowedTags = [
   "th",
   "tr",
   "td",
-  "hr"
+  "hr",
 ];
 
 function replaceHTMLTags(text: string): string {
@@ -91,18 +92,18 @@ function mergeTextNodes(node: any): LayoutNode {
 class MdProcessor implements Processor {
   public parse(doc: string) {
     const mdast = unified().use(parse).use(gfm).parse(doc);
+    const mdastWithoutPosition = removePosition(mdast);
 
     const hast = unified()
       .use(remark2rehype, { allowDangerousHtml: true })
       .use(raw)
       .use(sanitize)
-      .runSync(mdast);
+      .runSync(mdastWithoutPosition);
 
     return this.hastToSegments(hast);
   }
 
   public stringify(data: Document) {
-
     throw new Error("Not implemented");
 
     return JSON.stringify(data);
@@ -115,7 +116,10 @@ class MdProcessor implements Processor {
     let segmentCount: number = 0;
 
     const addSegment = (node: LayoutElement): string => {
-      let segment: Segment = { id: segmentCount.toString(), text: node.value || "" };
+      let segment: Segment = {
+        id: segmentCount.toString(),
+        text: node.value || "",
+      };
 
       if (node.attributes) {
         segment.attributes = node.attributes;

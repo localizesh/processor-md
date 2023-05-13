@@ -289,7 +289,7 @@
     },
     {
       "id": "9",
-      "text": "Caution: If you plan to link to specific headings\n{a1}&#x3C;{code2}a href=\"#heading-what-what\"{/code2}>{/a1} within your document,\nit is {strong3}strongly{/strong3} recommended you define them yourself with the\n{code4}{: #anchor-name }{/code4} syntax. This ensures that when documents are localized,\nthe anchor will still work, but also ensures that any difference between\nMarkdown processors are a non-issue.",
+      "text": "Caution: If you plan to link to specific headings\n{a1}<{code2}a href=\"#heading-what-what\"{/code2}>{/a1} within your document,\nit is {strong3}strongly{/strong3} recommended you define them yourself with the\n{code4}{: #anchor-name }{/code4} syntax. This ensures that when documents are localized,\nthe anchor will still work, but also ensures that any difference between\nMarkdown processors are a non-issue.",
       "attributes": {
         "a1": {
           "href": "#heading-what-what"
@@ -302,7 +302,7 @@
     },
     {
       "id": "11",
-      "text": "DevSite will automatically add {code1}&#x3C;h2>{/code1} and {code2}&#x3C;h3>{/code2} elements\nto the table of contents. To keep one from being added (like these two here,\nwhich do not appear in the table of contents), apply {code3}class=\"hide-from-toc\"{/code3}.\nYou can also put an {code4}&#x3C;h2>{/code4} or {code5}&#x3C;h3>{/code5} inside a table header ({code6}&#x3C;th>{/code6}) to force\nthe table into the table of contents. Inside a table header, {code7}&#x3C;h2>{/code7} and {code8}&#x3C;h3>{/code8}\nare styled like regular text, so readers won't be able to tell."
+      "text": "DevSite will automatically add {code1}<h2>{/code1} and {code2}<h3>{/code2} elements\nto the table of contents. To keep one from being added (like these two here,\nwhich do not appear in the table of contents), apply {code3}class=\"hide-from-toc\"{/code3}.\nYou can also put an {code4}<h2>{/code4} or {code5}<h3>{/code5} inside a table header ({code6}<th>{/code6}) to force\nthe table into the table of contents. Inside a table header, {code7}<h2>{/code7} and {code8}<h3>{/code8}\nare styled like regular text, so readers won't be able to tell."
     },
     {
       "id": "12",

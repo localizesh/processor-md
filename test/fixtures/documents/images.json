@@ -322,7 +322,7 @@
     },
     {
       "id": "1",
-      "text": "When adding a caption, wrap images in {code1}&#x3C;figure>{/code1} blocks, and ideally, use\nresponsive images with the {code2}scrset{/code2} attribute when possible. Be sure you\ninclude {code3}alt{/code3} attributes for your images as well."
+      "text": "When adding a caption, wrap images in {code1}<figure>{/code1} blocks, and ideally, use\nresponsive images with the {code2}scrset{/code2} attribute when possible. Be sure you\ninclude {code3}alt{/code3} attributes for your images as well."
     },
     {
       "id": "2",
@@ -344,7 +344,7 @@
     },
     {
       "id": "5",
-      "text": "{code1}&#x3C;figure>\n  &#x3C;img src=\"https://placehold.it/350x150\" alt=\"sample image\">\n  &#x3C;figcaption>This caption should be used to describe the image.&#x3C;/figcaption>\n&#x3C;/figure>\n{/code1}"
+      "text": "{code1}<figure>\n  <img src=\"https://placehold.it/350x150\" alt=\"sample image\">\n  <figcaption>This caption should be used to describe the image.</figcaption>\n</figure>\n{/code1}"
     },
     {
       "id": "6",
@@ -378,11 +378,11 @@
     },
     {
       "id": "12",
-      "text": "{code1}&#x3C;div class=\"attempt-right\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption>&#x3C;b>Figure 1&#x3C;/b>: Alert dialog&#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n{/code1}"
+      "text": "{code1}<div class=\"attempt-right\">\n  <figure>\n    <img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    <figcaption><b>Figure 1</b>: Alert dialog</figcaption>\n  </figure>\n</div>\n{/code1}"
     },
     {
       "id": "13",
-      "text": "Caution: When using {code1}attempt-left{/code1} and {code2}attempt-right{/code2}, it may be necessary to include a {code3}&#x3C;div class=\"clearfix\">&#x3C;/div>{/code3} block."
+      "text": "Caution: When using {code1}attempt-left{/code1} and {code2}attempt-right{/code2}, it may be necessary to include a {code3}<div class=\"clearfix\"></div>{/code3} block."
     },
     {
       "id": "14",
@@ -422,7 +422,7 @@
     },
     {
       "id": "20",
-      "text": "{code1}&#x3C;div class=\"attempt-left\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption class=\"success\">\n      &#x3C;b>DO&#x3C;/b>: This is the right thing to do\n     &#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n&#x3C;div class=\"attempt-right\">\n  &#x3C;figure>\n    &#x3C;img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    &#x3C;figcaption class=\"warning\">\n      &#x3C;b>DON'T&#x3C;/b>: This is the wrong thing to do\n     &#x3C;/figcaption>\n  &#x3C;/figure>\n&#x3C;/div>\n{/code1}"
+      "text": "{code1}<div class=\"attempt-left\">\n  <figure>\n    <img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    <figcaption class=\"success\">\n      <b>DO</b>: This is the right thing to do\n     </figcaption>\n  </figure>\n</div>\n<div class=\"attempt-right\">\n  <figure>\n    <img src=\"https://placehold.it/350x150\" alt=\"Alert dialog\">\n    <figcaption class=\"warning\">\n      <b>DON'T</b>: This is the wrong thing to do\n     </figcaption>\n  </figure>\n</div>\n{/code1}"
     }
   ]
 }

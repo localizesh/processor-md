@@ -469,11 +469,11 @@
     },
     {
       "id": "13",
-      "text": "Within a code block, ampersands ({code1}&#x26;{/code1}) and angle brackets ({code2}&#x3C;{/code2} and {code3}>{/code3}) are\nautomatically converted into HTML entities. This makes it very easy to include\nexample HTML source code using Markdown -- just paste it and indent it, and\nMarkdown will handle the hassle of encoding the ampersands and angle brackets."
+      "text": "Within a code block, ampersands ({code1}&{/code1}) and angle brackets ({code2}<{/code2} and {code3}>{/code3}) are\nautomatically converted into HTML entities. This makes it very easy to include\nexample HTML source code using Markdown -- just paste it and indent it, and\nMarkdown will handle the hassle of encoding the ampersands and angle brackets."
     },
     {
       "id": "14",
-      "text": "Warning: Wrapping code blocks in {code1}&#x26;amp;&#x26;lt;&#x26;gt;{/code1} is not supported on\nDevSite. DevSite will not automatically style these blocks and our integration\ntests will fail."
+      "text": "Warning: Wrapping code blocks in {code1}&amp;&lt;&gt;{/code1} is not supported on\nDevSite. DevSite will not automatically style these blocks and our integration\ntests will fail."
     },
     {
       "id": "15",
@@ -481,15 +481,15 @@
     },
     {
       "id": "16",
-      "text": "Use {code1}&#x3C;strong>{/code1} to call attention to content within a {code2}&#x3C;pre>{/code2} block. Doing so\nwill lighten the surrounding content to emphasize the section highlighted by\nthe {code3}&#x3C;strong>{/code3} block. For example:"
+      "text": "Use {code1}<strong>{/code1} to call attention to content within a {code2}<pre>{/code2} block. Doing so\nwill lighten the surrounding content to emphasize the section highlighted by\nthe {code3}<strong>{/code3} block. For example:"
     },
     {
       "id": "17",
-      "text": "{code1}// ...\n// ...\n// ...\nfor (i = 0; i &#x3C; 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    if (i % 3 == 0) {\n        someFunc(i);\n    }\n}\n// ...\n// ...\n// ...\n{/code1}"
+      "text": "{code1}// ...\n// ...\n// ...\nfor (i = 0; i < 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    if (i % 3 == 0) {\n        someFunc(i);\n    }\n}\n// ...\n// ...\n// ...\n{/code1}"
     },
     {
       "id": "18",
-      "text": "{code1}&#x3C;pre class=\"prettyprint\">\n// ...\n// ...\n// ...\nfor (i = 0; i &#x3C; 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    &#x3C;strong>if (i % 3 == 0) {\n        someFunc(i);\n    }&#x3C;/strong>\n}\n// ...\n// ...\n// ...\n&#x3C;/pre>\n{/code1}"
+      "text": "{code1}<pre class=\"prettyprint\">\n// ...\n// ...\n// ...\nfor (i = 0; i < 10; i++) {\n    printf(\"Counting %d\\n\", i);\n\n    <strong>if (i % 3 == 0) {\n        someFunc(i);\n    }</strong>\n}\n// ...\n// ...\n// ...\n</pre>\n{/code1}"
     },
     {
       "id": "19",
@@ -513,15 +513,15 @@
     },
     {
       "id": "24",
-      "text": "{code1}&#x3C;pre class=\"prettyprint\">\n&#x26;lt;polymer-media-query query=\"max-width:640px\" queryMatches=\"&#x26;#123;{isPhone}}\">\n&#x3C;/pre>\n{/code1}"
+      "text": "{code1}<pre class=\"prettyprint\">\n&lt;polymer-media-query query=\"max-width:640px\" queryMatches=\"&#123;{isPhone}}\">\n</pre>\n{/code1}"
     },
     {
       "id": "25",
-      "text": "If it's inline, you'll need to wrap it in a {code1}&#x3C;code>{/code1} block instead of backticks."
+      "text": "If it's inline, you'll need to wrap it in a {code1}<code>{/code1} block instead of backticks."
     },
     {
       "id": "26",
-      "text": "{code1}* Declarative two-way data-binding: &#x3C;code>&#x3C;input id=\"input\" value=\"&#x26;#123;{foo}}\">&#x3C;/code>\n{/code1}"
+      "text": "{code1}* Declarative two-way data-binding: <code><input id=\"input\" value=\"&#123;{foo}}\"></code>\n{/code1}"
     }
   ]
 }

@@ -811,7 +811,7 @@
     },
     {
       "id": "1",
-      "text": "Tables are supported with standard markup. Here's a typical table with a\nheading row, several regular rows, and a row marked up as {code1}&#x3C;tr class=\"alt\">{/code1},\nwhich produces a darker background that can be used as an alternate header."
+      "text": "Tables are supported with standard markup. Here's a typical table with a\nheading row, several regular rows, and a row marked up as {code1}<tr class=\"alt\">{/code1},\nwhich produces a darker background that can be used as an alternate header."
     },
     {
       "id": "2",
@@ -867,7 +867,7 @@
     },
     {
       "id": "15",
-      "text": "{code1}&#x3C;table>\n  &#x3C;tr>&#x3C;th>One&#x3C;/th>&#x3C;th>Two&#x3C;/th>&#x3C;th>Three&#x3C;/th>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.0&#x3C;/td>&#x3C;td>2.0&#x3C;/td>&#x3C;td>3.0&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.1&#x3C;/td>&#x3C;td>2.1&#x3C;/td>&#x3C;td>3.1&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr class=\"alt\">&#x3C;td colspan=\"3\">Here come some numbers that end in .2!&#x3C;/td>&#x3C;/tr>\n  &#x3C;tr>&#x3C;td>1.2&#x3C;/td>&#x3C;td>2.2&#x3C;/td>&#x3C;td>3.2&#x3C;/td>&#x3C;/tr>\n&#x3C;/table>\n{/code1}"
+      "text": "{code1}<table>\n  <tr><th>One</th><th>Two</th><th>Three</th></tr>\n  <tr><td>1.0</td><td>2.0</td><td>3.0</td></tr>\n  <tr><td>1.1</td><td>2.1</td><td>3.1</td></tr>\n  <tr class=\"alt\"><td colspan=\"3\">Here come some numbers that end in .2!</td></tr>\n  <tr><td>1.2</td><td>2.2</td><td>3.2</td></tr>\n</table>\n{/code1}"
     },
     {
       "id": "16",
@@ -959,7 +959,7 @@
     },
     {
       "id": "38",
-      "text": "{code1}&#x3C;table class=\"responsive\">\n  &#x3C;tbody>\n    &#x3C;tr>\n      &#x3C;th colspan=2>Parameters&#x3C;/th>\n    &#x3C;/tr>\n    &#x3C;tr>\n      &#x3C;td>\n        &#x3C;code>value&#x3C;/code>\n      &#x3C;/td>\n      &#x3C;td>\n        &#x3C;code>String&#x3C;/code>&#x3C;br>\n        the choice's value, which respondents see as a label when viewing the form\n      &#x3C;/td>\n    &#x3C;/tr>\n    &#x3C;tr>\n      &#x3C;td>\n        &#x3C;code>navigationType&#x3C;/code>\n      &#x3C;/td>\n      &#x3C;td>\n        &#x3C;code>\n          &#x3C;a href=\"#\">PageNavigationType&#x3C;/a>\n        &#x3C;/code>\n        &#x3C;br>the choice's navigation type\n      &#x3C;/td>\n    &#x3C;/tr>\n  &#x3C;/tbody>\n&#x3C;/table>\n{/code1}"
+      "text": "{code1}<table class=\"responsive\">\n  <tbody>\n    <tr>\n      <th colspan=2>Parameters</th>\n    </tr>\n    <tr>\n      <td>\n        <code>value</code>\n      </td>\n      <td>\n        <code>String</code><br>\n        the choice's value, which respondents see as a label when viewing the form\n      </td>\n    </tr>\n    <tr>\n      <td>\n        <code>navigationType</code>\n      </td>\n      <td>\n        <code>\n          <a href=\"#\">PageNavigationType</a>\n        </code>\n        <br>the choice's navigation type\n      </td>\n    </tr>\n  </tbody>\n</table>\n{/code1}"
     },
     {
       "id": "39",
@@ -967,7 +967,7 @@
     },
     {
       "id": "40",
-      "text": "You can arrange text in columns, or otherwise make a table invisible, using\n{code1}&#x3C;table class=\"columns\">...&#x3C;/table>{/code1}. This is typically used for arranging\nlong narrow lists."
+      "text": "You can arrange text in columns, or otherwise make a table invisible, using\n{code1}<table class=\"columns\">...</table>{/code1}. This is typically used for arranging\nlong narrow lists."
     },
     {
       "id": "41",
@@ -1019,7 +1019,7 @@
     },
     {
       "id": "53",
-      "text": "{code1}&#x3C;table class=\"columns\">\n  &#x3C;tr>\n    &#x3C;td>\n      &#x3C;code>auto&#x3C;/code>&#x3C;br />\n      &#x3C;code>break&#x3C;/code>&#x3C;br />\n      &#x3C;code>case&#x3C;/code>&#x3C;br />\n      &#x3C;code>char&#x3C;/code>\n    &#x3C;/td>\n    &#x3C;td>\n      &#x3C;code>const&#x3C;/code>&#x3C;br />\n      &#x3C;code>continue&#x3C;/code>&#x3C;br />\n      &#x3C;code>default&#x3C;/code>&#x3C;br />\n      &#x3C;code>do&#x3C;/code>\n    &#x3C;/td>\n    &#x3C;td>\n      &#x3C;code>double&#x3C;/code>&#x3C;br />\n      &#x3C;code>else&#x3C;/code>&#x3C;br />\n      &#x3C;code>enum&#x3C;/code>&#x3C;br />\n      &#x3C;code>extern&#x3C;/code>\n    &#x3C;/td>\n  &#x3C;/tr>\n&#x3C;/table>\n{/code1}"
+      "text": "{code1}<table class=\"columns\">\n  <tr>\n    <td>\n      <code>auto</code><br />\n      <code>break</code><br />\n      <code>case</code><br />\n      <code>char</code>\n    </td>\n    <td>\n      <code>const</code><br />\n      <code>continue</code><br />\n      <code>default</code><br />\n      <code>do</code>\n    </td>\n    <td>\n      <code>double</code><br />\n      <code>else</code><br />\n      <code>enum</code><br />\n      <code>extern</code>\n    </td>\n  </tr>\n</table>\n{/code1}"
     }
   ]
 }

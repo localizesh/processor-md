@@ -1,5 +1,3 @@
-import { Properties } from "hast";
-
 export type Attributes = {
   [key: string]: { [key: string]: string };
 };

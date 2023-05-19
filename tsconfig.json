@@ -12,6 +12,7 @@
     "allowJs": true,
     "skipLibCheck": true
   },
+  "exclude": ["node_modules"],
   "ts-node": {
     "esm": true
   }

@@ -29,7 +29,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('code.md');
     processAndCompare('images.md');
     processAndCompare('lists.md');
-    // processAndCompare('tables.md');
+    processAndCompare('tables.md');
     processAndCompare('misc.md');
   });
 });

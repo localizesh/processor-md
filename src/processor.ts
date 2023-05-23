@@ -250,8 +250,14 @@ class MdProcessor implements Processor {
   private segmentsToHast(data: Document): HastRoot {
     visitParents(data.layout, { type: "segment" }, (node: any, parent) => {
       const structure = parseStringToStructure(data.segments[node.id]);
+      const parentTemp = parent[parent.length - 1];
+      const indexElement = parentTemp.children.findIndex((child: any) => child.id === node.id);
 
-      parent[parent.length - 1].children = structure;
+      if (parentTemp.children.length === 1) {
+        parentTemp.children = structure;
+      } else {
+        parentTemp.children[indexElement] = (structure.length > 1) ? structure : structure[0];
+      }
     });
 
     return data.layout as HastRoot;

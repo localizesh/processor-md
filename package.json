@@ -1,6 +1,6 @@
 {
   "name": "@localizeio/md",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": "localizeio/md",
   "type": "module",
   "main": "dist/index.js",

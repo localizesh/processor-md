@@ -22,6 +22,15 @@ import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 
+const inlineTags = [
+  "code",
+  "b",
+  "em",
+  "a",
+  "img",
+  "strong"
+];
+
 const allowedTags = [
   "blockquote",
   "ul",
@@ -35,70 +44,69 @@ const allowedTags = [
   "td",
   "hr",
 ];
+
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
-function replaceHTMLTags(text: string): string {
-  const newText: string = text.replace(/\r\n/g, "\n");
+function convertNodeToText(node: any){
+  let value = ""
+  let tagCount = 1;
+  let attributes: Attributes = {};
+  const tags: { index: number, name: string }[] = []
 
-  let tagCounter: number = 0;
-  let tagsArray: { count: number; tag: string }[] = [];
-
-  return newText.replace(/<(\/?\w+)>/g, (match: string, tag: string) => {
-    if (tag.startsWith("/")) {
-      const closedCounter = tagsArray[tagsArray.length - 1].count;
-      tagsArray.pop();
-
-      return `{${tag}${closedCounter}}`;
+  visitParents(node, (child, parent) => {
+    if(child.type === "text"){
+      value += child.value
     } else {
-      tagCounter++;
-      tagsArray.push({ count: tagCounter, tag });
+      if(inlineTags.includes(child.tagName)){
+        const openedTag = "{" + child.tagName + tagCount + "}"
 
-      return `{${tag}${tagCounter}}`;
+        value += openedTag
+        tags.push({index: tagCount, name: child.tagName})
+
+        if (Object.keys(child.properties).length !== 0) {
+          attributes[child.tagName + tagCount] = child.properties
+        }
+
+        tagCount++;
+      }
+    }
+
+    if(tags.length > 0){
+      if(parent[parent.length - 1] && parent[parent.length - 1].tagName === tags[tags.length - 1].name){
+        const {index, name} = tags[tags.length - 1]
+        const closedTag = "{/" + name + index + "}"
+
+        value += closedTag
+        tags.pop()
+      }
     }
   });
+
+  if(tags.length > 0){
+    tags.reverse().map(({index, name})=>{
+      const closedTag: string = "{/" + name + index + "}"
+
+      value += closedTag
+    })
+  }
+
+  return {
+    type: "text",
+    value: value,
+    attributes,
+  }
 }
 
 function mergeTextNodes(node: any): LayoutNode {
-  let propertiesCount: number = 1;
-  let properties: Attributes = {};
-  let attributes = undefined;
-
-  if (!allowedTags.includes(node.tagName) && node.children) {
-    visitParents(node, (child) => {
-      if (child.properties && Object.keys(child.properties).length !== 0) {
-        properties[child.tagName + propertiesCount] = {
-          ...child.properties,
-        };
-        child.properties = {};
-
-        if (
-          child.type === "element" ||
-          (child.type === "raw" && !child.value.startsWith("</"))
-        ) {
-          propertiesCount++;
-        }
-      }
-    });
-
-    let value: string = replaceHTMLTags(
-      toHtml(node.children, {
-        allowDangerousHtml: true,
-        allowDangerousCharacters: true,
-      })
+  visitParents(node, { type: "element" }, (child) => {
+    const hasAllowedTag = child.children.some((element: any) =>
+      allowedTags.includes(element.tagName)
     );
 
-    if (Object.keys(properties).length !== 0) {
-      attributes = { ...properties };
+    if (!hasAllowedTag) {
+      child.children = [convertNodeToText(child)];
     }
-
-    node.children = [
-      {
-        type: "text",
-        value: value.replace(/&#x3C;/g, "<").replace(/#x26;/g, ""),
-        attributes,
-      },
-    ];
-  }
+  });
 
   return node as LayoutNode;
 }

@@ -30,6 +30,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('images.md');
     processAndCompare('lists.md');
     processAndCompare('tables.md');
+    processAndCompare('gfm-table.md');
     processAndCompare('misc.md');
   });
 });

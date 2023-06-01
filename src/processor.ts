@@ -90,21 +90,25 @@ function convertNodeToText(node: any){
     })
   }
 
-  return {
-    type: "text",
-    value: value,
-    attributes,
+  if(value){
+    return {
+      type: "text",
+      value: value,
+      attributes,
+    }
   }
+
+  return null
 }
 
 function mergeTextNodes(node: any): LayoutNode {
   visitParents(node, { type: "element" }, (child) => {
     const hasAllowedTag = child.children.some((element: any) =>
-      allowedTags.includes(element.tagName)
+        allowedTags.includes(element.tagName)
     );
 
     if (!hasAllowedTag) {
-      child.children = [convertNodeToText(child)];
+      child.children = convertNodeToText(child) ? [convertNodeToText(child)] : [];
     }
   });
 

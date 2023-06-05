@@ -8,7 +8,7 @@ import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
 import sanitize from "rehype-sanitize";
-import { RootContent } from "hast";
+import { Element, RootContent } from "hast";
 import {
   Attributes,
   Layout,
@@ -21,15 +21,9 @@ import {
 import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
+import img from "./handlers/hastToMdast/img.js";
 
-const inlineTags = [
-  "code",
-  "b",
-  "em",
-  "a",
-  "img",
-  "strong"
-];
+const inlineTags = ["code", "b", "em", "a", "img", "strong"];
 
 const allowedTags = [
   "blockquote",
@@ -42,80 +36,84 @@ const allowedTags = [
   "th",
   "tr",
   "td",
-  "hr",
 ];
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
-function convertNodeToText(node: any){
-  let value = ""
-  let tagCount = 1;
+function convertNodeToText(node: any) {
+  let value = "";
+  let tagCount = 0;
   let attributes: Attributes = {};
-  const tags: { index: number, name: string }[] = []
+  const tags: { index: number; name: string }[] = [];
 
   visitParents(node, (child, parent) => {
-    if(child.type === "text"){
-      value += child.value
+    if (child.type === "text") {
+      value += child.value;
     } else {
-      if(inlineTags.includes(child.tagName)){
-        const openedTag = "{" + child.tagName + tagCount + "}"
+      if (inlineTags.includes(child.tagName)) {
+        const openedTag = "{" + child.tagName + tagCount + "}";
 
-        value += openedTag
-        tags.push({index: tagCount, name: child.tagName})
+        value += openedTag;
+        tags.push({ index: tagCount, name: child.tagName });
 
         if (Object.keys(child.properties).length !== 0) {
-          attributes[child.tagName + tagCount] = child.properties
+          attributes[child.tagName + tagCount] = child.properties;
         }
 
         tagCount++;
       }
     }
 
-    if(tags.length > 0){
-      if(parent[parent.length - 1] && parent[parent.length - 1].tagName === tags[tags.length - 1].name){
-        const {index, name} = tags[tags.length - 1]
-        const closedTag = "{/" + name + index + "}"
+    if (tags.length > 0) {
+      if (
+        parent[parent.length - 1] &&
+        parent[parent.length - 1].tagName === tags[tags.length - 1].name
+      ) {
+        const { index, name } = tags[tags.length - 1];
+        const closedTag = "{/" + name + index + "}";
 
-        value += closedTag
-        tags.pop()
+        value += closedTag;
+        tags.pop();
       }
     }
   });
 
-  if(tags.length > 0){
-    tags.reverse().map(({index, name})=>{
-      const closedTag: string = "{/" + name + index + "}"
+  if (tags.length > 0) {
+    tags.reverse().map(({ index, name }) => {
+      const closedTag: string = "{/" + name + index + "}";
 
-      value += closedTag
-    })
+      value += closedTag;
+    });
   }
 
-  if(value){
+  if (value) {
     return {
       type: "text",
       value: value,
       attributes,
-    }
+    };
   }
 
-  return null
+  return null;
 }
 
 function mergeTextNodes(node: any): LayoutNode {
   visitParents(node, { type: "element" }, (child) => {
     const hasAllowedTag = child.children.some((element: any) =>
-        allowedTags.includes(element.tagName)
+      allowedTags.includes(element.tagName)
     );
 
     if (!hasAllowedTag) {
-      child.children = convertNodeToText(child) ? [convertNodeToText(child)] : [];
+      child.children = convertNodeToText(child)
+        ? [convertNodeToText(child)]
+        : [];
     }
   });
 
   return node as LayoutNode;
 }
 
-function parseStringToStructure(segment: Segment): RootContent[] {
+function parseStringToStructure(segment: Segment): Element[] {
   const text: string = segment.text;
   const stack = [];
   let currentText: string = "";
@@ -196,10 +194,16 @@ class MdProcessor implements Processor {
   }
 
   public stringify(data: Document): string {
+    // const hast: HastRoot = this.segmentsToHast(data);
     const hast: HastRoot = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
-      .use(rehype2remark, { newlines: true })
+      .use(rehype2remark, {
+        newlines: true,
+        handlers: {
+          img: (h, node, parent) => img(node, parent),
+        },
+      })
       .runSync(hast) as MdastRoot;
 
     return unified().use(gfm).use(stringify).stringify(mdast) as string;
@@ -262,13 +266,21 @@ class MdProcessor implements Processor {
   private segmentsToHast(data: Document): HastRoot {
     visitParents(data.layout, { type: "segment" }, (node: any, parent) => {
       const structure = parseStringToStructure(data.segments[node.id]);
-      const parentTemp = parent[parent.length - 1];
-      const indexElement = parentTemp.children.findIndex((child: any) => child.id === node.id);
+      let parentTemp = parent[parent.length - 1];
+      const indexElement = parentTemp.children.findIndex(
+        (child: any) => child.id === node.id
+      );
 
       if (parentTemp.children.length === 1) {
-        parentTemp.children = structure;
+        if (parentTemp.tagName === "img") {
+          parentTemp.children = structure[0].children;
+          parentTemp.properties = structure[0].properties;
+        } else {
+          parentTemp.children = structure;
+        }
       } else {
-        parentTemp.children[indexElement] = (structure.length > 1) ? structure : structure[0];
+        parentTemp.children[indexElement] =
+          structure.length > 1 ? structure : structure[0];
       }
     });
 

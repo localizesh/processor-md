@@ -21,7 +21,7 @@ import {
 import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
-import img from "./handlers/hastToMdast/img.js";
+import img from "./handlers/hast_to_mdast/img.js";
 
 const inlineTags = ["code", "b", "em", "a", "img", "strong"];
 
@@ -206,7 +206,11 @@ class MdProcessor implements Processor {
       })
       .runSync(hast) as MdastRoot;
 
-    return unified().use(gfm).use(stringify).stringify(mdast) as string;
+    return unified().use(gfm).use(stringify, {
+      handlers: {
+        text: (node) => node.value
+      },
+    }).stringify(mdast) as string;
   }
 
   private hastToSegments(tree: HastRoot): Document {

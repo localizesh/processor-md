@@ -2,7 +2,6 @@ import { visitParents } from "unist-util-visit-parents";
 import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import { toHtml } from "hast-util-to-html";
 import remark2rehype from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
@@ -36,6 +35,10 @@ const allowedTags = [
   "th",
   "tr",
   "td",
+];
+const unallowedTags = [
+  "pre",
+  "code",
 ];
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
@@ -99,14 +102,18 @@ function convertNodeToText(node: any) {
 
 function mergeTextNodes(node: any): LayoutNode {
   visitParents(node, { type: "element" }, (child) => {
-    const hasAllowedTag = child.children.some((element: any) =>
-      allowedTags.includes(element.tagName)
-    );
+    if(!unallowedTags.includes(child.tagName)){
+      const hasAllowedTag = child.children.some((element: any) =>
+          allowedTags.includes(element.tagName)
+      );
 
-    if (!hasAllowedTag) {
-      child.children = convertNodeToText(child)
-        ? [convertNodeToText(child)]
-        : [];
+      if (!hasAllowedTag) {
+        const convertedNode = convertNodeToText(child)
+
+        child.children = convertedNode
+            ? [convertedNode]
+            : [];
+      }
     }
   });
 

@@ -21,7 +21,7 @@ import {
 import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
-import img from "./handlers/hast_to_mdast/img.js";
+import img from "./handlers/hast-to-mdast/img.js";
 
 const inlineTags = ["code", "b", "em", "a", "img", "strong"];
 

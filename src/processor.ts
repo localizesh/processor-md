@@ -254,8 +254,7 @@ class MdProcessor implements Processor {
         const children = node.children.map(convertNode);
 
         return {
-          type: node.type,
-          tagName: node.tagName,
+          ...node,
           children: children,
         };
       }

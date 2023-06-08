@@ -22,7 +22,7 @@ import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 
-const inlineTags = ["code", "b", "em", "a", "img", "strong"];
+const inlineTags = ["code", "b", "em", "a", "img", "strong", "kbd"];
 
 const allowedTags = [
   "blockquote",

@@ -67,17 +67,17 @@ function convertNodeToText(node: any) {
       }
     }
 
-    if (tags.length > 0) {
-      if (
-        parent[parent.length - 1] &&
-        parent[parent.length - 1].tagName === tags[tags.length - 1].name
-      ) {
-        const { index, name } = tags[tags.length - 1];
-        const closedTag = "{/" + name + index + "}";
+    const noChildrenElement: boolean = !child.children || child.children && child.children.length === 0
+    if (tags.length > 0 && noChildrenElement) {
+      tags.slice().reverse().forEach((tag, i)=>{
+        if (parent[parent.length - (i + 1)]?.tagName === tag.name) {
+          const { index, name } = tag;
+          const closedTag = "{/" + name + index + "}";
 
-        value += closedTag;
-        tags.pop();
-      }
+          value += closedTag;
+          tags.pop();
+        }
+      })
     }
   });
 

@@ -35,9 +35,9 @@ const allowedTags = [
   "th",
   "tr",
   "td",
+  "pre",
 ];
 const unallowedTags = [
-  "pre",
   "code",
 ];
 
@@ -102,7 +102,12 @@ function convertNodeToText(node: any) {
 
 function mergeTextNodes(node: any): LayoutNode {
   visitParents(node, { type: "element" }, (child) => {
-    if(!unallowedTags.includes(child.tagName)){
+    const isChildTagNotAllowed = unallowedTags.includes(child.tagName);
+    const isSingleChildTagNotAllowed =
+        child.children.length === 1 &&
+        unallowedTags.includes(child.children[0].tagName);
+
+    if (!isChildTagNotAllowed && !isSingleChildTagNotAllowed) {
       const hasAllowedTag = child.children.some((element: any) =>
           allowedTags.includes(element.tagName)
       );

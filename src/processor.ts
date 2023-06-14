@@ -6,7 +6,7 @@ import remark2rehype from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
-import sanitize from "rehype-sanitize";
+import remarkFrontmatter from "remark-frontmatter";
 import { Element, RootContent } from "hast";
 import {
   Attributes,
@@ -21,6 +21,7 @@ import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
+import yaml from "./handlers/yaml-to-hast/yaml.js";
 
 const inlineTags = ["code", "b", "em", "a", "img", "strong", "kbd"];
 
@@ -193,15 +194,24 @@ function parseStringToStructure(segment: Segment): Element[] {
 
 class MdProcessor implements Processor {
   public parse(doc: string) {
-    const mdast = unified().use(parse).use(gfm).parse(doc);
+    const mdast = unified().use(parse)
+      .use(remarkFrontmatter, ['yaml'])
+      .use(gfm)
+      .parse(doc);
     const mdastWithoutPosition = removePosition(mdast);
 
+
     const hast = unified()
-      .use(remark2rehype, { allowDangerousHtml: true })
-      .use(raw)
-      .use(sanitize)
+      .use(remark2rehype, {
+        allowDangerousHtml: true,
+        handlers: {
+          yaml: (h, node, parent) => yaml.stringToHast(node.value)
+        }
+      })
+      .use(raw, {passThrough: ['yaml']})
       .runSync(mdastWithoutPosition);
 
+    //@ts-ignore
     return this.hastToSegments(hast);
   }
 
@@ -214,6 +224,19 @@ class MdProcessor implements Processor {
         newlines: true,
         handlers: {
           img: (h, node, parent) => img(node, parent),
+          yaml: (h, node, parent) => {
+            const result = yaml.hastToString(node)
+            return {
+              type: 'paragraph',
+              position: undefined,
+              children: [
+                {
+                  type: 'text',
+                  value: result
+                }
+              ]
+            }
+          }
         },
       })
       .runSync(hast) as MdastRoot;
@@ -255,7 +278,7 @@ class MdProcessor implements Processor {
         }
       }
 
-      if (node.type === "element") {
+      if (node.type === "element" || node.type === "yaml") {
         const children = node.children.map(convertNode);
 
         return {

@@ -29,8 +29,8 @@ const hastToString = (rootMdast: any) => {
     return result;
   };
 
-  const yamlObject: any = mdastToStringRecursive(rootMdast.children[0]);
-  const yamlString: any = jsYaml.dump(yamlObject, {});
+  const yamlObject: Object = mdastToStringRecursive(rootMdast);
+  const yamlString: string = jsYaml.dump(yamlObject, {});
 
   return `---\n${yamlString}---`
 }
@@ -39,12 +39,12 @@ const stringToHast = (rootString: string) => {
   const yamlObject = jsYaml.load(rootString, {});
   const stringToMdastRecursive: any = (yaml: any) => {
 
-    const isSeq: any = Array.isArray(yaml);
-    const isMap: any = isPlainObject(yaml);
+    const isSeq: boolean = Array.isArray(yaml);
+    const isMap: boolean = isPlainObject(yaml);
 
     if (isMap) {
       return {
-        type: 'element',
+        type: 'yaml',
         tagName: 'table',
         children: [
           {
@@ -77,15 +77,14 @@ const stringToHast = (rootString: string) => {
       };
     }
   };
-  const result = {
-    type: 'yaml',
-    tagName: 'table',
-    children: [stringToMdastRecursive(yamlObject)],
-    properties: {}
-  }
-  return result
+  return stringToMdastRecursive(yamlObject)
 }
 
+const getQuotesType = (yaml: string, rootString: string) => {
+  const startIndex = rootString.indexOf(yaml)
+  const bracket = rootString[startIndex - 1]
+  return bracket ? bracket : ''
+}
 
 const isPlainObject = function (obj: any): any {
   return Object.prototype.toString.call(obj) === '[object Object]';

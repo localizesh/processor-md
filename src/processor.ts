@@ -211,7 +211,6 @@ class MdProcessor implements Processor {
       .use(raw, {passThrough: ['yaml']})
       .runSync(mdastWithoutPosition);
 
-    //@ts-ignore
     return this.hastToSegments(hast);
   }
 
@@ -270,7 +269,7 @@ class MdProcessor implements Processor {
     };
 
     const convertNode = (node: LayoutNode): LayoutNode => {
-      if (node.type === "text" || node.type === "raw") {
+      if (node.type === "text" || node.type === "comment" ) {
         if (node.value?.trim() === "") {
           return node;
         } else {

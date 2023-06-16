@@ -6,8 +6,7 @@ import remark2rehype from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
-import sanitize from "rehype-sanitize";
-import { Element, RootContent } from "hast";
+import { Element } from "hast";
 import {
   Attributes,
   Layout,
@@ -22,57 +21,103 @@ import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 
-const inlineTags = ["code", "b", "em", "a", "img", "strong", "kbd"];
+const convertMdastTagToHast = (tag: string) => {
+  const tagsMap: Record<string, string> = {
+    "link": "a",
+    "inlineCode": "code"
+  }
 
-const allowedTags = [
-  "blockquote",
-  "ul",
-  "ol",
-  "li",
-  "table",
-  "thead",
-  "tbody",
-  "th",
-  "tr",
-  "td",
-  "pre",
-];
-const unallowedTags = [
-  "code",
-];
+  return tagsMap[tag] ? tagsMap[tag] : tag
+}
+
+const convertMdastAttributesToHast = (attributes: any) => {
+  let newAttributes: Attributes = {};
+  const attributesMapLinks: Record<string, string> = {
+    "url": "href"
+  }
+  const attributesMapImg: Record<string, string> = {
+    "url": "src"
+  }
+
+  for (const key in attributes) {
+    if (attributes.hasOwnProperty(key)) {
+      const innerObject = attributes[key];
+      const transformedInnerObject: any = {};
+      const attributesMap = key.includes("image") ? attributesMapImg : attributesMapLinks
+
+      for (const innerKey in innerObject) {
+        if (innerObject.hasOwnProperty(innerKey)) {
+          if (attributesMap.hasOwnProperty(innerKey)) {
+            transformedInnerObject[attributesMap[innerKey]] = innerObject[innerKey];
+          } else {
+            transformedInnerObject[innerKey] = innerObject[innerKey];
+          }
+        }
+      }
+
+      newAttributes[key] = transformedInnerObject;
+    }
+  }
+
+  return newAttributes
+}
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
-function convertNodeToText(node: any) {
+function convertMdastNodeToText(node: any) {
   let value = "";
   let tagCount = 0;
   let attributes: Attributes = {};
-  const tags: { index: number; name: string }[] = [];
+  const tags: { index: number; name: string, isClosed: boolean }[] = [];
 
   visitParents(node, (child, parent) => {
+    if(parent.length === 0){
+      return;
+    }
+
     if (child.type === "text") {
       value += child.value;
     } else {
-      if (inlineTags.includes(child.tagName)) {
-        const openedTag = "{" + child.tagName + tagCount + "}";
 
-        value += openedTag;
-        tags.push({ index: tagCount, name: child.tagName });
+      const tagName = convertMdastTagToHast(child.type)
+      const tagNameWithIndex = tagName + tagCount
+      const openedTag = "{" + tagNameWithIndex + "}";
+      const newTag = { index: tagCount, name: child.type, isClosed: false }
 
-        if (Object.keys(child.properties).length !== 0) {
-          attributes[child.tagName + tagCount] = child.properties;
-        }
-
-        tagCount++;
+      value += openedTag;
+      if(child.value){
+        value += child.value;
+        newTag.isClosed = true
       }
+
+      tags.push(newTag);
+
+      //todo
+      if (child.url) {
+        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], url: child.url};
+      }
+
+      if (child.title) {
+        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], title: child.title};
+      }
+
+      if (child.alt) {
+        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], alt: child.alt};
+      }
+
+      tagCount++;
     }
 
-    const noChildrenElement: boolean = !child.children || child.children && child.children.length === 0
-    if (tags.length > 0 && noChildrenElement) {
+    if (tags.length > 0) {
       tags.slice().reverse().forEach((tag, i)=>{
-        if (parent[parent.length - (i + 1)]?.tagName === tag.name) {
+        const currentParent = parent[parent.length - (i + 1)]
+        if (tag.isClosed ||
+            (child.type !== "text" && currentParent?.type === tag.name) ||
+            (child.type === "text" && currentParent.children[currentParent.children.length - 1].value === child.value)) {
           const { index, name } = tag;
-          const closedTag = "{/" + name + index + "}";
+          const tagName = convertMdastTagToHast(name)
+          const tagNameWithIndex = tagName + index
+          const closedTag = "{/" + tagNameWithIndex + "}";
 
           value += closedTag;
           tags.pop();
@@ -83,7 +128,9 @@ function convertNodeToText(node: any) {
 
   if (tags.length > 0) {
     tags.reverse().map(({ index, name }) => {
-      const closedTag: string = "{/" + name + index + "}";
+      const tagName = convertMdastTagToHast(name)
+      const tagNameWithIndex = tagName + index
+      const closedTag: string = "{/" + tagNameWithIndex + "}";
 
       value += closedTag;
     });
@@ -93,36 +140,11 @@ function convertNodeToText(node: any) {
     return {
       type: "text",
       value: value,
-      attributes,
+      attributes: Object.keys(attributes).length > 0 ? {attributes: JSON.stringify(attributes)} : {},
     };
   }
 
   return null;
-}
-
-function mergeTextNodes(node: any): LayoutNode {
-  visitParents(node, { type: "element" }, (child) => {
-    const isChildTagNotAllowed = unallowedTags.includes(child.tagName);
-    const isSingleChildTagNotAllowed =
-        child.children.length === 1 &&
-        unallowedTags.includes(child.children[0].tagName);
-
-    if (!isChildTagNotAllowed && !isSingleChildTagNotAllowed) {
-      const hasAllowedTag = child.children.some((element: any) =>
-          allowedTags.includes(element.tagName)
-      );
-
-      if (!hasAllowedTag) {
-        const convertedNode = convertNodeToText(child)
-
-        child.children = convertedNode
-            ? [convertedNode]
-            : [];
-      }
-    }
-  });
-
-  return node as LayoutNode;
 }
 
 function parseStringToStructure(segment: Segment): Element[] {
@@ -197,10 +219,24 @@ class MdProcessor implements Processor {
     const mdastWithoutPosition = removePosition(mdast);
 
     const hast = unified()
-      .use(remark2rehype, { allowDangerousHtml: true })
-      .use(raw)
-      .use(sanitize)
-      .runSync(mdastWithoutPosition);
+        .use(remark2rehype, { allowDangerousHtml: true,
+          handlers: {
+            paragraph:(state, node) => {
+              const segment: any = convertMdastNodeToText(node)
+
+
+              return {
+                type: 'element',
+                tagName: 'p',
+                properties: segment.attributes,
+                children: [segment]
+              }
+            }
+          }
+        })
+        .use(raw)
+        // .use(sanitize)
+        .runSync(mdastWithoutPosition);
 
     return this.hastToSegments(hast);
   }
@@ -256,7 +292,7 @@ class MdProcessor implements Processor {
       }
 
       if (node.type === "element") {
-        const children = node.children.map(convertNode);
+        const children: LayoutNode[] = node.children.map(convertNode);
 
         return {
           ...node,
@@ -267,11 +303,12 @@ class MdProcessor implements Processor {
       throw new Error(`Unsupported node type: ${node.type}`);
     };
 
-    tree.children.forEach((child: RootContent) => {
-      layoutTemp.children.push(mergeTextNodes(child));
-    });
+    tree.children.forEach((child: any) => {
+      if(child.properties?.attributes){
+        child.children[0].attributes = convertMdastAttributesToHast(JSON.parse(child.properties.attributes))
+        delete child.properties.attributes
+      }
 
-    layoutTemp.children.forEach((child: LayoutNode) => {
       layout.children.push(convertNode(child));
     });
 

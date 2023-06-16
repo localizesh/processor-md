@@ -33,6 +33,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('tables.md');
     processAndCompare('gfm-table.md');
     processAndCompare('misc.md');
+    processAndCompare('frontmatter.md');
   });
 });
 

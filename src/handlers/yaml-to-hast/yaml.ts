@@ -1,36 +1,54 @@
 import jsYaml from 'js-yaml';
+import { Element } from "hast";
 
 const yamlSequenceTags = ['ul', 'li'];
 
+const quoteCustomCodes: {[key: string]: string} = {
+  single: '{$sqc0}',
+  double: '{$dqc0}'
+}
 
-const hastToString = (rootMdast: any) => {
-  const mdastToStringRecursive: any = (mdast: any): any => {
+enum quotesTypes {
+  single = 'single',
+  double = 'double',
+}
+
+
+const hastToString = (rootMdast: Element): string => {
+  const hastToStringRecursive = (mdast: any): Element => {
 
     let result: any;
     const isTableTag = mdast?.tagName === "table";
     if (isTableTag) {
       const tbody = mdast?.children[0]
-      result = tbody.children.reduce((result: any, value: any) => {
-        return {...result, ...mdastToStringRecursive(value)};
+      result = tbody.children.reduce((result: {}, value: Element) => {
+        return {...result, ...hastToStringRecursive(value)};
       }, {});
     } else if (yamlSequenceTags.includes(mdast?.tagName)) {
-      result = mdast.children.map((value: any) => {
-        return mdastToStringRecursive(value);
+      result = mdast.children.map((value: Element) => {
+        return hastToStringRecursive(value);
       });
     } else if (mdast?.tagName === "tr") {
       const [key, value] = mdast.children;
       const [keyChild] = key.children;
       const [valueChild] = value.children;
+      const quotes = value?.properties?.quotes
 
-      result = {[keyChild.value]: mdastToStringRecursive(valueChild)};
+      if(quotes && valueChild.value && quoteCustomCodes[quotes]) {
+        valueChild.value = quoteCustomCodes[quotes] + valueChild.value + quoteCustomCodes[quotes]
+      }
+
+      result = {[keyChild.value]: hastToStringRecursive(valueChild)};
     } else if (mdast?.type === "text") {
       result = mdast.value;
     }
     return result;
   };
 
-  const yamlObject: Object = mdastToStringRecursive(rootMdast);
-  const yamlString: string = jsYaml.dump(yamlObject, {});
+  const yamlObject: Object = hastToStringRecursive(rootMdast);
+
+  let yamlString: string = jsYaml.dump(yamlObject, {});
+  yamlString = replaceCustomQuotes(yamlString)
 
   return `---\n${yamlString}---`
 }
@@ -50,7 +68,7 @@ const stringToHast = (rootString: string) => {
           {
             type: 'element',
             tagName: 'tbody',
-            children: getPropertiesInYamlObj(yaml, stringToMdastRecursive),
+            children: getPropertiesInYamlObj(yaml, stringToMdastRecursive, rootString),
             properties: {}
           }
         ],
@@ -60,7 +78,7 @@ const stringToHast = (rootString: string) => {
       return {
         type: 'element',
         tagName: 'ul',
-        children: yaml.map((value: any, key: any) => {
+        children: yaml.map((value: Element) => {
           return {
             type: 'element',
             tagName: 'li',
@@ -83,17 +101,41 @@ const stringToHast = (rootString: string) => {
 const getQuotesType = (yaml: string, rootString: string) => {
   const startIndex = rootString.indexOf(yaml)
   const bracket = rootString[startIndex - 1]
-  return bracket ? bracket : ''
+  if(!bracket || !bracket.trim()) {
+    return ''
+  } else {
+    return bracket === `'` ? quotesTypes.single : quotesTypes.double
+  }
 }
 
-const isPlainObject = function (obj: any): any {
+const replaceCustomQuotes = (str: string): string => {
+  return  str.replaceAll(`'${quoteCustomCodes.double}`, `"`)
+    .replaceAll(`${quoteCustomCodes.double}'`, `"`)
+    .replaceAll(`'${quoteCustomCodes.single}`, `'`)
+    .replaceAll(`${quoteCustomCodes.single}'`, `'`)
+    .replaceAll(quoteCustomCodes.single, `'`)
+    .replaceAll(quoteCustomCodes.double, `"`)
+}
+
+const isPlainObject = function (obj: Object): boolean {
   return Object.prototype.toString.call(obj) === '[object Object]';
 };
 
-function getPropertiesInYamlObj(yaml: any, stringToMdastRecursive: any) {
+function getPropertiesInYamlObj(yaml: {[key: string]: string}, stringToHastRecursive: any, rootString: string) {
   const children = []
   for (let key in yaml) {
     if (yaml.hasOwnProperty(key)) {
+      const yamlKey = stringToHastRecursive(key)
+      const yamlValue = stringToHastRecursive(yaml[key])
+
+      let yamlKeyProperties: any = {type: 'yamlKey'}
+      let yamlValueProperties: any = {type: 'yamlValue'}
+
+      if(yamlValue.type === 'text') {
+        const quotes = getQuotesType(yamlValue.value, rootString)
+        if(quotes) yamlValueProperties = {...yamlValueProperties, quotes}
+      }
+
       const value = {
         type: 'element',
         tagName: 'tr',
@@ -101,13 +143,14 @@ function getPropertiesInYamlObj(yaml: any, stringToMdastRecursive: any) {
           {
             type: 'element',
             tagName: 'td',
-            children: [stringToMdastRecursive(key)],
-            properties: {type: 'yamlKey'}},
+            children: [yamlKey],
+            properties: yamlKeyProperties
+          },
           {
             type: 'element',
             tagName: 'td',
-            children: [stringToMdastRecursive(yaml[key])],
-            properties: {type: 'yamlValue'}
+            children: [yamlValue],
+            properties: yamlValueProperties
           },
         ],
         properties: {}
@@ -119,8 +162,8 @@ function getPropertiesInYamlObj(yaml: any, stringToMdastRecursive: any) {
 }
 
 const yaml: {
-  hastToString: (rootMdast: any) => string,
-  stringToHast: (rootString: string) => any
+  hastToString: (rootHast: Element) => string,
+  stringToHast: (rootString: string) => Element
 } = {
   hastToString,
   stringToHast

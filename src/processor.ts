@@ -269,7 +269,7 @@ class MdProcessor implements Processor {
     };
 
     const convertNode = (node: LayoutNode): LayoutNode => {
-      if (node.type === "text" || node.type === "comment" ) {
+      if (node.type === "text") {
         if (node.value?.trim() === "") {
           return node;
         } else {
@@ -285,6 +285,8 @@ class MdProcessor implements Processor {
           children: children,
         };
       }
+
+      if(node.type === "comment") return node
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

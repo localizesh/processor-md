@@ -24,7 +24,8 @@ import img from "./handlers/hast-to-mdast/img.js";
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
     "link": "a",
-    "inlineCode": "code"
+    "inlineCode": "code",
+    "emphasis": "em"
   }
 
   return tagsMap[tag] ? tagsMap[tag] : tag
@@ -71,65 +72,73 @@ function convertMdastNodeToText(node: any) {
   const tags: { index: number; name: string, isClosed: boolean }[] = [];
 
   visitParents(node, (child, parent) => {
-    if(parent.length === 0){
+    if (parent.length === 0) {
       return;
     }
 
     if (child.type === "text") {
       value += child.value;
     } else {
-
-      const tagName = convertMdastTagToHast(child.type)
-      const tagNameWithIndex = tagName + tagCount
+      const tagName = convertMdastTagToHast(child.type);
+      const tagNameWithIndex = tagName + tagCount;
       const openedTag = "{" + tagNameWithIndex + "}";
-      const newTag = { index: tagCount, name: child.type, isClosed: false }
+      const newTag = { index: tagCount, name: child.type, isClosed: false };
 
       value += openedTag;
-      if(child.value){
+      if (child.value) {
         value += child.value;
-        newTag.isClosed = true
+        newTag.isClosed = true;
       }
 
       tags.push(newTag);
 
-      //todo
-      if (child.url) {
-        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], url: child.url};
-      }
+      if (child.url || child.title || child.alt) {
+        const attr: any = {};
 
-      if (child.title) {
-        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], title: child.title};
-      }
+        if (child.url) {
+          attr.url = child.url;
+        }
 
-      if (child.alt) {
-        attributes[tagNameWithIndex] = {...attributes[tagNameWithIndex], alt: child.alt};
+        if (child.title) {
+          attr.title = child.title;
+        }
+
+        if (child.alt) {
+          attr.alt = child.alt;
+        }
+
+        attributes[tagNameWithIndex] = { ...attributes[tagNameWithIndex], ...attr };
       }
 
       tagCount++;
     }
 
     if (tags.length > 0) {
-      tags.slice().reverse().forEach((tag, i)=>{
-        const currentParent = parent[parent.length - (i + 1)]
-        if (tag.isClosed ||
+      tags.slice().reverse().forEach((tag, i) => {
+        const currentParent = parent[parent.length - (i + 1)];
+
+        if (
+            tag.isClosed ||
             (child.type !== "text" && currentParent?.type === tag.name) ||
-            (child.type === "text" && currentParent.children[currentParent.children.length - 1].value === child.value)) {
+            (child.type === "text" && currentParent?.type === 'emphasis' && currentParent?.type === tag.name) ||
+            (child.type === "text" && currentParent.children[currentParent.children.length - 1].value === child.value)
+        ) {
           const { index, name } = tag;
-          const tagName = convertMdastTagToHast(name)
-          const tagNameWithIndex = tagName + index
+          const tagName = convertMdastTagToHast(name);
+          const tagNameWithIndex = tagName + index;
           const closedTag = "{/" + tagNameWithIndex + "}";
 
           value += closedTag;
           tags.pop();
         }
-      })
+      });
     }
   });
 
   if (tags.length > 0) {
-    tags.reverse().map(({ index, name }) => {
-      const tagName = convertMdastTagToHast(name)
-      const tagNameWithIndex = tagName + index
+    tags.reverse().forEach(({ index, name }) => {
+      const tagName = convertMdastTagToHast(name);
+      const tagNameWithIndex = tagName + index;
       const closedTag: string = "{/" + tagNameWithIndex + "}";
 
       value += closedTag;
@@ -140,7 +149,7 @@ function convertMdastNodeToText(node: any) {
     return {
       type: "text",
       value: value,
-      attributes: Object.keys(attributes).length > 0 ? {attributes: JSON.stringify(attributes)} : {},
+      attributes: Object.keys(attributes).length > 0 ? { attributes: JSON.stringify(attributes) } : {},
     };
   }
 
@@ -224,12 +233,25 @@ class MdProcessor implements Processor {
             paragraph:(state, node) => {
               const segment: any = convertMdastNodeToText(node)
 
-
               return {
                 type: 'element',
                 tagName: 'p',
                 properties: segment.attributes,
                 children: [segment]
+              }
+            },
+            tableRow: (state, node) => {
+              visitParents(node, {type: "tableCell"}, (child, parent) => {
+                const segment: any = convertMdastNodeToText(child)
+
+                child.children = segment ? [segment] : []
+              })
+
+              return {
+                type: "element",
+                tagName: "tr",
+                properties: {},
+                children: state.all(node)
               }
             }
           }
@@ -298,6 +320,10 @@ class MdProcessor implements Processor {
           ...node,
           children: children,
         };
+      }
+
+      if (node.type === "comment") {
+        return node;
       }
 
       throw new Error(`Unsupported node type: ${node.type}`);

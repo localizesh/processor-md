@@ -25,15 +25,18 @@ const hastToString = (rootMdast: Element): string => {
         return {...result, ...hastToStringRecursive(value)};
       }, {});
     } else if (yamlSequenceTags.includes(mdast?.tagName)) {
-      result = mdast.children.map((value: Element) => {
+      const children = mdast.children.map((value: Element) => {
         return hastToStringRecursive(value);
       });
+      result = (mdast?.tagName === 'li') ? children[0] : children
     } else if (mdast?.tagName === "tr") {
       const [key, value] = mdast.children;
       const [keyChild] = key.children;
       const [valueChild] = value.children;
       const quotes = value?.properties?.quotes
 
+      const isValueChildNumber = !isNaN(Number(valueChild.value))
+      if(isValueChildNumber) valueChild.value = Number(valueChild.value);
       if(quotes && valueChild.value && quoteCustomCodes[quotes]) {
         valueChild.value = quoteCustomCodes[quotes] + valueChild.value + quoteCustomCodes[quotes]
       }

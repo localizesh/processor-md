@@ -34,6 +34,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('gfm-table.md');
     processAndCompare('misc.md');
     processAndCompare('frontmatter.md');
+    processAndCompare('footnote.md');
   });
 });
 

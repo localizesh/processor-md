@@ -2,7 +2,7 @@ import { visitParents } from "unist-util-visit-parents";
 import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype from "remark-rehype";
+import remark2rehype, {all} from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
@@ -17,7 +17,7 @@ import {
   Document,
   Processor,
 } from "./types";
-import { Root as MdastRoot } from "mdast";
+import { Root as MdastRoot, Paragraph } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
@@ -205,7 +205,22 @@ class MdProcessor implements Processor {
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
-          yaml: (h, node, parent) => yaml.stringToHast(node.value)
+          yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          footnoteReference: (h, node, parent) => {
+            return   {type: 'text', value: `[^${node.label}]`}
+          },
+          footnoteDefinition: (h, node, parent) => {
+            const paragraphLevel = node.children[0]
+            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel)
+            const footnoteLabel = `[^${node.label}]: `
+            const children = [{type: 'text', value: footnoteLabel}, ...paragraphLevelChildrenInHast]
+            return {
+              type: 'element',
+              tagName: 'p',
+              children,
+              properties: {}
+            }
+          }
         }
       })
       .use(raw, {passThrough: ['yaml']})

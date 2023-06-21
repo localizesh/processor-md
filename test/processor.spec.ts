@@ -35,6 +35,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('misc.md');
     processAndCompare('frontmatter.md');
     processAndCompare('footnote.md');
+    processAndCompare('task-list.md');
   });
 });
 

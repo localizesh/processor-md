@@ -305,7 +305,6 @@ class MdProcessor implements Processor {
   }
 
   public stringify(data: Document): string {
-    // const hast: HastRoot = this.segmentsToHast(data);
     const hast: HastRoot = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()

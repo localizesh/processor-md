@@ -135,6 +135,7 @@ function getPropertiesInYamlObj(yaml: {[key: string]: string}, stringToHastRecur
       let yamlValueProperties: any = {type: 'yamlValue'}
 
       if(yamlValue.type === 'text') {
+        yamlValue.value = yamlValue.value.toString()
         const quotes = getQuotesType(yamlValue.value, rootString)
         if(quotes) yamlValueProperties = {...yamlValueProperties, quotes}
       }

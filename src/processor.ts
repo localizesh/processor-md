@@ -1,16 +1,27 @@
-import {visitParents} from "unist-util-visit-parents";
-import {unified} from "unified";
+import { visitParents } from "unist-util-visit-parents";
+import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype from "remark-rehype";
+import remark2rehype, {all} from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
-import {Element, Root as HastRoot} from "hast";
-import {Attributes, Document, Layout, LayoutElement, LayoutNode, Processor, Segment,} from "./types";
-import {Root as MdastRoot} from "mdast";
-import {removePosition} from "unist-util-remove-position";
+import remarkFrontmatter from "remark-frontmatter";
+import { Element, RootContent } from "hast";
+import {
+  Attributes,
+  Layout,
+  LayoutElement,
+  LayoutNode,
+  Segment,
+  Document,
+  Processor,
+} from "./types";
+import { Root as MdastRoot, Paragraph } from "mdast";
+import { Root as HastRoot } from "hast";
+import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
+import yaml from "./handlers/yaml-to-hast/yaml.js";
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
@@ -220,41 +231,75 @@ function parseStringToStructure(segment: Segment): Element[] {
 
 class MdProcessor implements Processor {
   public parse(doc: string) {
-    const mdast = unified().use(parse).use(gfm).parse(doc);
+    const mdast = unified().use(parse)
+      .use(remarkFrontmatter, ['yaml'])
+      .use(gfm)
+      .parse(doc);
     const mdastWithoutPosition = removePosition(mdast);
 
+
     const hast = unified()
-        .use(remark2rehype, { allowDangerousHtml: true,
-          handlers: {
-            paragraph:(state, node) => {
-              const segment: any = convertMdastNodeToText(node)
+      .use(remark2rehype, {
+        allowDangerousHtml: true,
+        handlers: {
+          paragraph:(state, node) => {
+            const segment: any = convertMdastNodeToText(node)
 
-              return {
-                type: 'element',
-                tagName: 'p',
-                properties: segment?.attributes || {},
-                children: [segment]
-              }
-            },
-            tableRow: (state, node) => {
-              visitParents(node, {type: "tableCell"}, (child, parent) => {
-                const segment: any = convertMdastNodeToText(child)
+            return {
+              type: 'element',
+              tagName: 'p',
+              properties: segment?.attributes || {},
+              children: [segment]
+            }
+          },
+          tableRow: (state, node) => {
+            visitParents(node, {type: "tableCell"}, (child, parent) => {
+              const segment: any = convertMdastNodeToText(child)
 
-                child.children = segment ? [segment] : []
-              })
+              child.children = segment ? [segment] : []
+            })
 
-              return {
-                type: "element",
-                tagName: "tr",
-                properties: {},
-                children: state.all(node)
-              }
+            return {
+              type: "element",
+              tagName: "tr",
+              properties: {},
+              children: state.all(node)
+            }
+          },
+          yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          footnoteReference: (h, node, parent) => {
+            return   {type: 'text', value: `[^${node.label}]`}
+          },
+          footnoteDefinition: (h, node, parent) => {
+            const paragraphLevel = node.children[0]
+            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel)
+            const footnoteLabel = `[^${node.label}]: `
+            const children = [{type: 'text', value: footnoteLabel}, ...paragraphLevelChildrenInHast]
+            return {
+              type: 'element',
+              tagName: 'p',
+              children,
+              properties: {}
+            }
+          },
+          listItem: (h, node, parent) => {
+            let listItemChildren = all(h, node);
+            const isTaskItem = node.checked !== null;
+            if(isTaskItem) {
+              const checkBox = `[${node.checked ? `x` : ` `}] `;
+              listItemChildren = [{type: 'text', value: checkBox}, ...listItemChildren];
+            }
+            return {
+              ...node,
+              tagName: 'li',
+              type: 'element',
+              children: listItemChildren
             }
           }
-        })
-        .use(raw)
-        // .use(sanitize)
-        .runSync(mdastWithoutPosition);
+        }
+      })
+      .use(raw, {passThrough: ['yaml']})
+      .runSync(mdastWithoutPosition);
 
     return this.hastToSegments(hast);
   }
@@ -268,6 +313,19 @@ class MdProcessor implements Processor {
         newlines: true,
         handlers: {
           img: (h, node, parent) => img(node, parent),
+          yaml: (h, node, parent) => {
+            const result = yaml.hastToString(node)
+            return {
+              type: 'paragraph',
+              position: undefined,
+              children: [
+                {
+                  type: 'text',
+                  value: result
+                }
+              ]
+            }
+          }
         },
       })
       .runSync(hast) as MdastRoot;
@@ -301,7 +359,7 @@ class MdProcessor implements Processor {
     };
 
     const convertNode = (node: LayoutNode): LayoutNode => {
-      if (node.type === "text" || node.type === "raw") {
+      if (node.type === "text") {
         if (node.value?.trim() === "") {
           return node;
         } else {
@@ -309,8 +367,8 @@ class MdProcessor implements Processor {
         }
       }
 
-      if (node.type === "element") {
-        const children: LayoutNode[] = node.children.map(convertNode);
+      if (node.type === "element" || node.type === "yaml") {
+        const children = node.children.map(convertNode);
 
         return {
           ...node,
@@ -318,9 +376,7 @@ class MdProcessor implements Processor {
         };
       }
 
-      if (node.type === "comment") {
-        return node;
-      }
+      if(node.type === "comment") return node
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

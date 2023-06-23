@@ -98,6 +98,10 @@ function convertMdastNodeToText(node: any) {
       return value;
     }
 
+    if(node.type === 'footnoteReference'){
+      return `[^${node.label}]`
+    }
+
     if ('children' in node) {
       const tagCountTemp = tagCount;
 
@@ -235,8 +239,6 @@ class MdProcessor implements Processor {
       .use(remarkFrontmatter, ['yaml'])
       .use(gfm)
       .parse(doc);
-    const mdastWithoutPosition = removePosition(mdast);
-
 
     const hast = unified()
       .use(remark2rehype, {
@@ -267,6 +269,7 @@ class MdProcessor implements Processor {
             }
           },
           yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          //todo
           footnoteReference: (h, node, parent) => {
             return   {type: 'text', value: `[^${node.label}]`}
           },
@@ -299,9 +302,11 @@ class MdProcessor implements Processor {
         }
       })
       .use(raw, {passThrough: ['yaml']})
-      .runSync(mdastWithoutPosition);
+      .runSync(mdast);
 
-    return this.hastToSegments(hast);
+    const hastWithoutPosition = removePosition(hast);
+
+    return this.hastToSegments(hastWithoutPosition);
   }
 
   public stringify(data: Document): string {

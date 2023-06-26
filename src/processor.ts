@@ -290,7 +290,11 @@ class MdProcessor implements Processor {
             const isTaskItem = node.checked !== null;
             if(isTaskItem) {
               const checkBox = `[${node.checked ? `x` : ` `}] `;
-              listItemChildren = [{type: 'text', value: checkBox}, ...listItemChildren];
+              const paragraph = listItemChildren[0]
+              if('children' in paragraph) {
+                const textNode = paragraph.children[0]
+                if('value' in textNode) textNode.value = `${checkBox} ${textNode.value}`
+              }
             }
             return {
               ...node,

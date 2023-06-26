@@ -246,12 +246,13 @@ class MdProcessor implements Processor {
         handlers: {
           paragraph:(state, node) => {
             const segment: any = convertMdastNodeToText(node)
+            node.children = segment ? [segment] : []
 
             return {
               type: 'element',
               tagName: 'p',
               properties: segment?.attributes || {},
-              children: [segment]
+              children: state.all(node)
             }
           },
           tableRow: (state, node) => {
@@ -269,7 +270,6 @@ class MdProcessor implements Processor {
             }
           },
           yaml: (h, node, parent) => yaml.stringToHast(node.value),
-          //todo
           footnoteReference: (h, node, parent) => {
             return   {type: 'text', value: `[^${node.label}]`}
           },

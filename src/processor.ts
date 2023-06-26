@@ -2,7 +2,7 @@ import { visitParents } from "unist-util-visit-parents";
 import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype, {all} from "remark-rehype";
+import remark2rehype, { all } from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
@@ -17,7 +17,7 @@ import {
   Document,
   Processor,
 } from "./types";
-import { Root as MdastRoot, Paragraph } from "mdast";
+import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
@@ -25,33 +25,36 @@ import yaml from "./handlers/yaml-to-hast/yaml.js";
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
-    "link": "a",
-    "inlineCode": "code",
-    "emphasis": "em"
-  }
+    link: "a",
+    inlineCode: "code",
+    emphasis: "em",
+  };
 
-  return tagsMap[tag] ? tagsMap[tag] : tag
-}
+  return tagsMap[tag] ? tagsMap[tag] : tag;
+};
 
 const convertMdastAttributesToHast = (attributes: any) => {
   let newAttributes: Attributes = {};
   const attributesMapLinks: Record<string, string> = {
-    "url": "href"
-  }
+    url: "href",
+  };
   const attributesMapImg: Record<string, string> = {
-    "url": "src"
-  }
+    url: "src",
+  };
 
   for (const key in attributes) {
     if (attributes.hasOwnProperty(key)) {
       const innerObject = attributes[key];
       const transformedInnerObject: any = {};
-      const attributesMap = key.includes("image") ? attributesMapImg : attributesMapLinks
+      const attributesMap = key.includes("image")
+        ? attributesMapImg
+        : attributesMapLinks;
 
       for (const innerKey in innerObject) {
         if (innerObject.hasOwnProperty(innerKey)) {
           if (attributesMap.hasOwnProperty(innerKey)) {
-            transformedInnerObject[attributesMap[innerKey]] = innerObject[innerKey];
+            transformedInnerObject[attributesMap[innerKey]] =
+              innerObject[innerKey];
           } else {
             transformedInnerObject[innerKey] = innerObject[innerKey];
           }
@@ -62,8 +65,8 @@ const convertMdastAttributesToHast = (attributes: any) => {
     }
   }
 
-  return newAttributes
-}
+  return newAttributes;
+};
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
@@ -71,54 +74,55 @@ function convertMdastNodeToText(node: any) {
   let resultNodeText = "";
   let tagCount = 0;
   let attributes: Attributes = {};
-  const htmlTags: any[] = []
+  const htmlTags: number[] = [];
 
   const nodeToString = (node: any): string => {
     const tag = convertMdastTagToHast(node.type);
     let tagNameWithIndex = "";
 
-    if(node.type === "html"){
-      const tagName = node.value.replace(/[<>]/g, '')
+    if (node.type === "html") {
+      const tagName = node.value.replace(/[<>]/g, "");
       const openingTag = /^<(\w+)>$/;
       const closingTag = /^<\/\w+>$/;
       let tagCountTemp = tagCount;
 
-      if(closingTag.test(node.value)){
-        tagCountTemp = htmlTags[htmlTags.length - 1];
-        htmlTags.pop()
+      if (closingTag.test(node.value)) {
+        tagCountTemp = htmlTags.pop()!;
       }
 
       const value = `{${tagName}${tagCountTemp}}`;
 
-      if(openingTag.test(node.value)){
-        htmlTags.push(tagCount)
+      if (openingTag.test(node.value)) {
+        htmlTags.push(tagCount);
         tagCount++;
       }
 
       return value;
     }
 
-    if(node.type === 'footnoteReference'){
-      return `[^${node.label}]`
+    if (node.type === "footnoteReference") {
+      return `[^${node.label}]`;
     }
 
-    if ('children' in node) {
+    if ("children" in node) {
       const tagCountTemp = tagCount;
 
       tagNameWithIndex = tag + tagCountTemp;
-      setAttributes(node, tagNameWithIndex)
+      setAttributes(node, tagNameWithIndex);
       tagCount++;
 
-      const content = node.children.map(nodeToString).join('');
+      const content = node.children.map(nodeToString).join("");
 
       return `{${tag}${tagCountTemp}}${content}{/${tag}${tagCountTemp}}`;
-    } else if ('value' in node || node.type === "image") {
-      if(tag !== "text"){
+    } else if ("value" in node || node.type === "image") {
+      if (tag !== "text") {
         tagNameWithIndex = tag + tagCount;
 
-        setAttributes(node, tagNameWithIndex)
+        setAttributes(node, tagNameWithIndex);
 
-        const value = `{${tag}${tagCount}}${node.value || ""}{/${tag}${tagCount}}`;
+        const value = `{${tag}${tagCount}}${
+          node.value || ""
+        }{/${tag}${tagCount}}`;
 
         tagCount++;
 
@@ -127,9 +131,10 @@ function convertMdastNodeToText(node: any) {
         return node.value;
       }
     } else {
-      return '';
+      return "";
     }
-  }
+  };
+
   const setAttributes = (child: any, tag: string): void => {
     if (child.url || child.title || child.alt) {
       const attr: any = {};
@@ -148,19 +153,22 @@ function convertMdastNodeToText(node: any) {
 
       attributes[tag] = { ...attributes[tag], ...attr };
     }
-  }
+  };
 
-  if(node.children.length === 1 && node.children[0].type === "inlineCode"){
+  if (node.children.length === 1 && node.children[0].type === "inlineCode") {
     return node.children[0];
   }
 
-  resultNodeText = node.children.map(nodeToString).join('');
+  resultNodeText = node.children.map(nodeToString).join("");
 
   if (resultNodeText) {
     return {
       type: "text",
       value: resultNodeText,
-      attributes: Object.keys(attributes).length > 0 ? { attributes: JSON.stringify(attributes) } : {},
+      attributes:
+        Object.keys(attributes).length > 0
+          ? { attributes: JSON.stringify(attributes) }
+          : {},
     };
   }
 
@@ -235,8 +243,9 @@ function parseStringToStructure(segment: Segment): Element[] {
 
 class MdProcessor implements Processor {
   public parse(doc: string) {
-    const mdast = unified().use(parse)
-      .use(remarkFrontmatter, ['yaml'])
+    const mdast = unified()
+      .use(parse)
+      .use(remarkFrontmatter, ["yaml"])
       .use(gfm)
       .parse(doc);
 
@@ -244,68 +253,72 @@ class MdProcessor implements Processor {
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
-          paragraph:(state, node) => {
-            const segment: any = convertMdastNodeToText(node)
-            node.children = segment ? [segment] : []
+          paragraph: (state, node) => {
+            const segment: any = convertMdastNodeToText(node);
+            node.children = segment ? [segment] : [];
 
             return {
-              type: 'element',
-              tagName: 'p',
+              type: "element",
+              tagName: "p",
               properties: segment?.attributes || {},
-              children: state.all(node)
-            }
+              children: state.all(node),
+            };
           },
           tableRow: (state, node) => {
-            visitParents(node, {type: "tableCell"}, (child, parent) => {
-              const segment: any = convertMdastNodeToText(child)
+            visitParents(node, { type: "tableCell" }, (child, parent) => {
+              const segment: any = convertMdastNodeToText(child);
 
-              child.children = segment ? [segment] : []
-            })
+              child.children = segment ? [segment] : [];
+            });
 
             return {
               type: "element",
               tagName: "tr",
               properties: {},
-              children: state.all(node)
-            }
+              children: state.all(node),
+            };
           },
           yaml: (h, node, parent) => yaml.stringToHast(node.value),
           footnoteReference: (h, node, parent) => {
-            return   {type: 'text', value: `[^${node.label}]`}
+            return { type: "text", value: `[^${node.label}]` };
           },
           footnoteDefinition: (h, node, parent) => {
-            const paragraphLevel = node.children[0]
-            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel)
-            const footnoteLabel = `[^${node.label}]: `
-            const children = [{type: 'text', value: footnoteLabel}, ...paragraphLevelChildrenInHast]
+            const paragraphLevel = node.children[0];
+            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel);
+            const footnoteLabel = `[^${node.label}]: `;
+            const children = [
+              { type: "text", value: footnoteLabel },
+              ...paragraphLevelChildrenInHast,
+            ];
             return {
-              type: 'element',
-              tagName: 'p',
+              type: "element",
+              tagName: "p",
               children,
-              properties: {}
-            }
+              properties: {},
+            };
           },
           listItem: (h, node, parent) => {
             let listItemChildren = all(h, node);
             const isTaskItem = node.checked !== null;
-            if(isTaskItem) {
+            if (isTaskItem) {
               const checkBox = `[${node.checked ? `x` : ` `}] `;
-              const paragraph = listItemChildren[0]
-              if('children' in paragraph) {
-                const textNode = paragraph.children[0]
-                if('value' in textNode) textNode.value = `${checkBox} ${textNode.value}`
+              const paragraph = listItemChildren[0];
+              if ("children" in paragraph) {
+                const textNode = paragraph.children[0];
+                if ("value" in textNode)
+                  textNode.value = `${checkBox} ${textNode.value}`;
               }
             }
             return {
               ...node,
-              tagName: 'li',
-              type: 'element',
-              children: listItemChildren
-            }
-          }
-        }
+              tagName: "li",
+              type: "element",
+              children: listItemChildren,
+            };
+          },
+        },
       })
-      .use(raw, {passThrough: ['yaml']})
+      .use(raw, { passThrough: ["yaml"] })
       .runSync(mdast);
 
     const hastWithoutPosition = removePosition(hast);
@@ -322,27 +335,30 @@ class MdProcessor implements Processor {
         handlers: {
           img: (h, node, parent) => img(node, parent),
           yaml: (h, node, parent) => {
-            const result = yaml.hastToString(node)
+            const result = yaml.hastToString(node);
             return {
-              type: 'paragraph',
+              type: "paragraph",
               position: undefined,
               children: [
                 {
-                  type: 'text',
-                  value: result
-                }
-              ]
-            }
-          }
+                  type: "text",
+                  value: result,
+                },
+              ],
+            };
+          },
         },
       })
       .runSync(hast) as MdastRoot;
 
-    return unified().use(gfm).use(stringify, {
-      handlers: {
-        text: (node) => node.value
-      },
-    }).stringify(mdast) as string;
+    return unified()
+      .use(gfm)
+      .use(stringify, {
+        handlers: {
+          text: (node) => node.value,
+        },
+      })
+      .stringify(mdast) as string;
   }
 
   private hastToSegments(tree: HastRoot): Document {
@@ -384,15 +400,17 @@ class MdProcessor implements Processor {
         };
       }
 
-      if(node.type === "comment") return node
+      if (node.type === "comment") return node;
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };
 
     tree.children.forEach((child: any) => {
-      if(child.properties?.attributes){
-        child.children[0].attributes = convertMdastAttributesToHast(JSON.parse(child.properties.attributes))
-        delete child.properties.attributes
+      if (child.properties?.attributes) {
+        child.children[0].attributes = convertMdastAttributesToHast(
+          JSON.parse(child.properties.attributes)
+        );
+        delete child.properties.attributes;
       }
 
       layout.children.push(convertNode(child));

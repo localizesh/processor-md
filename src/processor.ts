@@ -2,7 +2,7 @@ import { visitParents } from "unist-util-visit-parents";
 import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype, {all} from "remark-rehype";
+import remark2rehype, { all } from "remark-rehype";
 import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
@@ -17,113 +17,162 @@ import {
   Document,
   Processor,
 } from "./types";
-import { Root as MdastRoot, Paragraph } from "mdast";
+import { Root as MdastRoot } from "mdast";
 import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 
-const inlineTags = ["code", "b", "em", "a", "img", "strong", "kbd"];
+const convertMdastTagToHast = (tag: string) => {
+  const tagsMap: Record<string, string> = {
+    link: "a",
+    inlineCode: "code",
+    emphasis: "em",
+  };
 
-const allowedTags = [
-  "blockquote",
-  "ul",
-  "ol",
-  "li",
-  "table",
-  "thead",
-  "tbody",
-  "th",
-  "tr",
-  "td",
-  "pre",
-];
-const unallowedTags = [
-  "code",
-];
+  return tagsMap[tag] ? tagsMap[tag] : tag;
+};
+
+const convertMdastAttributesToHast = (attributes: any) => {
+  let newAttributes: Attributes = {};
+  const attributesMapLinks: Record<string, string> = {
+    url: "href",
+  };
+  const attributesMapImg: Record<string, string> = {
+    url: "src",
+  };
+
+  for (const key in attributes) {
+    if (attributes.hasOwnProperty(key)) {
+      const innerObject = attributes[key];
+      const transformedInnerObject: any = {};
+      const attributesMap = key.includes("image")
+        ? attributesMapImg
+        : attributesMapLinks;
+
+      for (const innerKey in innerObject) {
+        if (innerObject.hasOwnProperty(innerKey)) {
+          if (attributesMap.hasOwnProperty(innerKey)) {
+            transformedInnerObject[attributesMap[innerKey]] =
+              innerObject[innerKey];
+          } else {
+            transformedInnerObject[innerKey] = innerObject[innerKey];
+          }
+        }
+      }
+
+      newAttributes[key] = transformedInnerObject;
+    }
+  }
+
+  return newAttributes;
+};
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
-function convertNodeToText(node: any) {
-  let value = "";
+function convertMdastNodeToText(node: any) {
+  let resultNodeText = "";
   let tagCount = 0;
   let attributes: Attributes = {};
-  const tags: { index: number; name: string }[] = [];
+  const htmlTags: number[] = [];
 
-  visitParents(node, (child, parent) => {
-    if (child.type === "text") {
-      value += child.value;
-    } else {
-      if (inlineTags.includes(child.tagName)) {
-        const openedTag = "{" + child.tagName + tagCount + "}";
+  const nodeToString = (node: any): string => {
+    const tag = convertMdastTagToHast(node.type);
+    let tagNameWithIndex = "";
 
-        value += openedTag;
-        tags.push({ index: tagCount, name: child.tagName });
+    if (node.type === "html") {
+      const tagName = node.value.replace(/[<>]/g, "");
+      const openingTag = /^<(\w+)>$/;
+      const closingTag = /^<\/\w+>$/;
+      let tagCountTemp = tagCount;
 
-        if (Object.keys(child.properties).length !== 0) {
-          attributes[child.tagName + tagCount] = child.properties;
-        }
+      if (closingTag.test(node.value)) {
+        tagCountTemp = htmlTags.pop()!;
+      }
 
+      const value = `{${tagName}${tagCountTemp}}`;
+
+      if (openingTag.test(node.value)) {
+        htmlTags.push(tagCount);
         tagCount++;
       }
+
+      return value;
     }
 
-    const noChildrenElement: boolean = !child.children || child.children && child.children.length === 0
-    if (tags.length > 0 && noChildrenElement) {
-      tags.slice().reverse().forEach((tag, i)=>{
-        if (parent[parent.length - (i + 1)]?.tagName === tag.name) {
-          const { index, name } = tag;
-          const closedTag = "{/" + name + index + "}";
-
-          value += closedTag;
-          tags.pop();
-        }
-      })
+    if (node.type === "footnoteReference") {
+      return `[^${node.label}]`;
     }
-  });
 
-  if (tags.length > 0) {
-    tags.reverse().map(({ index, name }) => {
-      const closedTag: string = "{/" + name + index + "}";
+    if ("children" in node) {
+      const tagCountTemp = tagCount;
 
-      value += closedTag;
-    });
+      tagNameWithIndex = tag + tagCountTemp;
+      setAttributes(node, tagNameWithIndex);
+      tagCount++;
+
+      const content = node.children.map(nodeToString).join("");
+
+      return `{${tag}${tagCountTemp}}${content}{/${tag}${tagCountTemp}}`;
+    } else if ("value" in node || node.type === "image") {
+      if (tag !== "text") {
+        tagNameWithIndex = tag + tagCount;
+
+        setAttributes(node, tagNameWithIndex);
+
+        const value = `{${tag}${tagCount}}${
+          node.value || ""
+        }{/${tag}${tagCount}}`;
+
+        tagCount++;
+
+        return value;
+      } else {
+        return node.value;
+      }
+    } else {
+      return "";
+    }
+  };
+
+  const setAttributes = (child: any, tag: string): void => {
+    if (child.url || child.title || child.alt) {
+      const attr: any = {};
+
+      if (child.url) {
+        attr.url = child.url;
+      }
+
+      if (child.title) {
+        attr.title = child.title;
+      }
+
+      if (child.alt) {
+        attr.alt = child.alt;
+      }
+
+      attributes[tag] = { ...attributes[tag], ...attr };
+    }
+  };
+
+  if (node.children.length === 1 && node.children[0].type === "inlineCode") {
+    return node.children[0];
   }
 
-  if (value) {
+  resultNodeText = node.children.map(nodeToString).join("");
+
+  if (resultNodeText) {
     return {
       type: "text",
-      value: value,
-      attributes,
+      value: resultNodeText,
+      attributes:
+        Object.keys(attributes).length > 0
+          ? { attributes: JSON.stringify(attributes) }
+          : {},
     };
   }
 
   return null;
-}
-
-function mergeTextNodes(node: any): LayoutNode {
-  visitParents(node, { type: "element" }, (child) => {
-    const isChildTagNotAllowed = unallowedTags.includes(child.tagName);
-    const isSingleChildTagNotAllowed =
-        child.children.length === 1 &&
-        unallowedTags.includes(child.children[0].tagName);
-
-    if (!isChildTagNotAllowed && !isSingleChildTagNotAllowed) {
-      const hasAllowedTag = child.children.some((element: any) =>
-          allowedTags.includes(element.tagName)
-      );
-
-      if (!hasAllowedTag) {
-        const convertedNode = convertNodeToText(child)
-
-        child.children = convertedNode
-            ? [convertedNode]
-            : [];
-      }
-    }
-  });
-
-  return node as LayoutNode;
 }
 
 function parseStringToStructure(segment: Segment): Element[] {
@@ -194,57 +243,90 @@ function parseStringToStructure(segment: Segment): Element[] {
 
 class MdProcessor implements Processor {
   public parse(doc: string) {
-    const mdast = unified().use(parse)
-      .use(remarkFrontmatter, ['yaml'])
+    const mdast = unified()
+      .use(parse)
+      .use(remarkFrontmatter, ["yaml"])
       .use(gfm)
       .parse(doc);
-    const mdastWithoutPosition = removePosition(mdast);
-
 
     const hast = unified()
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
+          paragraph: (state, node) => {
+            const segment: any = convertMdastNodeToText(node);
+            node.children = segment ? [segment] : [];
+
+            return {
+              type: "element",
+              tagName: "p",
+              properties: segment?.attributes || {},
+              children: state.all(node),
+            };
+          },
+          tableRow: (state, node) => {
+            visitParents(node, { type: "tableCell" }, (child, parent) => {
+              const segment: any = convertMdastNodeToText(child);
+
+              child.children = segment ? [segment] : [];
+            });
+
+            return {
+              type: "element",
+              tagName: "tr",
+              properties: {},
+              children: state.all(node),
+            };
+          },
           yaml: (h, node, parent) => yaml.stringToHast(node.value),
           footnoteReference: (h, node, parent) => {
-            return   {type: 'text', value: `[^${node.label}]`}
+            return { type: "text", value: `[^${node.label}]` };
           },
           footnoteDefinition: (h, node, parent) => {
-            const paragraphLevel = node.children[0]
-            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel)
-            const footnoteLabel = `[^${node.label}]: `
-            const children = [{type: 'text', value: footnoteLabel}, ...paragraphLevelChildrenInHast]
+            const paragraphLevel = node.children[0];
+            const paragraphLevelChildrenInHast: any[] = all(h, paragraphLevel);
+            const footnoteLabel = `[^${node.label}]: `;
+            const children = [
+              { type: "text", value: footnoteLabel },
+              ...paragraphLevelChildrenInHast,
+            ];
             return {
-              type: 'element',
-              tagName: 'p',
+              type: "element",
+              tagName: "p",
               children,
-              properties: {}
-            }
+              properties: {},
+            };
           },
           listItem: (h, node, parent) => {
             let listItemChildren = all(h, node);
             const isTaskItem = node.checked !== null;
-            if(isTaskItem) {
+            if (isTaskItem) {
               const checkBox = `[${node.checked ? `x` : ` `}] `;
-              listItemChildren = [{type: 'text', value: checkBox}, ...listItemChildren];
+              const paragraph = listItemChildren[0];
+              if ("children" in paragraph) {
+                const textNode = paragraph.children[0];
+                if ("value" in textNode)
+                  textNode.value = `${checkBox} ${textNode.value}`;
+              }
             }
             return {
               ...node,
-              tagName: 'li',
-              type: 'element',
-              children: listItemChildren
-            }
-          }
-        }
+              tagName: "li",
+              type: "element",
+              children: listItemChildren,
+            };
+          },
+        },
       })
-      .use(raw, {passThrough: ['yaml']})
-      .runSync(mdastWithoutPosition);
+      .use(raw, { passThrough: ["yaml"] })
+      .runSync(mdast);
 
-    return this.hastToSegments(hast);
+    const hastWithoutPosition = removePosition(hast);
+
+    return this.hastToSegments(hastWithoutPosition);
   }
 
   public stringify(data: Document): string {
-    // const hast: HastRoot = this.segmentsToHast(data);
     const hast: HastRoot = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -253,27 +335,30 @@ class MdProcessor implements Processor {
         handlers: {
           img: (h, node, parent) => img(node, parent),
           yaml: (h, node, parent) => {
-            const result = yaml.hastToString(node)
+            const result = yaml.hastToString(node);
             return {
-              type: 'paragraph',
+              type: "paragraph",
               position: undefined,
               children: [
                 {
-                  type: 'text',
-                  value: result
-                }
-              ]
-            }
-          }
+                  type: "text",
+                  value: result,
+                },
+              ],
+            };
+          },
         },
       })
       .runSync(hast) as MdastRoot;
 
-    return unified().use(gfm).use(stringify, {
-      handlers: {
-        text: (node) => node.value
-      },
-    }).stringify(mdast) as string;
+    return unified()
+      .use(gfm)
+      .use(stringify, {
+        handlers: {
+          text: (node) => node.value,
+        },
+      })
+      .stringify(mdast) as string;
   }
 
   private hastToSegments(tree: HastRoot): Document {
@@ -315,16 +400,19 @@ class MdProcessor implements Processor {
         };
       }
 
-      if(node.type === "comment") return node
+      if (node.type === "comment") return node;
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };
 
-    tree.children.forEach((child: RootContent) => {
-      layoutTemp.children.push(mergeTextNodes(child));
-    });
+    tree.children.forEach((child: any) => {
+      if (child.properties?.attributes) {
+        child.children[0].attributes = convertMdastAttributesToHast(
+          JSON.parse(child.properties.attributes)
+        );
+        delete child.properties.attributes;
+      }
 
-    layoutTemp.children.forEach((child: LayoutNode) => {
       layout.children.push(convertNode(child));
     });
 

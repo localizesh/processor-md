@@ -22,6 +22,7 @@ import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
+import cheerio from 'cheerio';
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
@@ -70,6 +71,20 @@ const convertMdastAttributesToHast = (attributes: any) => {
 
 const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
 
+
+function parseHTMLTags(html: string) {
+  const $ = cheerio.load(html);
+  let tagName = ''
+  let htmlAttributes = {}
+
+  $('body').children().each((index, element: any) => {
+    tagName = $(element).prop('tagName')?.toLowerCase() || '';
+    htmlAttributes = $(element).get(0).attribs;
+  });
+
+  return {tagName, htmlAttributes}
+}
+
 function convertMdastNodeToText(node: any) {
   let resultNodeText = "";
   let tagCount = 0;
@@ -81,18 +96,21 @@ function convertMdastNodeToText(node: any) {
     let tagNameWithIndex = "";
 
     if (node.type === "html") {
-      const tagName = node.value.replace(/[<>]/g, "");
+      let value = ''
+      const {tagName, htmlAttributes} = parseHTMLTags(node.value)
       const openingTag = /^<(\w+)>$/;
       const closingTag = /^<\/\w+>$/;
       let tagCountTemp = tagCount;
 
       if (closingTag.test(node.value)) {
         tagCountTemp = htmlTags.pop()!;
+        const tagName = node.value.replace(/[<>]/g, "");
+        value = `{${tagName}${tagCountTemp}}`;
       }
 
-      const value = `{${tagName}${tagCountTemp}}`;
-
-      if (openingTag.test(node.value)) {
+      if (tagName) {
+        value = `{${tagName}${tagCountTemp}}`;
+        attributes[tagName + tagCountTemp] = { ...htmlAttributes };
         htmlTags.push(tagCount);
         tagCount++;
       }

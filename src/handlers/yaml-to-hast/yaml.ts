@@ -51,7 +51,7 @@ const hastToString = (rootMdast: Element): string => {
 
   const yamlObject: Object = hastToStringRecursive(rootMdast);
 
-  let yamlString: string = jsYaml.dump(yamlObject, {});
+  let yamlString: string = jsYaml.dump(yamlObject, {lineWidth: -1});
   yamlString = replaceCustomQuotes(yamlString);
 
   return `---\n${yamlString}---`;

@@ -33,7 +33,7 @@
     "@types/hast": "^2.3.4",
     "@types/mdast": "^3.0.10",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.2.5",
+    "@types/node": "^20.3.3",
     "@types/unist": "^2.0.6",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",

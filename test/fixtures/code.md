@@ -102,3 +102,22 @@ If it's inline, you'll need to wrap it in a `<code>` block instead of backticks.
     * Declarative two-way data-binding: <code><input id="input" value="&#123;{foo}}"></code>
 
 
+```header meta some text
+  for (i = 0; i < 10; i++) {
+      printf("Counting %d\n", i);
+
+        if (i % 3 == 0) {
+            someFunc(i);
+        }
+    }
+```
+
+```header
+  for (i = 0; i < 10; i++) {
+    printf("Counting %d\n", i);
+  <em>gfhgfh<em>
+        <strong>if (i % 3 == 0) {
+            someFunc(i);
+        }</strong>
+    }
+ ```

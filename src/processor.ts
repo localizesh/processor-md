@@ -287,6 +287,27 @@ class MdProcessor implements Processor {
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
+          code: (h, node, parent) => {
+            const properties: any = {};
+            if(node.lang) properties.lang = node.lang;
+            if(node.meta) properties.meta = node.meta;
+
+            return {
+              type: 'element',
+              tagName: 'pre',
+              properties: {},
+              children: [
+                {
+                  properties,
+                  type: 'element',
+                  tagName: 'code',
+                  children: [
+                    { type: 'text', value: node.value }
+                  ]
+                }
+              ]
+            }
+          },
           paragraph: (state, node) => {
             const segment: any = convertMdastNodeToText(node);
             node.children = segment ? [segment] : [];
@@ -367,6 +388,24 @@ class MdProcessor implements Processor {
       .use(rehype2remark, {
         newlines: true,
         handlers: {
+          pre: (h, node, parent) => {
+            const isPreCodeWrapper = node.children.length === 1 && node.children[0].tagName === 'code';
+            if(isPreCodeWrapper) {
+              const codeNode = node.children[0];
+              return  {
+                type: "code",
+                value: codeNode.children[0].value,
+                meta: codeNode.properties.meta,
+                lang: codeNode.properties.lang,
+              }
+            } else {
+              const textNode = node.children[0];
+              return {
+                type: "code",
+                value: textNode.value,
+              }
+            }
+          },
           img: (h, node, parent) => img(node, parent),
           yaml: (h, node, parent) => {
             const result = yaml.hastToString(node);

@@ -1,5 +1,5 @@
 import { visitParents } from "unist-util-visit-parents";
-import { unified } from "unified";
+import { unified, Transformer, Attacher } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype, { all } from "remark-rehype";
@@ -154,7 +154,7 @@ function convertMdastNodeToText(node: any) {
   };
 
   const setAttributes = (child: any, tag: string): void => {
-    if (child.url || child.title || child.alt) {
+    if (child.url || child.title || child.alt || child.marker) {
       const attr: any = {};
 
       if (child.url) {
@@ -167,6 +167,10 @@ function convertMdastNodeToText(node: any) {
 
       if (child.alt) {
         attr.alt = child.alt;
+      }
+
+      if (child.marker) {
+        attr.marker = child.marker;
       }
 
       attributes[tag] = { ...attributes[tag], ...attr };
@@ -197,7 +201,7 @@ function parseStringToStructure(segment: Segment): Element[] {
   const text: string = segment.text;
   const stack = [];
   let currentText: string = "";
-  let properties = {};
+  let properties: any = {};
 
   for (let i = 0; i < text.length; i++) {
     if (
@@ -234,12 +238,13 @@ function parseStringToStructure(segment: Segment): Element[] {
           properties = segment.attributes[tagWithIndex];
         }
 
-        const element = {
+        let element: any = {
           type: "element",
           tagName: tag,
           properties: properties,
           children: [],
         };
+        if(properties.marker) element.marker = properties.marker
         stack.push(element);
       }
 
@@ -258,6 +263,16 @@ function parseStringToStructure(segment: Segment): Element[] {
 
   return stack;
 }
+const keepMarkerPlugin: Attacher = (option: any) => {
+  const {doc} = option
+  const transformer: Transformer = (ast, _) => {
+    visitParents(ast, node => ["emphasis", "code"].includes(node.type), (node: any, parent) => {
+      const marker = doc.charAt(node.position?.start?.offset);
+      node.marker = marker;
+    });
+  }
+  return transformer;
+};
 
 class MdProcessor implements Processor {
   public parse(doc: string) {
@@ -268,6 +283,7 @@ class MdProcessor implements Processor {
       .parse(doc);
 
     const hast = unified()
+      .use(keepMarkerPlugin, {doc: doc})
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
@@ -365,6 +381,14 @@ class MdProcessor implements Processor {
               ],
             };
           },
+          em: (h: any, node, parent) => {
+            const children: any =  all(h, node)
+            return {
+              type: "emphasis",
+              marker: node.marker,
+              children,
+            }
+          },
         },
       })
       .runSync(hast) as MdastRoot;
@@ -374,6 +398,22 @@ class MdProcessor implements Processor {
       .use(stringify, {
         handlers: {
           text: (node) => node.value,
+          emphasis: (node, _, state, info) => {
+            const marker = node.marker || state.options.emphasis || '*';
+            const exit = state.enter('emphasis')
+            const tracker = state.createTracker(info)
+            let value = tracker.move(marker)
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })
+            )
+            value += tracker.move(marker)
+            exit()
+            return value
+          },
         },
       })
       .stringify(mdast) as string;

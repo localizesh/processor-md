@@ -266,7 +266,7 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "html"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code"].includes(node.type), (node: any, parent) => {
       const marker = doc.charAt(node.position?.start?.offset);
       node.marker = marker;
     });

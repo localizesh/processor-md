@@ -266,7 +266,7 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "html"].includes(node.type), (node: any, parent) => {
       const marker = doc.charAt(node.position?.start?.offset);
       node.marker = marker;
     });
@@ -436,7 +436,7 @@ class MdProcessor implements Processor {
         handlers: {
           text: (node) => node.value,
           emphasis: (node, _, state, info) => {
-            const marker = node.marker || state.options.emphasis || '*';
+            const marker = node.marker || state.options.emphasis || "<em>";
             const exit = state.enter('emphasis')
             const tracker = state.createTracker(info)
             let value = tracker.move(marker)
@@ -447,7 +447,7 @@ class MdProcessor implements Processor {
                 ...tracker.current()
               })
             )
-            value += tracker.move(marker)
+            value += tracker.move(marker === "<em>" ? "</em>" : marker)
             exit()
             return value
           },

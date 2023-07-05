@@ -244,7 +244,7 @@ function parseStringToStructure(segment: Segment): Element[] {
           properties: properties,
           children: [],
         };
-        if(properties.marker) element.marker = properties.marker
+        if(properties?.marker) element.marker = properties.marker
         stack.push(element);
       }
 
@@ -421,12 +421,10 @@ class MdProcessor implements Processor {
             };
           },
           em: (h: any, node, parent) => {
-            const children: any =  all(h, node)
-            return {
-              type: "emphasis",
-              marker: node.marker,
-              children,
-            }
+            let mdast: any = unified().use(rehype2remark, {newlines: true}).runSync(node)
+
+            if(node.marker) mdast.marker = node.marker;
+            return mdast;
           },
         },
       })

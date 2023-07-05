@@ -121,3 +121,13 @@ If it's inline, you'll need to wrap it in a `<code>` block instead of backticks.
         }</strong>
     }
  ```
+
+    const arr = [];
+
+```
+Code block without header
+```
+
+~~~
+Code block
+~~~

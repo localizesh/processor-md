@@ -292,20 +292,21 @@ class MdProcessor implements Processor {
             if(node.lang) properties.lang = node.lang;
             if(node.meta) properties.meta = node.meta;
 
+            let codeElement: any =  {
+              properties,
+              type: 'element',
+              tagName: 'code',
+              children: [
+                { type: 'text', value: node.value }
+              ]
+            }
+            if(node.marker) properties.marker = node.marker;
+
             return {
               type: 'element',
               tagName: 'pre',
               properties: {},
-              children: [
-                {
-                  properties,
-                  type: 'element',
-                  tagName: 'code',
-                  children: [
-                    { type: 'text', value: node.value }
-                  ]
-                }
-              ]
+              children: [codeElement]
             }
           },
           paragraph: (state, node) => {
@@ -396,7 +397,8 @@ class MdProcessor implements Processor {
                 type: "code",
                 value: codeNode.children[0].value,
                 meta: codeNode.properties.meta,
-                lang: codeNode.properties.lang,
+                lang: codeNode.properties.lang || 'no_lang',
+                marker: codeNode.properties?.marker,
               }
             } else {
               const textNode = node.children[0];
@@ -435,21 +437,56 @@ class MdProcessor implements Processor {
       .use(stringify, {
         handlers: {
           text: (node) => node.value,
+          code: (node, _, state, info) => {
+            const marker = node.marker.trim() ? node.marker.repeat(3) : "";
+
+            const codeIndented: any = {
+              ...node,
+              lang: marker,
+              type: "code",
+              children: [{type: "text", value: node.value}]
+            }
+
+            if(!marker) {
+              const strCode = unified().use(stringify).stringify(codeIndented);
+              return strCode.trimRight();
+            }
+            const exit = state.enter("codeIndented");
+            const lineBreak = marker ? "\n" : "";
+            const tracker = state.createTracker(info);
+
+            let value = tracker.move(
+              marker +
+              (node.lang === "no_lang" ? '' : node.lang) +
+              (marker ? " " : "") +
+              (node.meta ? node.meta : '')
+              + lineBreak
+            );
+            value += state.containerPhrasing(codeIndented, {
+              before: value,
+              after: marker,
+              ...tracker.current()
+            });
+            value += tracker.move(lineBreak + marker);
+
+            exit();
+            return value;
+          },
           emphasis: (node, _, state, info) => {
             const marker = node.marker || state.options.emphasis || "<em>";
-            const exit = state.enter('emphasis')
-            const tracker = state.createTracker(info)
-            let value = tracker.move(marker)
+            const exit = state.enter('emphasis');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
             value += tracker.move(
               state.containerPhrasing(node, {
                 before: value,
                 after: marker,
                 ...tracker.current()
               })
-            )
-            value += tracker.move(marker === "<em>" ? "</em>" : marker)
-            exit()
-            return value
+            );
+            value += tracker.move(marker === "<em>" ? "</em>" : marker);
+            exit();
+            return value;
           },
         },
       })

@@ -3,7 +3,7 @@ import { unified, Transformer, Attacher } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype, { all } from "remark-rehype";
-import rehype2remark from "rehype-remark";
+import rehype2remark, {all as toMdastAll} from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
@@ -266,7 +266,7 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode"].includes(node.type), (node: any, parent) => {
       const marker = doc.charAt(node.position?.start?.offset);
       node.marker = marker;
     });
@@ -408,6 +408,14 @@ class MdProcessor implements Processor {
               }
             }
           },
+          code: (h, node, parent) => {
+            const inlineCode: any = {
+              properties: node.properties,
+              type: "inlineCode",
+              children: toMdastAll(h, node),
+            };
+            return inlineCode;
+          },
           img: (h, node, parent) => img(node, parent),
           yaml: (h, node, parent) => {
             const result = yaml.hastToString(node);
@@ -423,10 +431,12 @@ class MdProcessor implements Processor {
             };
           },
           em: (h: any, node, parent) => {
-            let mdast: any = unified().use(rehype2remark, {newlines: true}).runSync(node)
-
-            if(node.marker) mdast.marker = node.marker;
-            return mdast;
+            let emphasis: any = {
+              properties: node.properties,
+              type: "emphasis",
+              children: toMdastAll(h, node),
+            };
+            return emphasis;
           },
         },
       })
@@ -438,7 +448,7 @@ class MdProcessor implements Processor {
         handlers: {
           text: (node) => node.value,
           code: (node, _, state, info) => {
-            const marker = node.marker.trim() ? node.marker.repeat(3) : "";
+            const marker = node.marker?.trim() ? node.marker.repeat(3) : "";
 
             const codeIndented: any = {
               ...node,
@@ -473,7 +483,7 @@ class MdProcessor implements Processor {
             return value;
           },
           emphasis: (node, _, state, info) => {
-            const marker = node.marker || state.options.emphasis || "<em>";
+            const marker = node.properties?.marker || state.options.emphasis || "<em>";
             const exit = state.enter('emphasis');
             const tracker = state.createTracker(info);
             let value = tracker.move(marker);
@@ -485,6 +495,23 @@ class MdProcessor implements Processor {
               })
             );
             value += tracker.move(marker === "<em>" ? "</em>" : marker);
+            exit();
+            return value;
+          },
+          inlineCode: (node, _, state, info) => {
+            const marker = node.properties?.marker || "<code>";
+
+            const exit = state.enter('blockquote');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })
+            );
+            value += tracker.move(marker === "<code>" ? "</code>" : marker);
             exit();
             return value;
           },

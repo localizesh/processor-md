@@ -266,8 +266,9 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode"].includes(node.type), (node: any, parent) => {
-      const marker = doc.charAt(node.position?.start?.offset);
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong"].includes(node.type), (node: any, parent) => {
+      let marker = doc.charAt(node.position?.start?.offset);
+      if(node.type === "strong") marker+=marker;
       node.marker = marker;
     });
   }
@@ -430,7 +431,7 @@ class MdProcessor implements Processor {
               ],
             };
           },
-          em: (h: any, node, parent) => {
+          em: (h, node, parent) => {
             let emphasis: any = {
               properties: node.properties,
               type: "emphasis",
@@ -438,6 +439,14 @@ class MdProcessor implements Processor {
             };
             return emphasis;
           },
+          strong: (h, node, parent) => {
+            let strong: any = {
+              properties: node.properties,
+              type: "strong",
+              children: toMdastAll(h, node),
+            };
+            return strong;
+          }
         },
       })
       .runSync(hast) as MdastRoot;
@@ -484,6 +493,7 @@ class MdProcessor implements Processor {
           },
           emphasis: (node, _, state, info) => {
             const marker = node.properties?.marker || state.options.emphasis || "<em>";
+
             const exit = state.enter('emphasis');
             const tracker = state.createTracker(info);
             let value = tracker.move(marker);
@@ -515,6 +525,23 @@ class MdProcessor implements Processor {
             exit();
             return value;
           },
+          strong: (node, _, state, info) => {
+            let marker = node.properties?.marker || "<strong>";
+
+            const exit = state.enter('strong');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })?.trimRight()
+            );
+            value += tracker.move(marker === "<strong>" ? "</strong>" : marker);
+            exit();
+            return value;
+          }
         },
       })
       .stringify(mdast) as string;

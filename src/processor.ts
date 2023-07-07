@@ -23,6 +23,7 @@ import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from 'cheerio';
+import {listToMdast, ListTypes} from "./handlers/hast-to-mdast/handlers.js";
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
@@ -238,13 +239,13 @@ function parseStringToStructure(segment: Segment): Element[] {
           properties = segment.attributes[tagWithIndex];
         }
 
-        let element: any = {
+        const element = {
           type: "element",
           tagName: tag,
           properties: properties,
           children: [],
         };
-        if(properties?.marker) element.marker = properties.marker
+
         stack.push(element);
       }
 
@@ -266,9 +267,13 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list"].includes(node.type), (node: any, parent) => {
       let marker = doc.charAt(node.position?.start?.offset);
       if(node.type === "strong") marker+=marker;
+      if(node.type === "list") {
+        marker += doc.charAt(node.position?.start?.offset + 1).trim();
+        if(marker.length > 1) marker = marker[marker.length -1];
+      }
       node.marker = marker;
     });
   }
@@ -373,6 +378,20 @@ class MdProcessor implements Processor {
               children: listItemChildren,
             };
           },
+          list: (h, node, parent) => {
+            const properties: any = {
+              spread: node.spread.toString(),
+              start: node.start,
+            };
+            if (node.marker) properties.marker = node.marker;
+            return {
+              type: "element",
+              tagName: typeof node.start === "number" ?
+                ListTypes.ol : ListTypes.ul,
+              properties,
+              children: all(h, node),
+            }
+          },
         },
       })
       .use(raw, { passThrough: ["yaml"] })
@@ -446,7 +465,9 @@ class MdProcessor implements Processor {
               children: toMdastAll(h, node),
             };
             return strong;
-          }
+          },
+          ol: (h, node, parent) => listToMdast(h, node, ListTypes.ol),
+          ul: (h, node, parent) => listToMdast(h, node, ListTypes.ul),
         },
       })
       .runSync(hast) as MdastRoot;
@@ -541,7 +562,24 @@ class MdProcessor implements Processor {
             value += tracker.move(marker === "<strong>" ? "</strong>" : marker);
             exit();
             return value;
-          }
+          },
+          list: (node, _, state, info) => {
+            const marker = node.properties?.marker || node.marker;
+
+            const exit = state.enter('list');
+            const tracker = state.createTracker(info);
+
+            state.bulletCurrent = marker;
+            state.options.listItemIndent = "one";
+
+            let value = tracker.move(
+                state.containerFlow(node, {
+                  ...info,
+                })
+            )
+            exit();
+            return value;
+          },
         },
       })
       .stringify(mdast) as string;

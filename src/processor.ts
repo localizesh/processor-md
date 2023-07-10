@@ -30,6 +30,7 @@ const convertMdastTagToHast = (tag: string) => {
     link: "a",
     inlineCode: "code",
     emphasis: "em",
+    image: "img",
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;
@@ -48,7 +49,7 @@ const convertMdastAttributesToHast = (attributes: any) => {
     if (attributes.hasOwnProperty(key)) {
       const innerObject = attributes[key];
       const transformedInnerObject: any = {};
-      const attributesMap = key.includes("image")
+      const attributesMap = key.includes("img")
         ? attributesMapImg
         : attributesMapLinks;
 
@@ -267,7 +268,7 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image"].includes(node.type), (node: any, parent) => {
       let marker = doc.charAt(node.position?.start?.offset);
       if(node.type === "strong") marker+=marker;
       if(node.type === "list") {

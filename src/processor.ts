@@ -7,22 +7,27 @@ import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
-import { Element, RootContent } from "hast";
+import { Element, Root as HastRoot } from "hast";
 import {
   Attributes,
+  Document,
   Layout,
   LayoutElement,
   LayoutNode,
-  Segment,
-  Document,
   Processor,
+  Segment,
 } from "./types";
 import { Root as MdastRoot } from "mdast";
-import { Root as HastRoot } from "hast";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
-import cheerio from 'cheerio';
+import cheerio from "cheerio";
+
+const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
+const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
+const replacedStrings: string[] = [];
+const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
+let replacementIndex = 0;
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
@@ -69,20 +74,19 @@ const convertMdastAttributesToHast = (attributes: any) => {
   return newAttributes;
 };
 
-const allowedTagsRegex = /^\/?[a-zA-Z]+\d+$/;
-
-
 function parseHTMLTags(html: string) {
   const $ = cheerio.load(html);
-  let tagName = ''
-  let htmlAttributes = {}
+  let tagName = "";
+  let htmlAttributes = {};
 
-  $('body').children().each((index, element: any) => {
-    tagName = $(element).prop('tagName')?.toLowerCase() || '';
-    htmlAttributes = $(element).get(0).attribs;
-  });
+  $("body")
+    .children()
+    .each((index, element: any) => {
+      tagName = $(element).prop("tagName")?.toLowerCase() || "";
+      htmlAttributes = $(element).get(0).attribs;
+    });
 
-  return {tagName, htmlAttributes}
+  return { tagName, htmlAttributes };
 }
 
 function convertMdastNodeToText(node: any) {
@@ -96,8 +100,8 @@ function convertMdastNodeToText(node: any) {
     let tagNameWithIndex = "";
 
     if (node.type === "html") {
-      let value = ''
-      const {tagName, htmlAttributes} = parseHTMLTags(node.value)
+      let value = "";
+      const { tagName, htmlAttributes } = parseHTMLTags(node.value);
       const openingTag = /^<(\w+)>$/;
       const closingTag = /^<\/\w+>$/;
       let tagCountTemp = tagCount;
@@ -259,13 +263,55 @@ function parseStringToStructure(segment: Segment): Element[] {
   return stack;
 }
 
+const cutBlockFromDoc = (inputString: string, regex: RegExp) => {
+  const replacementTemplate: string = "GL_CODE_BLOCK_";
+
+  return inputString.replace(regex, (match, group) => {
+    const content = group.trim();
+    replacedStrings.push(content);
+    const replacement: string = match.replace(
+      content,
+      `${replacementTemplate}${replacementIndex}`
+    );
+    replacementIndex++;
+    return replacement;
+  });
+};
+
+const pastCodeBlockToHast = (hast: HastRoot) => {
+  visitParents(hast, { type: "text" }, (child: any) => {
+    child.value = extractNumberFromGLCodeBlockString(child.value);
+  });
+};
+
+const extractNumberFromGLCodeBlockString = (inputString: string): string => {
+  const regex = /GL_CODE_BLOCK_(\d+)/;
+  let match;
+
+  while ((match = regex.exec(inputString)) !== null) {
+    if (match && match.length > 1) {
+      const numberString = parseInt(match[1], 10);
+      inputString = inputString.replace(
+        match[0],
+        replacedStrings[numberString]
+      );
+    }
+  }
+
+  return inputString;
+};
+
 class MdProcessor implements Processor {
   public parse(doc: string) {
+    let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
+
+    modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
+
     const mdast = unified()
       .use(parse)
       .use(remarkFrontmatter, ["yaml"])
       .use(gfm)
-      .parse(doc);
+      .parse(modifiedDoc);
 
     const hast = unified()
       .use(remark2rehype, {
@@ -273,24 +319,22 @@ class MdProcessor implements Processor {
         handlers: {
           code: (h, node, parent) => {
             const properties: any = {};
-            if(node.lang) properties.lang = node.lang;
-            if(node.meta) properties.meta = node.meta;
+            if (node.lang) properties.lang = node.lang;
+            if (node.meta) properties.meta = node.meta;
 
             return {
-              type: 'element',
-              tagName: 'pre',
+              type: "element",
+              tagName: "pre",
               properties: {},
               children: [
                 {
                   properties,
-                  type: 'element',
-                  tagName: 'code',
-                  children: [
-                    { type: 'text', value: node.value }
-                  ]
-                }
-              ]
-            }
+                  type: "element",
+                  tagName: "code",
+                  children: [{ type: "text", value: node.value }],
+                },
+              ],
+            };
           },
           paragraph: (state, node) => {
             const segment: any = convertMdastNodeToText(node);
@@ -360,6 +404,8 @@ class MdProcessor implements Processor {
       .use(raw, { passThrough: ["yaml"] })
       .runSync(mdast);
 
+    pastCodeBlockToHast(hast);
+
     const hastWithoutPosition = removePosition(hast);
 
     return this.hastToSegments(hastWithoutPosition);
@@ -373,21 +419,22 @@ class MdProcessor implements Processor {
         newlines: true,
         handlers: {
           pre: (h, node, parent) => {
-            const isPreCodeWrapper = node.children.length === 1 && node.children[0].tagName === 'code';
-            if(isPreCodeWrapper) {
+            const isPreCodeWrapper =
+              node.children.length === 1 && node.children[0].tagName === "code";
+            if (isPreCodeWrapper) {
               const codeNode = node.children[0];
-              return  {
+              return {
                 type: "code",
                 value: codeNode.children[0].value,
                 meta: codeNode.properties.meta,
                 lang: codeNode.properties.lang,
-              }
+              };
             } else {
               const textNode = node.children[0];
               return {
                 type: "code",
                 value: textNode.value,
-              }
+              };
             }
           },
           img: (h, node, parent) => img(node, parent),

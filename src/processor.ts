@@ -23,7 +23,7 @@ import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from 'cheerio';
-import {listToMdast, ListTypes} from "./handlers/hast-to-mdast/handlers.js";
+import {listToMdast, ListTypes, linkHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
 
 const convertMdastTagToHast = (tag: string) => {
   const tagsMap: Record<string, string> = {
@@ -268,7 +268,7 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image", "link"].includes(node.type), (node: any, parent) => {
       let marker = doc.charAt(node.position?.start?.offset);
       if(node.type === "strong") marker+=marker;
       if(node.type === "list") {
@@ -469,6 +469,7 @@ class MdProcessor implements Processor {
           },
           ol: (h, node, parent) => listToMdast(h, node, ListTypes.ol),
           ul: (h, node, parent) => listToMdast(h, node, ListTypes.ul),
+          a: (h, node, parent) => linkHastToMdast(h, node),
         },
       })
       .runSync(hast) as MdastRoot;

@@ -45,3 +45,22 @@ export const linkHastToMdast = (h: any, node: Element) => {
   };
   return element;
 }
+
+export const tableHastToMdast = (h: any, node: Element) => {
+  const isNodeSyntaxHtml: boolean = !node.properties?.marker;
+
+  if(isNodeSyntaxHtml) {
+    const res: string = toHtml(node);
+    return {type: "html", value: res};
+  }
+  //@ts-ignore
+  const align: String[] | undefined = node.properties?.align ? node.properties?.align?.split(" ") : undefined;
+
+  const element: any = {
+    properties: node.properties,
+    align,
+    type: "table",
+    children: toMdastAll(h, node),
+  };
+  return element;
+}

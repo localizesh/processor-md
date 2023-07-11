@@ -369,7 +369,7 @@ class MdProcessor implements Processor {
               if ("children" in paragraph) {
                 const textNode = paragraph.children[0];
                 if ("value" in textNode)
-                  textNode.value = `${checkBox} ${textNode.value}`;
+                  textNode.value = `${checkBox} ${textNode.value.trim()}`;
               }
             }
             return {

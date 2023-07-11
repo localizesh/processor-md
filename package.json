@@ -13,8 +13,10 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "patch-package": "^7.0.0",
     "@types/js-yaml": "^4.0.5",
     "cheerio": "^1.0.0-rc.12",
+    "hast-util-to-html": "^8.0.4",
     "rehype-raw": "^6.1.1",
     "rehype-remark": "^9.1.2",
     "rehype-sanitize": "^5.0.1",
@@ -37,7 +39,6 @@
     "@types/unist": "^2.0.6",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
-    "patch-package": "^7.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.3"
   },

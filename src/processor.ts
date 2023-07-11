@@ -1,9 +1,9 @@
 import { visitParents } from "unist-util-visit-parents";
-import { unified } from "unified";
+import { unified, Transformer, Attacher } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype, { all } from "remark-rehype";
-import rehype2remark from "rehype-remark";
+import rehype2remark, {all as toMdastAll} from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
@@ -22,6 +22,8 @@ import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from "cheerio";
+import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
+
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -34,6 +36,7 @@ const convertMdastTagToHast = (tag: string) => {
     link: "a",
     inlineCode: "code",
     emphasis: "em",
+    image: "img",
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;
@@ -52,7 +55,7 @@ const convertMdastAttributesToHast = (attributes: any) => {
     if (attributes.hasOwnProperty(key)) {
       const innerObject = attributes[key];
       const transformedInnerObject: any = {};
-      const attributesMap = key.includes("image")
+      const attributesMap = key.includes("img")
         ? attributesMapImg
         : attributesMapLinks;
 
@@ -158,7 +161,7 @@ function convertMdastNodeToText(node: any) {
   };
 
   const setAttributes = (child: any, tag: string): void => {
-    if (child.url || child.title || child.alt) {
+    if (child.url || child.title || child.alt || child.marker) {
       const attr: any = {};
 
       if (child.url) {
@@ -171,6 +174,10 @@ function convertMdastNodeToText(node: any) {
 
       if (child.alt) {
         attr.alt = child.alt;
+      }
+
+      if (child.marker) {
+        attr.marker = child.marker;
       }
 
       attributes[tag] = { ...attributes[tag], ...attr };
@@ -201,7 +208,7 @@ function parseStringToStructure(segment: Segment): Element[] {
   const text: string = segment.text;
   const stack = [];
   let currentText: string = "";
-  let properties = {};
+  let properties: any = {};
 
   for (let i = 0; i < text.length; i++) {
     if (
@@ -244,6 +251,7 @@ function parseStringToStructure(segment: Segment): Element[] {
           properties: properties,
           children: [],
         };
+
         stack.push(element);
       }
 
@@ -262,6 +270,21 @@ function parseStringToStructure(segment: Segment): Element[] {
 
   return stack;
 }
+const keepMarkerPlugin: Attacher = (option: any) => {
+  const {doc} = option
+  const transformer: Transformer = (ast, _) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table"].includes(node.type), (node: any, parent) => {
+      let marker = doc.charAt(node.position?.start?.offset);
+      if(node.type === "strong") marker+=marker;
+      if(node.type === "list") {
+        marker += doc.charAt(node.position?.start?.offset + 1).trim();
+        if(marker.length > 1) marker = marker[marker.length -1];
+      }
+      node.marker = marker;
+    });
+  }
+  return transformer;
+};
 
 const cutBlockFromDoc = (inputString: string, regex: RegExp) => {
   const replacementTemplate: string = "GL_CODE_BLOCK_";
@@ -314,6 +337,7 @@ class MdProcessor implements Processor {
       .parse(modifiedDoc);
 
     const hast = unified()
+      .use(keepMarkerPlugin, {doc: doc})
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
@@ -322,19 +346,22 @@ class MdProcessor implements Processor {
             if (node.lang) properties.lang = node.lang;
             if (node.meta) properties.meta = node.meta;
 
+            let codeElement: any =  {
+              properties,
+              type: "element",
+              tagName: "code",
+              children: [
+                { type: "text", value: node.value }
+              ]
+            }
+            if(node.marker) properties.marker = node.marker;
+
             return {
               type: "element",
               tagName: "pre",
               properties: {},
-              children: [
-                {
-                  properties,
-                  type: "element",
-                  tagName: "code",
-                  children: [{ type: "text", value: node.value }],
-                },
-              ],
-            };
+              children: [codeElement]
+            }
           },
           paragraph: (state, node) => {
             const segment: any = convertMdastNodeToText(node);
@@ -389,7 +416,7 @@ class MdProcessor implements Processor {
               if ("children" in paragraph) {
                 const textNode = paragraph.children[0];
                 if ("value" in textNode)
-                  textNode.value = `${checkBox} ${textNode.value}`;
+                  textNode.value = `${checkBox} ${textNode.value.trim()}`;
               }
             }
             return {
@@ -399,6 +426,30 @@ class MdProcessor implements Processor {
               children: listItemChildren,
             };
           },
+          list: (h, node, parent) => {
+            const properties: any = {
+              spread: node.spread.toString(),
+              start: node.start,
+            };
+            if (node.marker) properties.marker = node.marker;
+            return {
+              type: "element",
+              tagName: typeof node.start === "number" ?
+                ListTypes.ol : ListTypes.ul,
+              properties,
+              children: all(h, node),
+            }
+          },
+          table: (h, node, parent) => {
+            const properties: any = {align: node.align};
+            if (node.marker) properties.marker = node.marker;
+            return {
+              type: "element",
+              tagName: "table",
+              properties,
+              children: all(h, node),
+            }
+          }
         },
       })
       .use(raw, { passThrough: ["yaml"] })
@@ -427,8 +478,9 @@ class MdProcessor implements Processor {
                 type: "code",
                 value: codeNode.children[0].value,
                 meta: codeNode.properties.meta,
-                lang: codeNode.properties.lang,
-              };
+                lang: codeNode.properties.lang || 'no_lang',
+                marker: codeNode.properties?.marker,
+              }
             } else {
               const textNode = node.children[0];
               return {
@@ -436,6 +488,14 @@ class MdProcessor implements Processor {
                 value: textNode.value,
               };
             }
+          },
+          code: (h, node, parent) => {
+            const inlineCode: any = {
+              properties: node.properties,
+              type: "inlineCode",
+              children: toMdastAll(h, node),
+            };
+            return inlineCode;
           },
           img: (h, node, parent) => img(node, parent),
           yaml: (h, node, parent) => {
@@ -451,6 +511,26 @@ class MdProcessor implements Processor {
               ],
             };
           },
+          em: (h, node, parent) => {
+            let emphasis: any = {
+              properties: node.properties,
+              type: "emphasis",
+              children: toMdastAll(h, node),
+            };
+            return emphasis;
+          },
+          strong: (h, node, parent) => {
+            let strong: any = {
+              properties: node.properties,
+              type: "strong",
+              children: toMdastAll(h, node),
+            };
+            return strong;
+          },
+          ol: (h, node, parent) => listToMdast(h, node, ListTypes.ol),
+          ul: (h, node, parent) => listToMdast(h, node, ListTypes.ul),
+          a: (h, node, parent) => linkHastToMdast(h, node),
+          table: (h, node, parent) => tableHastToMdast(h, node),
         },
       })
       .runSync(hast) as MdastRoot;
@@ -460,6 +540,109 @@ class MdProcessor implements Processor {
       .use(stringify, {
         handlers: {
           text: (node) => node.value,
+          code: (node, _, state, info) => {
+            const marker = node.marker?.trim() ? node.marker.repeat(3) : "";
+
+            const codeIndented: any = {
+              ...node,
+              lang: marker,
+              type: "code",
+              children: [{type: "text", value: node.value}]
+            }
+
+            if(!marker) {
+              const strCode = unified().use(stringify).stringify(codeIndented);
+              return strCode.trimRight();
+            }
+            const exit = state.enter("codeIndented");
+            const lineBreak = marker ? "\n" : "";
+            const tracker = state.createTracker(info);
+
+            let value = tracker.move(
+              marker +
+              (node.lang === "no_lang" ? '' : node.lang) +
+              (marker ? " " : "") +
+              (node.meta ? node.meta : '')
+              + lineBreak
+            );
+            value += state.containerPhrasing(codeIndented, {
+              before: value,
+              after: marker,
+              ...tracker.current()
+            });
+            value += tracker.move(lineBreak + marker);
+
+            exit();
+            return value;
+          },
+          emphasis: (node, _, state, info) => {
+            const marker = node.properties?.marker || state.options.emphasis || "<em>";
+
+            const exit = state.enter('emphasis');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })
+            );
+            value += tracker.move(marker === "<em>" ? "</em>" : marker);
+            exit();
+            return value;
+          },
+          inlineCode: (node, _, state, info) => {
+            const marker = node.properties?.marker || "<code>";
+
+            const exit = state.enter('blockquote');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })
+            );
+            value += tracker.move(marker === "<code>" ? "</code>" : marker);
+            exit();
+            return value;
+          },
+          strong: (node, _, state, info) => {
+            let marker = node.properties?.marker || "<strong>";
+
+            const exit = state.enter('strong');
+            const tracker = state.createTracker(info);
+            let value = tracker.move(marker);
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: marker,
+                ...tracker.current()
+              })?.trimRight()
+            );
+            value += tracker.move(marker === "<strong>" ? "</strong>" : marker);
+            exit();
+            return value;
+          },
+          list: (node, _, state, info) => {
+            const marker = node.properties?.marker || node.marker;
+
+            const exit = state.enter('list');
+            const tracker = state.createTracker(info);
+
+            state.bulletCurrent = marker;
+            state.options.listItemIndent = "one";
+
+            let value = tracker.move(
+                state.containerFlow(node, {
+                  ...info,
+                })
+            )
+            exit();
+            return value;
+          },
         },
       })
       .stringify(mdast) as string;

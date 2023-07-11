@@ -510,12 +510,15 @@ class MdProcessor implements Processor {
     };
 
     tree.children.forEach((child: any) => {
-      if (child.properties?.attributes) {
-        child.children[0].attributes = convertMdastAttributesToHast(
-          JSON.parse(child.properties.attributes)
-        );
-        delete child.properties.attributes;
-      }
+      visitParents(child, { type: "element" }, (node: any) => {
+        if (node.properties?.attributes) {
+          node.children[0].attributes = convertMdastAttributesToHast(
+            JSON.parse(node.properties.attributes)
+          );
+
+          delete node.properties.attributes;
+        }
+      });
 
       layout.children.push(convertNode(child));
     });

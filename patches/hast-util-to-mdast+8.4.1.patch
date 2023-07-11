@@ -1,0 +1,13 @@
+diff --git a/node_modules/hast-util-to-mdast/lib/index.js b/node_modules/hast-util-to-mdast/lib/index.js
+index 7ff93a3..09c6a86 100644
+--- a/node_modules/hast-util-to-mdast/lib/index.js
++++ b/node_modules/hast-util-to-mdast/lib/index.js
+@@ -110,7 +110,7 @@ export function toMdast(tree, options = {}) {
+   })
+ 
+   // @ts-expect-error: does return a transformer, that does accept any node.
+-  rehypeMinifyWhitespace({newlines: options.newlines === true})(tree)
++  // rehypeMinifyWhitespace({newlines: options.newlines === true})(tree)
+ 
+   const result = one(h, tree, undefined)
+ 

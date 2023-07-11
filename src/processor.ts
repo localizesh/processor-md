@@ -478,7 +478,8 @@ class MdProcessor implements Processor {
                 type: "code",
                 value: codeNode.children[0].value,
                 meta: codeNode.properties.meta,
-                lang: codeNode.properties.lang,
+                lang: codeNode.properties.lang || 'no_lang',
+                marker: codeNode.properties?.marker,
               }
             } else {
               const textNode = node.children[0];

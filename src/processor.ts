@@ -23,6 +23,7 @@ import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from "cheerio";
 import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
+import {toHtml} from "hast-util-to-html";
 
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -118,6 +119,7 @@ function convertMdastNodeToText(node: any) {
       if (tagName) {
         value = `{${tagName}${tagCountTemp}}`;
         attributes[tagName + tagCountTemp] = { ...htmlAttributes };
+        if(node.marker) attributes[tagName + tagCountTemp].marker = node.marker;
         htmlTags.push(tagCount);
         tagCount++;
       }
@@ -273,14 +275,30 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table", "html"].includes(node.type), (node: any, parent) => {
       let marker = doc.charAt(node.position?.start?.offset);
       if(node.type === "strong") marker+=marker;
       if(node.type === "list") {
         marker += doc.charAt(node.position?.start?.offset + 1).trim();
         if(marker.length > 1) marker = marker[marker.length -1];
       }
+      if(node.type === "html") marker = "html";
       node.marker = marker;
+    });
+  }
+  return transformer;
+};
+
+const convertToHtmlType: Attacher = () => {
+  const transformer: Transformer = (ast, _) => {
+    visitParents(ast, node => "properties" in node, (node: any, parent) => {
+      if(node?.properties?.marker === "html") {
+        let properties = {...node.properties};
+        delete properties.marker;
+        const value: string = toHtml({...node, properties});
+        node.type = "text";
+        node.value = value;
+      }
     });
   }
   return transformer;
@@ -466,6 +484,7 @@ class MdProcessor implements Processor {
     const hast: HastRoot = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
+      .use(convertToHtmlType)
       .use(rehype2remark, {
         newlines: true,
         handlers: {

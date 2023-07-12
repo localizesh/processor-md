@@ -404,3 +404,7 @@ SVG tags are not in the HTML5 namespace. They are listed below without section i
       network bandwidth.
 -   All other scripting rules and exclusions are carried over from general
     AMP.
+
+<span attr="some attr">Or use the </span> hotkey (<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>M</kbd> by default).
+
+<customtag attr="some attr">Text </customtag>

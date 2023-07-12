@@ -141,13 +141,16 @@ function convertMdastNodeToText(node: any) {
       return `{${tag}${tagCountTemp}}${content}{/${tag}${tagCountTemp}}`;
     } else if ("value" in node || node.type === "image") {
       if (tag !== "text") {
+        let value: string
         tagNameWithIndex = tag + tagCount;
 
         setAttributes(node, tagNameWithIndex);
 
-        const value = `{${tag}${tagCount}}${
-          node.value || ""
-        }{/${tag}${tagCount}}`;
+        if(node.type === "image"){
+          value = `{${tag}${tagCount}}`;
+        } else {
+          value = `{${tag}${tagCount}}${node.value || ""}{/${tag}${tagCount}}`;
+        }
 
         tagCount++;
 

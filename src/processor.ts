@@ -22,7 +22,7 @@ import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from "cheerio";
-import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
+import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast, divHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
 import {toHtml} from "hast-util-to-html";
 
 
@@ -298,7 +298,8 @@ const convertToHtmlType: Attacher = () => {
       if(node?.properties?.marker === "html") {
         let properties = {...node.properties};
         delete properties.marker;
-        const value: string = toHtml({...node, properties});
+        visitParents(node, child => "properties" in child && node !== child, (child: any, _) => delete child.properties.marker);
+        const value: string = toHtml({...node, properties})
         node.type = "text";
         node.value = value;
       }
@@ -553,6 +554,7 @@ class MdProcessor implements Processor {
           ul: (h, node, parent) => listToMdast(h, node, ListTypes.ul),
           a: (h, node, parent) => linkHastToMdast(h, node),
           table: (h, node, parent) => tableHastToMdast(h, node),
+          div: (h, node, parent) => divHastToMdast(h, node),
         },
       })
       .runSync(hast) as MdastRoot;

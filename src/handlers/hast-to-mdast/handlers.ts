@@ -64,3 +64,11 @@ export const tableHastToMdast = (h: any, node: Element) => {
   };
   return element;
 }
+
+export const divHastToMdast = (h: any, node: Element) => {
+  const element: any = {
+    type: "html",
+    value: toHtml(node),
+  };
+  return element;
+}

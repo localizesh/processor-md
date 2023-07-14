@@ -395,18 +395,22 @@ class MdProcessor implements Processor {
               children: state.all(node),
             };
           },
-          tableRow: (state, node) => {
-            visitParents(node, { type: "tableCell" }, (child, parent) => {
+          tableRow: (state, node, parent) => {
+            const cells: any[] = []
+            visitParents(node, { type: "tableCell" }, (child) => {
               const segment: any = convertMdastNodeToText(child);
+              const cell: any = state.one(child, parent)
 
-              child.children = segment ? [segment] : [];
+              cell.properties = segment?.attributes || {}
+              cell.children = segment ? [segment] : [];
+              cells.push(cell)
             });
 
             return {
               type: "element",
               tagName: "tr",
               properties: {},
-              children: state.all(node),
+              children: cells,
             };
           },
           yaml: (h, node, parent) => yaml.stringToHast(node.value),

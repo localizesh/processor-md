@@ -190,7 +190,7 @@ function convertMdastNodeToText(node: any) {
   };
 
   if (node.children.length === 1 && node.children[0].type === "inlineCode") {
-    return node.children[0];
+    return node;
   }
 
   resultNodeText = node.children.map(nodeToString).join("");
@@ -399,10 +399,17 @@ class MdProcessor implements Processor {
             const cells: any[] = []
             visitParents(node, { type: "tableCell" }, (child) => {
               const segment: any = convertMdastNodeToText(child);
-              const cell: any = state.one(child, parent)
+              let cell: any
 
-              cell.properties = segment?.attributes || {}
-              cell.children = segment ? [segment] : [];
+              if(segment !== null && segment.type !== "text"){
+                cell = state.one(segment, parent)
+                cell.children[0].properties.marker = segment.children[0].marker
+              } else {
+                cell = state.one(child, parent)
+                cell.properties = segment?.attributes || {}
+                cell.children = segment ? [segment] : [];
+              }
+
               cells.push(cell)
             });
 

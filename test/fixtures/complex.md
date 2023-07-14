@@ -408,3 +408,12 @@ SVG tags are not in the HTML5 namespace. They are listed below without section i
 <span attr="some attr">Or use the </span> hotkey (<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>M</kbd> by default).
 
 <customtag attr="some attr">Text </customtag>
+
+See <div>view </div>
+<div>View </div>
+
+<div align="center">
+  <img src="https://tensorflow.org/images/SIGAddons.png" width="60%"><br><br>
+</div>
+
+First and <main attr="attr">second</main> after

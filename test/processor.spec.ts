@@ -31,7 +31,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('images.md');
     processAndCompare('images-html.md');
     processAndCompare('lists.md');
-    // processAndCompare('tables.md');
+    processAndCompare('tables.md');
     processAndCompare('gfm-table.md');
     processAndCompare('misc.md');
     processAndCompare('frontmatter.md');

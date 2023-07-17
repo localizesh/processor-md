@@ -13,6 +13,7 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npm run build
+      - run: npm version from-git --allow-same-version --no-git-tag-version
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -736,6 +736,16 @@ class MdProcessor implements Processor {
 
           delete node.properties.attributes;
         }
+
+        if((node.tagName === "img" || node.tagName === "a") && node.children.length === 0) {
+          const tagName: string = `${node.tagName}0`
+
+          node.children.push({
+            type: "text",
+            value: `{${tagName}}`,
+            attributes: {[tagName]: node.properties}
+          })
+        }
       });
 
       layout.children.push(convertNode(child));

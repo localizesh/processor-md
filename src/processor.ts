@@ -25,6 +25,7 @@ import cheerio from "cheerio";
 import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast, divHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
 import {toHtml} from "hast-util-to-html";
 import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
+import {hastToString} from "./utils/hast.js";
 
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -735,6 +736,16 @@ class MdProcessor implements Processor {
           );
 
           delete node.properties.attributes;
+        }
+
+        if(node.tagName === "td") {
+          if(node.children.length > 1 && node.children.some((el: any) => el.type === "element")) {
+            const {text, attributes} = hastToString(node);
+
+            if(text) {
+              node.children = [{type: "text", value: text, attributes}];
+            }
+          }
         }
 
         if((node.tagName === "img" || node.tagName === "a") && node.children.length === 0) {

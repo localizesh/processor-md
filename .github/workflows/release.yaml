@@ -11,9 +11,12 @@ jobs:
         with:
           registry-url: 'https://npm.pkg.github.com'
           node-version: 18
+          cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm version from-git --allow-same-version --no-git-tag-version
+      - run: npm version ${TAG} --no-git-tag-version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

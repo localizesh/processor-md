@@ -517,10 +517,11 @@ class MdProcessor implements Processor {
                 marker: codeNode.properties?.marker,
               }
             } else {
-              const textNode = node.children[0];
+              const htmlValue = toHtml(node);
               return {
-                type: "code",
-                value: textNode.value,
+                properties: node.properties,
+                type: "html",
+                value:  htmlValue,
               };
             }
           },

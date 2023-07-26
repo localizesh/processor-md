@@ -294,13 +294,31 @@ const keepMarkerPlugin: Attacher = (option: any) => {
   return transformer;
 };
 
+const prepareMdast: Attacher = () => {
+  const transformer: Transformer = (ast, _) => {
+    visitParents(ast, node => ["link"].includes(node.type), (node: any, parent) => {
+
+      const isLinkUrlLAndLinkTextHasSameValue: boolean =
+        node.url === node?.children[0]?.value && node.type === "link" && node.marker === "h";
+
+      if(isLinkUrlLAndLinkTextHasSameValue) {
+        node.type = "text";
+        node.value = node?.children[0].value;
+        delete node.children;
+      }
+
+    });
+  }
+  return transformer;
+};
+
 const convertToHtmlType: Attacher = () => {
   const transformer: Transformer = (ast, _) => {
     visitParents(ast, node => "properties" in node, (node: any, parent) => {
       if(node?.properties?.marker === "html") {
         let properties = {...node.properties};
         delete properties.marker;
-        visitParents(node, child => "properties" in child && node !== child, (child: any, _) => delete child.properties.marker);
+        visitParents(node, child => "properties" in child && node !== child, (child: any, _) => delete child?.properties?.marker);
         const value: string = toHtml({...node, properties})
         node.type = "text";
         node.value = value;
@@ -362,6 +380,7 @@ class MdProcessor implements Processor {
 
     const hast = unified()
       .use(keepMarkerPlugin, {doc: doc})
+      .use(prepareMdast)
       .use(remark2rehype, {
         allowDangerousHtml: true,
         handlers: {
@@ -626,6 +645,21 @@ class MdProcessor implements Processor {
               })
             );
             value += tracker.move(marker === "<em>" ? "</em>" : marker);
+            exit();
+            return value;
+          },
+          link: (node, _, state, info) => {
+            const exit = state.enter('link');
+            const tracker = state.createTracker(info);
+            let value = tracker.move("[");
+            value += tracker.move(
+              state.containerPhrasing(node, {
+                before: value,
+                after: "]",
+                ...tracker.current()
+              })
+            );
+            value += tracker.move("](" + node.url + ")");
             exit();
             return value;
           },

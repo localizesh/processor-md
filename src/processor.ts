@@ -319,7 +319,7 @@ const convertToHtmlType: Attacher = () => {
         let properties = {...node.properties};
         delete properties.marker;
         visitParents(node, child => "properties" in child && node !== child, (child: any, _) => delete child?.properties?.marker);
-        const value: string = toHtml({...node, properties})
+        const value: string = toHtml({...node, properties},  {allowDangerousCharacters: true, allowDangerousHtml: true} )
         node.type = "text";
         node.value = value;
       }

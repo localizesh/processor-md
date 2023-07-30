@@ -4,7 +4,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [ "/dist" ],
+  "files": [
+    "/dist"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc --project tsconfig.build.json",
@@ -12,9 +14,9 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@types/js-yaml": "^4.0.5",
     "cheerio": "^1.0.0-rc.12",
     "hast-util-to-html": "^8.0.4",
+    "js-yaml": "^4.1.0",
     "rehype-raw": "^6.1.1",
     "rehype-remark": "^9.1.2",
     "rehype-sanitize": "^5.0.1",
@@ -31,6 +33,7 @@
   "devDependencies": {
     "@types/chai": "^4.3.5",
     "@types/hast": "^2.3.4",
+    "@types/js-yaml": "^4.0.5",
     "@types/mdast": "^3.0.10",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.2.5",

@@ -1,12 +1,15 @@
 ---
 My:
   girl1:
-    name: 'Kate2'
+    name: "Kate2"
     age: 25
     profession: Interprète
+    profile: |-
+      email@ya.by
+      customer
   girl2:
     name: "Inna"
-    age: '43'
+    age: "43"
     profession: Ingénieur
   girl3:
     name: Kate1
@@ -14,7 +17,7 @@ My:
     profession: Médecin
 Mans:
   man1:
-    name: 'Victor'
+    name: "Victor"
     profession: Interprète
   Man2:
     name: "Anton"
@@ -23,7 +26,8 @@ Mans:
     name: Dick
     profession: référence
 girls:
-- filles1
-- filles2
-- filles3
+  - filles1
+  - filles2
+  - filles3
+date: 2023-04-14
 ---

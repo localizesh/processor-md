@@ -280,7 +280,8 @@ function parseStringToStructure(segment: Segment): Element[] {
 const keepMarkerPlugin: Attacher = (option: any) => {
   const {doc} = option
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table", "html"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node =>
+      ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table", "html", "thematicBreak"].includes(node.type), (node: any, parent) => {
       let marker = doc.charAt(node.position?.start?.offset);
       if(node.type === "strong") marker+=marker;
       if(node.type === "list") {
@@ -502,6 +503,15 @@ class MdProcessor implements Processor {
               properties,
               children: all(h, node),
             }
+          },
+          thematicBreak: (h, node, parent) => {
+            return {
+              properties: {...node.properties, marker: node.marker || ""},
+              type: "element",
+              tagName: "hr",
+              children: [],
+            }
+
           }
         },
       })
@@ -586,6 +596,9 @@ class MdProcessor implements Processor {
           a: (h, node, parent) => linkHastToMdast(h, node),
           table: (h, node, parent) => tableHastToMdast(h, node),
           div: (h, node, parent) => divHastToMdast(h, node),
+          hr:  (h, node, parent) => {
+            return { type: "thematicBreak", properties: node.properties };
+          },
         },
       })
       .runSync(hast) as MdastRoot;
@@ -712,6 +725,13 @@ class MdProcessor implements Processor {
             )
             exit();
             return value;
+          },
+          thematicBreak: (node, parent, state) => {
+            let marker = node?.properties.marker;
+            if (marker !== '-' && marker !== '_') marker = '*';
+            const value = marker.repeat(3);
+
+            return state.options.ruleSpaces ? value.slice(0, -1) : value;
           },
         },
       })

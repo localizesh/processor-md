@@ -1,4 +1,4 @@
-import jsYaml from "js-yaml";
+import jsYaml, {CORE_SCHEMA} from "js-yaml";
 import { Element } from "hast";
 
 const yamlSequenceTags = ["ul", "li"];
@@ -6,6 +6,7 @@ const yamlSequenceTags = ["ul", "li"];
 const quoteCustomCodes: { [key: string]: string } = {
   single: "{$sqc0}",
   double: "{$dqc0}",
+  without: "{$without0}"
 };
 
 enum quotesTypes {
@@ -40,6 +41,11 @@ const hastToString = (rootMdast: Element): string => {
           quoteCustomCodes[quotes] +
           valueChild.value +
           quoteCustomCodes[quotes];
+      } else if (valueChild.value) {
+        valueChild.value =
+          quoteCustomCodes.without +
+          valueChild.value +
+          quoteCustomCodes.without;
       }
 
       result = { [keyChild.value]: hastToStringRecursive(valueChild) };
@@ -58,7 +64,7 @@ const hastToString = (rootMdast: Element): string => {
 };
 
 const stringToHast = (rootString: string) => {
-  const yamlObject = jsYaml.load(rootString, {});
+  const yamlObject = jsYaml.load(rootString, {schema: CORE_SCHEMA});
   const stringToMdastRecursive: any = (yaml: any) => {
     const isSeq: boolean = Array.isArray(yaml);
     const isMap: boolean = isPlainObject(yaml);
@@ -117,12 +123,13 @@ const getQuotesType = (yaml: string, rootString: string) => {
 
 const replaceCustomQuotes = (str: string): string => {
   return str
+    .replaceAll(`'${quoteCustomCodes.without}`, ``)
+    .replaceAll(`${quoteCustomCodes.without}'`, ``)
+    .replaceAll(`${quoteCustomCodes.without}`, ``)
     .replaceAll(`'${quoteCustomCodes.double}`, `"`)
     .replaceAll(`${quoteCustomCodes.double}'`, `"`)
     .replaceAll(`'${quoteCustomCodes.single}`, `'`)
     .replaceAll(`${quoteCustomCodes.single}'`, `'`)
-    .replaceAll(quoteCustomCodes.single, `'`)
-    .replaceAll(quoteCustomCodes.double, `"`);
 };
 
 const isPlainObject = function (obj: Object): boolean {

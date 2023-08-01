@@ -510,9 +510,8 @@ class MdProcessor implements Processor {
 
     pastCodeBlockToHast(hast);
 
-    const hastWithoutPosition = removePosition(hast);
-
-    return this.hastToSegments(hastWithoutPosition);
+    const {layout, segments} = this.hastToSegments(hast);
+    return {layout: removePosition(layout), segments};
   }
 
   public stringify(data: Document): string {
@@ -536,7 +535,7 @@ class MdProcessor implements Processor {
                 marker: codeNode.properties?.marker,
               }
             } else {
-              const htmlValue = toHtml(node);
+              const htmlValue = toHtml(node, {allowDangerousCharacters: true, allowDangerousHtml: true});
               return {
                 properties: node.properties,
                 type: "html",
@@ -773,7 +772,7 @@ class MdProcessor implements Processor {
           delete node.properties.attributes;
         }
 
-        if(node.tagName === "td") {
+        if(node.tagName === "td" || node.tagName === "th") {
           if(node.children.length > 1 && node.children.some((el: any) => el.type === "element")) {
             const {text, attributes} = hastToString(node);
 

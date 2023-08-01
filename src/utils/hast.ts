@@ -1,7 +1,7 @@
 const HAST_TYPES: string[] = ['element'];
 const TEXT_TYPES: string[] = ['text'];
 const IMAGE_TAG: string = 'img';
-const SELF_CLOSING_TAGS: string[] = ['img', 'br', 'hr']
+const SELF_CLOSING_TAGS: string[] = ['img', 'br', 'hr'];
 
 export const hastToString = (rootNode: any, options: any = {}) => {
   const {
@@ -23,14 +23,17 @@ export const hastToString = (rootNode: any, options: any = {}) => {
 
       return node.tagName === IMAGE_TAG ? `{${nodeTagKey} alt="${node.properties.alt ? node.properties.alt : ''}"}` : `{${nodeTagKey}}`;
     } else if (HAST_TYPES.some((el) => el === node.type)) {
-      context.index++;
+      const isTagOnSourceDoc: boolean = !!node.position;
+
+      isTagOnSourceDoc && context.index++;
+
       const nodeTagKey = `${node.tagName}${context.index - 1}`;
       const index = context.index;
 
       if(Object.keys(node.properties).length) attributes = {...attributes, [nodeTagKey]: node.properties};
 
-      const tagStringOpen = index ? `{${nodeTagKey}}` : ``;
-      const tagStringClose = index ? `{/${nodeTagKey}}` : ``;
+      const tagStringOpen = (index && isTagOnSourceDoc) ? `{${nodeTagKey}}` : ``;
+      const tagStringClose = (index && isTagOnSourceDoc) ? `{/${nodeTagKey}}` : ``;
 
       result.push(
         `${tagStringOpen}${

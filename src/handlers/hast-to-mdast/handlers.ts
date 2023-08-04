@@ -1,6 +1,8 @@
 import {all as toMdastAll} from "rehype-remark";
 import { Element } from "hast";
 import {toHtml} from 'hast-util-to-html';
+import {HastRoot} from "remark-rehype/lib";
+import {visitParents} from "unist-util-visit-parents";
 
 export enum ListTypes {
   ol = "ol",
@@ -28,15 +30,33 @@ export const listToMdast = (h: any, node: Element, type: ListTypes) => {
   return element;
 }
 
-export const linkHastToMdast = (h: any, node: Element) => {
+export const linkHastToMdast = (h: any, node: Element, hast?: HastRoot) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
+  const isLinkReference: boolean = !!node.properties?.identifier;
+  const url = node.properties?.href ? node.properties?.href : "";
+
+  if(isLinkReference && hast) {
+    const children = toMdastAll(h, node);
+
+      visitParents(hast, child =>
+        child.type === "definition" && ("identifier" in child && child.identifier === node.properties?.identifier), (definition: any, _) => {
+        definition.url = url;
+      });
+
+    return {
+      type: "linkReference",
+      identifier: node.properties?.identifier,
+      install: node.properties?.identifier,
+      url: node.properties?.url,
+      children
+    }
+  }
 
   if(isNodeSyntaxHtml) {
     const res: string = toHtml(node);
     return {type: "html", value: res};
   }
 
-  const url = node.properties?.href ? node.properties?.href : "";
   const element: any = {
     properties: node.properties,
     url,

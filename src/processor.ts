@@ -40,6 +40,7 @@ const convertMdastTagToHast = (tag: string) => {
     inlineCode: "code",
     emphasis: "em",
     image: "img",
+    linkReference: "a"
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;
@@ -95,13 +96,22 @@ function parseHTMLTags(html: string) {
   return { tagName, htmlAttributes };
 }
 
-function convertMdastNodeToText(node: any) {
+function convertMdastNodeToText(node: any, mdast?: any) {
   let resultNodeText = "";
   let tagCount = 0;
   let attributes: Attributes = {};
   const htmlTags: number[] = [];
 
   const nodeToString = (node: any): string => {
+
+    if(node.type === "linkReference" && mdast) {
+      visitParents(mdast, mdastChild =>
+        mdastChild.type === "definition" && ("identifier" in mdastChild && mdastChild.identifier === node.identifier), (definition: any, _) => {
+        node.url = definition.url;
+        debugger
+      });
+    }
+
     const tag = convertMdastTagToHast(node.type);
     let tagNameWithIndex = "";
 
@@ -168,7 +178,7 @@ function convertMdastNodeToText(node: any) {
   };
 
   const setAttributes = (child: any, tag: string): void => {
-    if (child.url || child.title || child.alt || child.marker) {
+    if (child.url || child.title || child.alt || child.marker || child.identifier) {
       const attr: any = {};
 
       if (child.url) {
@@ -185,6 +195,10 @@ function convertMdastNodeToText(node: any) {
 
       if (child.marker) {
         attr.marker = child.marker;
+      }
+
+      if (child.identifier) {
+        attr.identifier = child.identifier;
       }
 
       attributes[tag] = { ...attributes[tag], ...attr };
@@ -383,6 +397,7 @@ class MdProcessor implements Processor {
       .use(keepMarkerPlugin, {doc: doc})
       .use(prepareMdast)
       .use(remark2rehype, {
+        passThrough: ["definition"],
         allowDangerousHtml: true,
         handlers: {
           code: (h, node, parent) => {
@@ -408,7 +423,7 @@ class MdProcessor implements Processor {
             }
           },
           paragraph: (state, node) => {
-            const segment: any = convertMdastNodeToText(node);
+            const segment: any = convertMdastNodeToText(node, mdast);
             const tagName: string = "p";
             return segmentParentNodeToHast(state, node, segment, tagName);
           },
@@ -512,10 +527,11 @@ class MdProcessor implements Processor {
               children: [],
             }
 
-          }
+          },
+          definition: (h, node, parent) => node,
         },
       })
-      .use(raw, { passThrough: ["yaml"] })
+      .use(raw, { passThrough: ["yaml", "definition"] })
       .runSync(mdast);
 
     pastCodeBlockToHast(hast);
@@ -593,12 +609,13 @@ class MdProcessor implements Processor {
           },
           ol: (h, node, parent) => listToMdast(h, node, ListTypes.ol),
           ul: (h, node, parent) => listToMdast(h, node, ListTypes.ul),
-          a: (h, node, parent) => linkHastToMdast(h, node),
+          a: (h, node, parent) => linkHastToMdast(h, node, hast),
           table: (h, node, parent) => tableHastToMdast(h, node),
           div: (h, node, parent) => divHastToMdast(h, node),
           hr:  (h, node, parent) => {
             return { type: "thematicBreak", properties: node.properties };
           },
+          definition:  (h, node, parent) => node,
         },
       })
       .runSync(hast) as MdastRoot;
@@ -777,7 +794,7 @@ class MdProcessor implements Processor {
         };
       }
 
-      if (node.type === "comment") return node;
+      if (node.type === "comment" || node.type === "definition") return node;
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

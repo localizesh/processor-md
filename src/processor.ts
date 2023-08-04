@@ -108,7 +108,6 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       visitParents(mdast, mdastChild =>
         mdastChild.type === "definition" && ("identifier" in mdastChild && mdastChild.identifier === node.identifier), (definition: any, _) => {
         node.url = definition.url;
-        debugger
       });
     }
 

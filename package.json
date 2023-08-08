@@ -27,7 +27,7 @@
     "remark-rehype": "^10.1.0",
     "remark-stringify": "^10.0.2",
     "unified": "10.1.2",
-    "unist-util-remove-position": "^4.0.2",
+    "unist-util-remove-position": "^5.0.0",
     "unist-util-visit-parents": "^6.0.1"
   },
   "devDependencies": {

@@ -381,7 +381,7 @@ const extractNumberFromGLCodeBlockString = (inputString: string): string => {
 };
 
 class MdProcessor implements Processor {
-  public parse(doc: string) {
+  public parse(doc: string): Document {
     let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
@@ -536,7 +536,10 @@ class MdProcessor implements Processor {
     pastCodeBlockToHast(hast);
 
     const {layout, segments} = this.hastToSegments(hast);
-    return {layout: removePosition(layout), segments};
+
+    removePosition(layout)
+
+    return {layout: layout, segments};
   }
 
   public stringify(data: Document): string {

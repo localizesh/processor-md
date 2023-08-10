@@ -543,7 +543,7 @@ class MdProcessor implements Processor {
   }
 
   public stringify(data: Document): string {
-    const hast: HastRoot = this.segmentsToHast(data);
+    const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
       .use(convertToHtmlType)
@@ -838,7 +838,7 @@ class MdProcessor implements Processor {
     return { layout, segments };
   }
 
-  private segmentsToHast(data: Document): HastRoot {
+  private segmentsToHast(data: Document): any {
     visitParents(data.layout, { type: "segment" }, (node: any, parent) => {
       const structure = parseStringToStructure(data.segments[node.id]);
       let parentTemp = parent[parent.length - 1];

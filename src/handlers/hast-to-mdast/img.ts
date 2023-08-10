@@ -1,7 +1,6 @@
-import { Element } from "hast";
 import {toHtml} from 'hast-util-to-html';
 
-export default function img(node: Element, parent: any): any {
+export default function img(node: any, parent: any): any {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
   if(isNodeSyntaxHtml) {

@@ -17,7 +17,7 @@ import {
   Processor,
   Segment,
 } from "./types";
-import { Root as MdastRoot } from "mdast";
+import {MdastRoot} from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
@@ -456,7 +456,7 @@ class MdProcessor implements Processor {
               children: cells,
             };
           },
-          yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          // yaml: (h, node, parent) => yaml.stringToHast(node.value),
           footnoteReference: (h, node, parent) => {
             return { type: "text", value: `[^${node.label}]` };
           },
@@ -531,7 +531,7 @@ class MdProcessor implements Processor {
         },
       })
       .use(raw, { passThrough: ["yaml", "definition"] })
-      .runSync(mdast);
+      .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);
 

@@ -1,7 +1,6 @@
 import {all as toMdastAll} from "rehype-remark";
-import { Element } from "hast";
+import { Root as HastRoot } from "hast";
 import {toHtml} from 'hast-util-to-html';
-import {HastRoot} from "remark-rehype/lib";
 import {visitParents} from "unist-util-visit-parents";
 
 export enum ListTypes {
@@ -9,7 +8,7 @@ export enum ListTypes {
   ul = "ul",
 }
 
-export const listToMdast = (h: any, node: Element, type: ListTypes) => {
+export const listToMdast = (h: any, node: any, type: ListTypes) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
   if(isNodeSyntaxHtml) {
@@ -30,7 +29,7 @@ export const listToMdast = (h: any, node: Element, type: ListTypes) => {
   return element;
 }
 
-export const linkHastToMdast = (h: any, node: Element, hast?: HastRoot) => {
+export const linkHastToMdast = (h: any, node: any, hast?: HastRoot) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
   const isLinkReference: boolean = !!node.properties?.identifier;
   const url = node.properties?.href ? node.properties?.href : "";
@@ -66,7 +65,7 @@ export const linkHastToMdast = (h: any, node: Element, hast?: HastRoot) => {
   return element;
 }
 
-export const tableHastToMdast = (h: any, node: Element) => {
+export const tableHastToMdast = (h: any, node: any) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
   if(isNodeSyntaxHtml) {
@@ -85,7 +84,7 @@ export const tableHastToMdast = (h: any, node: Element) => {
   return element;
 }
 
-export const divHastToMdast = (h: any, node: Element) => {
+export const divHastToMdast = (h: any, node: any) => {
   const element: any = {
     type: "html",
     value: toHtml(node),

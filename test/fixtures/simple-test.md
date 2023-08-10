@@ -2,7 +2,7 @@ Text
 
 ---
 
-> > First citation level
+>  First citation level
 >
 > > Second level citation
 > >

@@ -183,7 +183,7 @@ function getPropertiesInYamlObj(
 
 const yaml: {
   hastToString: (rootHast: Element) => string;
-  stringToHast: (rootString: string) => Element;
+  stringToHast: (rootString: string) => any;
 } = {
   hastToString,
   stringToHast,

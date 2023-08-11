@@ -17,7 +17,7 @@ import {
   Processor,
   Segment,
 } from "./types";
-import { Root as MdastRoot } from "mdast";
+import {MdastRoot} from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
@@ -381,7 +381,7 @@ const extractNumberFromGLCodeBlockString = (inputString: string): string => {
 };
 
 class MdProcessor implements Processor {
-  public parse(doc: string) {
+  public parse(doc: string): Document {
     let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
@@ -456,7 +456,7 @@ class MdProcessor implements Processor {
               children: cells,
             };
           },
-          yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          // yaml: (h, node, parent) => yaml.stringToHast(node.value),
           footnoteReference: (h, node, parent) => {
             return { type: "text", value: `[^${node.label}]` };
           },
@@ -531,16 +531,19 @@ class MdProcessor implements Processor {
         },
       })
       .use(raw, { passThrough: ["yaml", "definition"] })
-      .runSync(mdast);
+      .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);
 
     const {layout, segments} = this.hastToSegments(hast);
-    return {layout: removePosition(layout), segments};
+
+    removePosition(layout)
+
+    return {layout: layout, segments};
   }
 
   public stringify(data: Document): string {
-    const hast: HastRoot = this.segmentsToHast(data);
+    const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
       .use(convertToHtmlType)
@@ -835,7 +838,7 @@ class MdProcessor implements Processor {
     return { layout, segments };
   }
 
-  private segmentsToHast(data: Document): HastRoot {
+  private segmentsToHast(data: Document): any {
     visitParents(data.layout, { type: "segment" }, (node: any, parent) => {
       const structure = parseStringToStructure(data.segments[node.id]);
       let parentTemp = parent[parent.length - 1];

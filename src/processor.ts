@@ -26,6 +26,7 @@ import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast, divHastToMdas
 import {toHtml} from "hast-util-to-html";
 import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
 import {hastToString} from "./utils/hast.js";
+import {replaceHtmlBeforeMdast} from "./utils/html.js";
 
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -308,19 +309,29 @@ const keepMarkerPlugin: Attacher = (option: any) => {
   return transformer;
 };
 
-const prepareMdast: Attacher = () => {
+const prepareMdast: Attacher = (option: any) => {
+  const {contentsAvoidMarkdown} = option;
+
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => ["link"].includes(node.type), (node: any, parent) => {
+    visitParents(ast, node => node.type !== "text", (node: any, parent) => {
 
-      const isLinkUrlLAndLinkTextHasSameValue: boolean =
-        node.url === node?.children[0]?.value && node.type === "link" && node.marker === "h";
+      if (node.type === "link") {
+        const isLinkUrlLAndLinkTextHasSameValue: boolean =
+          node.url === node?.children[0]?.value && node.type === "link" && node.marker === "h";
 
-      if(isLinkUrlLAndLinkTextHasSameValue) {
-        node.type = "text";
-        node.value = node?.children[0].value;
-        delete node.children;
+        if (isLinkUrlLAndLinkTextHasSameValue) {
+          node.type = "text";
+          node.value = node?.children[0].value;
+          delete node.children;
+        }
       }
 
+      if(contentsAvoidMarkdown.length) {
+        const htmlPlaceholder =
+          contentsAvoidMarkdown.find((placeholder: any) => node.value === placeholder.placeholder);
+
+        if(htmlPlaceholder) node.value = htmlPlaceholder.content;
+      }
     });
   }
   return transformer;
@@ -386,15 +397,17 @@ class MdProcessor implements Processor {
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
 
+    const {docWithHtmlPlaceholders, contentsAvoidMarkdown} = replaceHtmlBeforeMdast(modifiedDoc);
+
     const mdast = unified()
       .use(parse)
       .use(remarkFrontmatter, ["yaml"])
       .use(gfm)
-      .parse(modifiedDoc);
+      .parse(docWithHtmlPlaceholders);
 
     const hast = unified()
-      .use(keepMarkerPlugin, {doc: doc})
-      .use(prepareMdast)
+      .use(keepMarkerPlugin, {doc: docWithHtmlPlaceholders})
+      .use(prepareMdast, {contentsAvoidMarkdown})
       .use(remark2rehype, {
         passThrough: ["definition"],
         allowDangerousHtml: true,

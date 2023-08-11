@@ -469,7 +469,7 @@ class MdProcessor implements Processor {
               children: cells,
             };
           },
-          // yaml: (h, node, parent) => yaml.stringToHast(node.value),
+          yaml: (h, node, parent) => yaml.stringToHast(node.value),
           footnoteReference: (h, node, parent) => {
             return { type: "text", value: `[^${node.label}]` };
           },

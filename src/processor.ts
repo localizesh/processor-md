@@ -15,7 +15,7 @@ import {
   LayoutElement,
   LayoutNode,
   Processor,
-  Segment,
+  Segment, Segments,
 } from "./types";
 import {MdastRoot} from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
@@ -772,7 +772,7 @@ class MdProcessor implements Processor {
   }
 
   private hastToSegments(tree: HastRoot): Document {
-    const segments: any = {};
+    const segments: Segments = {};
     const layoutTemp: Layout = { type: "root", children: [] };
     const layout: Layout = { type: "root", children: [] };
     let segmentCount: number = 0;

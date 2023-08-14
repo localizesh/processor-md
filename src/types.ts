@@ -2,6 +2,10 @@ export type Attributes = {
   [key: string]: { [key: string]: string };
 };
 
+export type Segments = {
+  [id: string]: Segment;
+};
+
 export interface Segment {
   id: string;
   text: string;
@@ -29,7 +33,7 @@ export interface Layout {
 }
 
 export interface Document {
-  segments: Segment[];
+  segments: Segments;
   layout: Layout;
 }
 

@@ -27,6 +27,7 @@ import {toHtml} from "hast-util-to-html";
 import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
 import {hastToString} from "./utils/hast.js";
 import {replaceHtmlBeforeMdast} from "./utils/html.js";
+import { sha256 } from 'js-sha256';
 
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -771,14 +772,15 @@ class MdProcessor implements Processor {
   }
 
   private hastToSegments(tree: HastRoot): Document {
-    const segments: Segment[] = [];
+    const segments: any = {};
     const layoutTemp: Layout = { type: "root", children: [] };
     const layout: Layout = { type: "root", children: [] };
     let segmentCount: number = 0;
 
     const addSegment = (node: LayoutElement): string => {
+      const id: string = sha256(node.value || "")
       let segment: Segment = {
-        id: segmentCount.toString(),
+        id,
         text: node.value || "",
       };
 
@@ -786,7 +788,7 @@ class MdProcessor implements Processor {
         segment.attributes = node.attributes;
       }
 
-      segments.push(segment);
+      segments[id] = segment;
       segmentCount++;
       return segment.id;
     };

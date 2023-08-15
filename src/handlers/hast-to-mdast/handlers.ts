@@ -1,7 +1,7 @@
-import {all as toMdastAll} from "rehype-remark";
+import { all as toMdastAll } from "rehype-remark";
 import { Root as HastRoot } from "hast";
-import {toHtml} from 'hast-util-to-html';
-import {visitParents} from "unist-util-visit-parents";
+import { toHtml } from "hast-util-to-html";
+import { visitParents } from "unist-util-visit-parents";
 
 export enum ListTypes {
   ol = "ol",
@@ -11,9 +11,9 @@ export enum ListTypes {
 export const listToMdast = (h: any, node: any, type: ListTypes) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
-  if(isNodeSyntaxHtml) {
+  if (isNodeSyntaxHtml) {
     const res: string = toHtml(node);
-    return {type: "html", value: res};
+    return { type: "html", value: res };
   }
 
   const spread: boolean = node.properties?.spread === "true";
@@ -27,33 +27,39 @@ export const listToMdast = (h: any, node: any, type: ListTypes) => {
     children: toMdastAll(h, node),
   };
   return element;
-}
+};
 
 export const linkHastToMdast = (h: any, node: any, hast?: HastRoot) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
   const isLinkReference: boolean = !!node.properties?.identifier;
   const url = node.properties?.href ? node.properties?.href : "";
 
-  if(isLinkReference && hast) {
+  if (isLinkReference && hast) {
     const children = toMdastAll(h, node);
 
-      visitParents(hast, child =>
-        child.type === "definition" && ("identifier" in child && child.identifier === node.properties?.identifier), (definition: any, _) => {
+    visitParents(
+      hast,
+      (child) =>
+        child.type === "definition" &&
+        "identifier" in child &&
+        child.identifier === node.properties?.identifier,
+      (definition: any, _) => {
         definition.url = url;
-      });
+      }
+    );
 
     return {
       type: "linkReference",
       identifier: node.properties?.identifier,
       install: node.properties?.identifier,
       url: node.properties?.url,
-      children
-    }
+      children,
+    };
   }
 
-  if(isNodeSyntaxHtml) {
+  if (isNodeSyntaxHtml) {
     const res: string = toHtml(node);
-    return {type: "html", value: res};
+    return { type: "html", value: res };
   }
 
   const element: any = {
@@ -63,17 +69,19 @@ export const linkHastToMdast = (h: any, node: any, hast?: HastRoot) => {
     children: toMdastAll(h, node),
   };
   return element;
-}
+};
 
 export const tableHastToMdast = (h: any, node: any) => {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
-  if(isNodeSyntaxHtml) {
+  if (isNodeSyntaxHtml) {
     const res: string = toHtml(node);
-    return {type: "html", value: res};
+    return { type: "html", value: res };
   }
   //@ts-ignore
-  const align: String[] | undefined = node.properties?.align ? node.properties?.align?.split(" ") : undefined;
+  const align: String[] | undefined = node.properties?.align
+    ? node.properties?.align?.split(" ")
+    : undefined;
 
   const element: any = {
     properties: node.properties,
@@ -82,7 +90,7 @@ export const tableHastToMdast = (h: any, node: any) => {
     children: toMdastAll(h, node),
   };
   return element;
-}
+};
 
 export const divHastToMdast = (h: any, node: any) => {
   const element: any = {
@@ -90,4 +98,4 @@ export const divHastToMdast = (h: any, node: any) => {
     value: toHtml(node),
   };
   return element;
-}
+};

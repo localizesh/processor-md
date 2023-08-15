@@ -3,7 +3,7 @@ import { unified, Transformer, Attacher } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype, { all } from "remark-rehype";
-import rehype2remark, {all as toMdastAll} from "rehype-remark";
+import rehype2remark, { all as toMdastAll } from "rehype-remark";
 import stringify from "remark-stringify";
 import raw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
@@ -16,18 +16,26 @@ import {
   LayoutNode,
   Processor,
   Segment,
+  SegmentsMap,
 } from "./types";
-import {MdastRoot} from "rehype-remark/lib";
+import { MdastRoot } from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from "cheerio";
-import {listToMdast, ListTypes, linkHastToMdast, tableHastToMdast, divHastToMdast} from "./handlers/hast-to-mdast/handlers.js";
-import {toHtml} from "hast-util-to-html";
-import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
-import {hastToString} from "./utils/hast.js";
-import {replaceHtmlBeforeMdast} from "./utils/html.js";
-
+import {
+  listToMdast,
+  ListTypes,
+  linkHastToMdast,
+  tableHastToMdast,
+  divHastToMdast,
+} from "./handlers/hast-to-mdast/handlers.js";
+import { toHtml } from "hast-util-to-html";
+import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
+import { hastToString } from "./utils/hast.js";
+import { replaceHtmlBeforeMdast } from "./utils/html.js";
+import { sha256 } from "js-sha256";
+import removeDuplicateSegments from "./utils/removeDuplicateSegments.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -41,7 +49,7 @@ const convertMdastTagToHast = (tag: string) => {
     inlineCode: "code",
     emphasis: "em",
     image: "img",
-    linkReference: "a"
+    linkReference: "a",
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;
@@ -104,12 +112,17 @@ function convertMdastNodeToText(node: any, mdast?: any) {
   const htmlTags: number[] = [];
 
   const nodeToString = (node: any): string => {
-
-    if(node.type === "linkReference" && mdast) {
-      visitParents(mdast, mdastChild =>
-        mdastChild.type === "definition" && ("identifier" in mdastChild && mdastChild.identifier === node.identifier), (definition: any, _) => {
-        node.url = definition.url;
-      });
+    if (node.type === "linkReference" && mdast) {
+      visitParents(
+        mdast,
+        (mdastChild) =>
+          mdastChild.type === "definition" &&
+          "identifier" in mdastChild &&
+          mdastChild.identifier === node.identifier,
+        (definition: any, _) => {
+          node.url = definition.url;
+        }
+      );
     }
 
     const tag = convertMdastTagToHast(node.type);
@@ -131,7 +144,8 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       if (tagName) {
         value = `{${tagName}${tagCountTemp}}`;
         attributes[tagName + tagCountTemp] = { ...htmlAttributes };
-        if(node.marker) attributes[tagName + tagCountTemp].marker = node.marker;
+        if (node.marker)
+          attributes[tagName + tagCountTemp].marker = node.marker;
         htmlTags.push(tagCount);
         tagCount++;
       }
@@ -155,12 +169,12 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       return `{${tag}${tagCountTemp}}${content}{/${tag}${tagCountTemp}}`;
     } else if ("value" in node || node.type === "image") {
       if (tag !== "text") {
-        let value: string
+        let value: string;
         tagNameWithIndex = tag + tagCount;
 
         setAttributes(node, tagNameWithIndex);
 
-        if(node.type === "image"){
+        if (node.type === "image") {
           value = `{${tag}${tagCount}}`;
         } else {
           value = `{${tag}${tagCount}}${node.value || ""}{/${tag}${tagCount}}`;
@@ -178,7 +192,13 @@ function convertMdastNodeToText(node: any, mdast?: any) {
   };
 
   const setAttributes = (child: any, tag: string): void => {
-    if (child.url || child.title || child.alt || child.marker || child.identifier) {
+    if (
+      child.url ||
+      child.title ||
+      child.alt ||
+      child.marker ||
+      child.identifier
+    ) {
       const attr: any = {};
 
       if (child.url) {
@@ -292,64 +312,96 @@ function parseStringToStructure(segment: Segment): Element[] {
   return stack;
 }
 const keepMarkerPlugin: Attacher = (option: any) => {
-  const {doc} = option
+  const { doc } = option;
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node =>
-      ["emphasis", "code", "inlineCode", "strong", "list", "image", "link", "table", "html", "thematicBreak"].includes(node.type), (node: any, parent) => {
-      let marker = doc.charAt(node.position?.start?.offset);
-      if(node.type === "strong") marker+=marker;
-      if(node.type === "list") {
-        marker += doc.charAt(node.position?.start?.offset + 1).trim();
-        if(marker.length > 1) marker = marker[marker.length -1];
+    visitParents(
+      ast,
+      (node) =>
+        [
+          "emphasis",
+          "code",
+          "inlineCode",
+          "strong",
+          "list",
+          "image",
+          "link",
+          "table",
+          "html",
+          "thematicBreak",
+        ].includes(node.type),
+      (node: any, parent) => {
+        let marker = doc.charAt(node.position?.start?.offset);
+        if (node.type === "strong") marker += marker;
+        if (node.type === "list") {
+          marker += doc.charAt(node.position?.start?.offset + 1).trim();
+          if (marker.length > 1) marker = marker[marker.length - 1];
+        }
+        if (node.type === "html") marker = "html";
+        node.marker = marker;
       }
-      if(node.type === "html") marker = "html";
-      node.marker = marker;
-    });
-  }
+    );
+  };
   return transformer;
 };
 
 const prepareMdast: Attacher = (option: any) => {
-  const {contentsAvoidMarkdown} = option;
+  const { contentsAvoidMarkdown } = option;
 
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => node.type !== "text", (node: any, parent) => {
+    visitParents(
+      ast,
+      (node) => node.type !== "text",
+      (node: any, parent) => {
+        if (node.type === "link") {
+          const isLinkUrlLAndLinkTextHasSameValue: boolean =
+            node.url === node?.children[0]?.value &&
+            node.type === "link" &&
+            node.marker === "h";
 
-      if (node.type === "link") {
-        const isLinkUrlLAndLinkTextHasSameValue: boolean =
-          node.url === node?.children[0]?.value && node.type === "link" && node.marker === "h";
+          if (isLinkUrlLAndLinkTextHasSameValue) {
+            node.type = "text";
+            node.value = node?.children[0].value;
+            delete node.children;
+          }
+        }
 
-        if (isLinkUrlLAndLinkTextHasSameValue) {
-          node.type = "text";
-          node.value = node?.children[0].value;
-          delete node.children;
+        if (contentsAvoidMarkdown.length) {
+          const htmlPlaceholder = contentsAvoidMarkdown.find(
+            (placeholder: any) => node.value === placeholder.placeholder
+          );
+
+          if (htmlPlaceholder) node.value = htmlPlaceholder.content;
         }
       }
-
-      if(contentsAvoidMarkdown.length) {
-        const htmlPlaceholder =
-          contentsAvoidMarkdown.find((placeholder: any) => node.value === placeholder.placeholder);
-
-        if(htmlPlaceholder) node.value = htmlPlaceholder.content;
-      }
-    });
-  }
+    );
+  };
   return transformer;
 };
 
 const convertToHtmlType: Attacher = () => {
   const transformer: Transformer = (ast, _) => {
-    visitParents(ast, node => "properties" in node, (node: any, parent) => {
-      if(node?.properties?.marker === "html") {
-        let properties = {...node.properties};
-        delete properties.marker;
-        visitParents(node, child => "properties" in child && node !== child, (child: any, _) => delete child?.properties?.marker);
-        const value: string = toHtml({...node, properties},  {allowDangerousCharacters: true, allowDangerousHtml: true} )
-        node.type = "text";
-        node.value = value;
+    visitParents(
+      ast,
+      (node) => "properties" in node,
+      (node: any, parent) => {
+        if (node?.properties?.marker === "html") {
+          let properties = { ...node.properties };
+          delete properties.marker;
+          visitParents(
+            node,
+            (child) => "properties" in child && node !== child,
+            (child: any, _) => delete child?.properties?.marker
+          );
+          const value: string = toHtml(
+            { ...node, properties },
+            { allowDangerousCharacters: true, allowDangerousHtml: true }
+          );
+          node.type = "text";
+          node.value = value;
+        }
       }
-    });
-  }
+    );
+  };
   return transformer;
 };
 
@@ -397,7 +449,8 @@ class MdProcessor implements Processor {
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
 
-    const {docWithHtmlPlaceholders, contentsAvoidMarkdown} = replaceHtmlBeforeMdast(modifiedDoc);
+    const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
+      replaceHtmlBeforeMdast(modifiedDoc);
 
     const mdast = unified()
       .use(parse)
@@ -406,8 +459,8 @@ class MdProcessor implements Processor {
       .parse(docWithHtmlPlaceholders);
 
     const hast = unified()
-      .use(keepMarkerPlugin, {doc: docWithHtmlPlaceholders})
-      .use(prepareMdast, {contentsAvoidMarkdown})
+      .use(keepMarkerPlugin, { doc: docWithHtmlPlaceholders })
+      .use(prepareMdast, { contentsAvoidMarkdown })
       .use(remark2rehype, {
         passThrough: ["definition"],
         allowDangerousHtml: true,
@@ -417,22 +470,20 @@ class MdProcessor implements Processor {
             if (node.lang) properties.lang = node.lang;
             if (node.meta) properties.meta = node.meta;
 
-            let codeElement: any =  {
+            let codeElement: any = {
               properties,
               type: "element",
               tagName: "code",
-              children: [
-                { type: "text", value: node.value }
-              ]
-            }
-            if(node.marker) properties.marker = node.marker;
+              children: [{ type: "text", value: node.value }],
+            };
+            if (node.marker) properties.marker = node.marker;
 
             return {
               type: "element",
               tagName: "pre",
               properties: {},
-              children: [codeElement]
-            }
+              children: [codeElement],
+            };
           },
           paragraph: (state, node) => {
             const segment: any = convertMdastNodeToText(node, mdast);
@@ -445,21 +496,21 @@ class MdProcessor implements Processor {
             return segmentParentNodeToHast(state, node, segment, tagName);
           },
           tableRow: (state, node, parent) => {
-            const cells: any[] = []
+            const cells: any[] = [];
             visitParents(node, { type: "tableCell" }, (child) => {
               const segment: any = convertMdastNodeToText(child);
-              let cell: any
+              let cell: any;
 
-              if(segment !== null && segment.type !== "text"){
-                cell = state.one(segment, parent)
-                cell.children[0].properties.marker = segment.children[0].marker
+              if (segment !== null && segment.type !== "text") {
+                cell = state.one(segment, parent);
+                cell.children[0].properties.marker = segment.children[0].marker;
               } else {
-                cell = state.one(child, parent)
-                cell.properties = segment?.attributes || {}
+                cell = state.one(child, parent);
+                cell.properties = segment?.attributes || {};
                 cell.children = segment ? [segment] : [];
               }
 
-              cells.push(cell)
+              cells.push(cell);
             });
 
             return {
@@ -515,30 +566,29 @@ class MdProcessor implements Processor {
             if (node.marker) properties.marker = node.marker;
             return {
               type: "element",
-              tagName: typeof node.start === "number" ?
-                ListTypes.ol : ListTypes.ul,
+              tagName:
+                typeof node.start === "number" ? ListTypes.ol : ListTypes.ul,
               properties,
               children: all(h, node),
-            }
+            };
           },
           table: (h, node, parent) => {
-            const properties: any = {align: node.align};
+            const properties: any = { align: node.align };
             if (node.marker) properties.marker = node.marker;
             return {
               type: "element",
               tagName: "table",
               properties,
               children: all(h, node),
-            }
+            };
           },
           thematicBreak: (h, node, parent) => {
             return {
-              properties: {...node.properties, marker: node.marker || ""},
+              properties: { ...node.properties, marker: node.marker || "" },
               type: "element",
               tagName: "hr",
               children: [],
-            }
-
+            };
           },
           definition: (h, node, parent) => node,
         },
@@ -548,11 +598,12 @@ class MdProcessor implements Processor {
 
     pastCodeBlockToHast(hast);
 
-    const {layout, segments} = this.hastToSegments(hast);
+    const { layout, segments } = this.hastToSegments(hast);
 
-    removePosition(layout)
+    removePosition(layout);
+    removeDuplicateSegments(segments)
 
-    return {layout: layout, segments};
+    return { layout: layout, segments };
   }
 
   public stringify(data: Document): string {
@@ -572,15 +623,18 @@ class MdProcessor implements Processor {
                 type: "code",
                 value: codeNode.children[0].value,
                 meta: codeNode.properties.meta,
-                lang: codeNode.properties.lang || 'no_lang',
+                lang: codeNode.properties.lang || "no_lang",
                 marker: codeNode.properties?.marker,
-              }
+              };
             } else {
-              const htmlValue = toHtml(node, {allowDangerousCharacters: true, allowDangerousHtml: true});
+              const htmlValue = toHtml(node, {
+                allowDangerousCharacters: true,
+                allowDangerousHtml: true,
+              });
               return {
                 properties: node.properties,
                 type: "html",
-                value:  htmlValue,
+                value: htmlValue,
               };
             }
           },
@@ -627,10 +681,10 @@ class MdProcessor implements Processor {
           a: (h, node, parent) => linkHastToMdast(h, node, hast),
           table: (h, node, parent) => tableHastToMdast(h, node),
           div: (h, node, parent) => divHastToMdast(h, node),
-          hr:  (h, node, parent) => {
+          hr: (h, node, parent) => {
             return { type: "thematicBreak", properties: node.properties };
           },
-          definition:  (h, node, parent) => node,
+          definition: (h, node, parent) => node,
         },
       })
       .runSync(hast) as MdastRoot;
@@ -647,10 +701,10 @@ class MdProcessor implements Processor {
               ...node,
               lang: marker,
               type: "code",
-              children: [{type: "text", value: node.value}]
-            }
+              children: [{ type: "text", value: node.value }],
+            };
 
-            if(!marker) {
+            if (!marker) {
               const strCode = unified().use(stringify).stringify(codeIndented);
               return strCode.trimRight();
             }
@@ -660,15 +714,15 @@ class MdProcessor implements Processor {
 
             let value = tracker.move(
               marker +
-              (node.lang === "no_lang" ? '' : node.lang) +
-              (marker ? " " : "") +
-              (node.meta ? node.meta : '')
-              + lineBreak
+                (node.lang === "no_lang" ? "" : node.lang) +
+                (marker ? " " : "") +
+                (node.meta ? node.meta : "") +
+                lineBreak
             );
             value += state.containerPhrasing(codeIndented, {
               before: value,
               after: marker,
-              ...tracker.current()
+              ...tracker.current(),
             });
             value += tracker.move(lineBreak + marker);
 
@@ -676,16 +730,17 @@ class MdProcessor implements Processor {
             return value;
           },
           emphasis: (node, _, state, info) => {
-            const marker = node.properties?.marker || state.options.emphasis || "<em>";
+            const marker =
+              node.properties?.marker || state.options.emphasis || "<em>";
 
-            const exit = state.enter('emphasis');
+            const exit = state.enter("emphasis");
             const tracker = state.createTracker(info);
             let value = tracker.move(marker);
             value += tracker.move(
               state.containerPhrasing(node, {
                 before: value,
                 after: marker,
-                ...tracker.current()
+                ...tracker.current(),
               })
             );
             value += tracker.move(marker === "<em>" ? "</em>" : marker);
@@ -693,14 +748,14 @@ class MdProcessor implements Processor {
             return value;
           },
           link: (node, _, state, info) => {
-            const exit = state.enter('link');
+            const exit = state.enter("link");
             const tracker = state.createTracker(info);
             let value = tracker.move("[");
             value += tracker.move(
               state.containerPhrasing(node, {
                 before: value,
                 after: "]",
-                ...tracker.current()
+                ...tracker.current(),
               })
             );
             value += tracker.move("](" + node.url + ")");
@@ -710,14 +765,14 @@ class MdProcessor implements Processor {
           inlineCode: (node, _, state, info) => {
             const marker = node.properties?.marker || "<code>";
 
-            const exit = state.enter('blockquote');
+            const exit = state.enter("blockquote");
             const tracker = state.createTracker(info);
             let value = tracker.move(marker);
             value += tracker.move(
               state.containerPhrasing(node, {
                 before: value,
                 after: marker,
-                ...tracker.current()
+                ...tracker.current(),
               })
             );
             value += tracker.move(marker === "<code>" ? "</code>" : marker);
@@ -727,15 +782,17 @@ class MdProcessor implements Processor {
           strong: (node, _, state, info) => {
             let marker = node.properties?.marker || "<strong>";
 
-            const exit = state.enter('strong');
+            const exit = state.enter("strong");
             const tracker = state.createTracker(info);
             let value = tracker.move(marker);
             value += tracker.move(
-              state.containerPhrasing(node, {
-                before: value,
-                after: marker,
-                ...tracker.current()
-              })?.trimRight()
+              state
+                .containerPhrasing(node, {
+                  before: value,
+                  after: marker,
+                  ...tracker.current(),
+                })
+                ?.trimRight()
             );
             value += tracker.move(marker === "<strong>" ? "</strong>" : marker);
             exit();
@@ -744,23 +801,23 @@ class MdProcessor implements Processor {
           list: (node, _, state, info) => {
             const marker = node.properties?.marker || node.marker;
 
-            const exit = state.enter('list');
+            const exit = state.enter("list");
             const tracker = state.createTracker(info);
 
             state.bulletCurrent = marker;
             state.options.listItemIndent = "one";
 
             let value = tracker.move(
-                state.containerFlow(node, {
-                  ...info,
-                })
-            )
+              state.containerFlow(node, {
+                ...info,
+              })
+            );
             exit();
             return value;
           },
           thematicBreak: (node, parent, state) => {
             let marker = node?.properties.marker;
-            if (marker !== '-' && marker !== '_') marker = '*';
+            if (marker !== "-" && marker !== "_") marker = "*";
             const value = marker.repeat(3);
 
             return state.options.ruleSpaces ? value.slice(0, -1) : value;
@@ -772,22 +829,20 @@ class MdProcessor implements Processor {
 
   private hastToSegments(tree: HastRoot): Document {
     const segments: Segment[] = [];
-    const layoutTemp: Layout = { type: "root", children: [] };
     const layout: Layout = { type: "root", children: [] };
-    let segmentCount: number = 0;
 
     const addSegment = (node: LayoutElement): string => {
-      let segment: Segment = {
-        id: segmentCount.toString(),
+      const attributes = node.attributes;
+      const id: string = sha256(
+        node.value + (node.attributes ? JSON.stringify(attributes) : "")
+      );
+      const segment: Segment = {
+        id,
         text: node.value || "",
+        ...(attributes && { attributes }),
       };
 
-      if (node.attributes) {
-        segment.attributes = node.attributes;
-      }
-
       segments.push(segment);
-      segmentCount++;
       return segment.id;
     };
 
@@ -824,24 +879,30 @@ class MdProcessor implements Processor {
           delete node.properties.attributes;
         }
 
-        if(node.tagName === "td" || node.tagName === "th") {
-          if(node.children.length > 1 && node.children.some((el: any) => el.type === "element")) {
-            const {text, attributes} = hastToString(node);
+        if (node.tagName === "td" || node.tagName === "th") {
+          if (
+            node.children.length > 1 &&
+            node.children.some((el: any) => el.type === "element")
+          ) {
+            const { text, attributes } = hastToString(node);
 
-            if(text) {
-              node.children = [{type: "text", value: text, attributes}];
+            if (text) {
+              node.children = [{ type: "text", value: text, attributes }];
             }
           }
         }
 
-        if((node.tagName === "img" || node.tagName === "a") && node.children.length === 0) {
-          const tagName: string = `${node.tagName}0`
+        if (
+          (node.tagName === "img" || node.tagName === "a") &&
+          node.children.length === 0
+        ) {
+          const tagName: string = `${node.tagName}0`;
 
           node.children.push({
             type: "text",
             value: `{${tagName}}`,
-            attributes: {[tagName]: node.properties}
-          })
+            attributes: { [tagName]: node.properties },
+          });
         }
       });
 
@@ -852,11 +913,17 @@ class MdProcessor implements Processor {
   }
 
   private segmentsToHast(data: Document): any {
+    const segmentsMap: SegmentsMap = {};
+
+    data.segments.forEach((segment: Segment): void => {
+      segmentsMap[segment.id] = segment;
+    });
+
     visitParents(data.layout, { type: "segment" }, (node: any, parent) => {
-      const structure = parseStringToStructure(data.segments[node.id]);
+      const structure: Element[] = parseStringToStructure(segmentsMap[node.id]);
       let parentTemp = parent[parent.length - 1];
       const indexElement = parentTemp.children.findIndex(
-        (child: any) => child.id === node.id
+        (child: any): boolean => child.id === node.id
       );
 
       if (parentTemp.children.length === 1) {

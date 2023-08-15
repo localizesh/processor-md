@@ -1,4 +1,4 @@
-import jsYaml, {CORE_SCHEMA} from "js-yaml";
+import jsYaml, { CORE_SCHEMA } from "js-yaml";
 import { Element } from "hast";
 
 const yamlSequenceTags = ["ul", "li"];
@@ -6,7 +6,7 @@ const yamlSequenceTags = ["ul", "li"];
 const quoteCustomCodes: { [key: string]: string } = {
   single: "{$sqc0}",
   double: "{$dqc0}",
-  without: "{$without0}"
+  without: "{$without0}",
 };
 
 enum quotesTypes {
@@ -64,7 +64,7 @@ const hastToString = (rootMdast: Element): string => {
 };
 
 const stringToHast = (rootString: string) => {
-  const yamlObject = jsYaml.load(rootString, {schema: CORE_SCHEMA});
+  const yamlObject = jsYaml.load(rootString, { schema: CORE_SCHEMA });
   const stringToMdastRecursive: any = (yaml: any) => {
     const isSeq: boolean = Array.isArray(yaml);
     const isMap: boolean = isPlainObject(yaml);
@@ -129,7 +129,7 @@ const replaceCustomQuotes = (str: string): string => {
     .replaceAll(`'${quoteCustomCodes.double}`, `"`)
     .replaceAll(`${quoteCustomCodes.double}'`, `"`)
     .replaceAll(`'${quoteCustomCodes.single}`, `'`)
-    .replaceAll(`${quoteCustomCodes.single}'`, `'`)
+    .replaceAll(`${quoteCustomCodes.single}'`, `'`);
 };
 
 const isPlainObject = function (obj: Object): boolean {

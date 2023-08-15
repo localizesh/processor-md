@@ -1,13 +1,12 @@
-import {toHtml} from 'hast-util-to-html';
+import { toHtml } from "hast-util-to-html";
 
 export default function img(node: any, parent: any): any {
   const isNodeSyntaxHtml: boolean = !node.properties?.marker;
 
-  if(isNodeSyntaxHtml) {
+  if (isNodeSyntaxHtml) {
     const res: string = toHtml(node);
-    return {type: "html", value: res};
+    return { type: "html", value: res };
   }
-
 
   if (parent?.type === "element") {
     const { src = "", title = null, alt = "" } = node.properties || {};

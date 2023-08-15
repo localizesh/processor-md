@@ -1,9 +1,12 @@
-import {Heading, Paragraph} from "mdast";
+import { Heading, Paragraph } from "mdast";
 import { Element } from "hast";
 
-export const segmentParentNodeToHast =
-  (state: any, node: Heading | Paragraph, segment: any, tagName: string): any => {
-
+export const segmentParentNodeToHast = (
+  state: any,
+  node: Heading | Paragraph,
+  segment: any,
+  tagName: string
+): any => {
   node.children = segment ? [segment] : [];
 
   const resultHast: Element = {
@@ -13,4 +16,4 @@ export const segmentParentNodeToHast =
     children: state.all(node),
   };
   return resultHast;
-}
+};

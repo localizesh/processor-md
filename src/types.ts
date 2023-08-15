@@ -5,6 +5,10 @@ export type SegmentsMap = {
   [id: string]: Segment;
 };
 
+export type Segments = {
+  [id: string]: Segment;
+};
+
 export interface Segment {
   id: string;
   text: string;
@@ -32,7 +36,7 @@ export interface Layout {
 }
 
 export interface Document {
-  segments: Segment[];
+  segments: Segments;
   layout: Layout;
 }
 

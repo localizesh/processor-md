@@ -1,5 +1,5 @@
 const getTagArray = (str: string, tagName: string): string[] => {
-  const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, 'g');
+  const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, "g");
   const strItem: string[] = [];
 
   const matches = str.match(regexp);
@@ -12,11 +12,11 @@ const getTagArray = (str: string, tagName: string): string[] => {
   }
 
   return strItem;
-}
+};
 
 const fetchNestedTags = (str: string, tagName: string): string | null => {
   const closeTagRegExp: RegExp = new RegExp(`</${tagName}>`);
-  const openTagRegExp: RegExp = new RegExp(`<${tagName}.*?>`, 'm')
+  const openTagRegExp: RegExp = new RegExp(`<${tagName}.*?>`, "m");
 
   const tagArr: string[] = getTagArray(str, tagName);
 
@@ -27,7 +27,7 @@ const fetchNestedTags = (str: string, tagName: string): string | null => {
   let indexIncrement: number = tagName.length + 2;
 
   const nestedContent: string = tagArr.reduce((acc, tag) => {
-    const isCloseTag = !tag.indexOf('/');
+    const isCloseTag = !tag.indexOf("/");
 
     if (isCloseTag) {
       closeTagCounter++;
@@ -36,27 +36,32 @@ const fetchNestedTags = (str: string, tagName: string): string | null => {
     } else {
       openTagCounter++;
       const openTagIndex: number = str.indexOf(tag, currentIndex);
-      currentIndex = openTagIndex + indexIncrement ;
+      currentIndex = openTagIndex + indexIncrement;
     }
 
     if (openTagCounter === closeTagCounter && !acc) {
       const matchCloseTag: any[] | null = str.match(closeTagRegExp);
-      const matchOpenTag: any[] | null  = str.match(openTagRegExp);
+      const matchOpenTag: any[] | null = str.match(openTagRegExp);
 
-      if(matchOpenTag && matchCloseTag) {
-        acc = str.substr(matchOpenTag[0].length, currentIndex - matchCloseTag[0].length - matchOpenTag[0].length);
+      if (matchOpenTag && matchCloseTag) {
+        acc = str.substr(
+          matchOpenTag[0].length,
+          currentIndex - matchCloseTag[0].length - matchOpenTag[0].length
+        );
         return acc;
       }
     }
     return acc;
-  }, '')
+  }, "");
 
-  return (openTagCounter === closeTagCounter || nestedContent) ? nestedContent : null;
-}
+  return openTagCounter === closeTagCounter || nestedContent
+    ? nestedContent
+    : null;
+};
 
-export const replaceHtmlBeforeMdast =
-  (markdownString: string): {docWithHtmlPlaceholders: string, contentsAvoidMarkdown: any[]} => {
-
+export const replaceHtmlBeforeMdast = (
+  markdownString: string
+): { docWithHtmlPlaceholders: string; contentsAvoidMarkdown: any[] } => {
   const HTML_SIMPLE_TAG: RegExp =
     /((<(aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|pre|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
 
@@ -81,41 +86,63 @@ export const replaceHtmlBeforeMdast =
 
     if (tagContentMatch) {
       const startTagIndex: number = markdownString.indexOf(fullTag);
-      const content: string | null = fetchNestedTags(markdownString.slice(startTagIndex, markdownString.length - 1), tagName);
+      const content: string | null = fetchNestedTags(
+        markdownString.slice(startTagIndex, markdownString.length - 1),
+        tagName
+      );
       if (content === null) {
-        return { docWithHtmlPlaceholders: markdownString, contentsAvoidMarkdown: [] };
+        return {
+          docWithHtmlPlaceholders: markdownString,
+          contentsAvoidMarkdown: [],
+        };
       }
       const placeholder: string = MD_HTML_PLACEHOLDER_ + index;
 
-      contentsAvoidMarkdown.push(
-        { placeholder: openTag + placeholder + closedTag, content: openTag + content + closedTag }
-      );
+      contentsAvoidMarkdown.push({
+        placeholder: openTag + placeholder + closedTag,
+        content: openTag + content + closedTag,
+      });
 
       markdownStringCopy = markdownStringCopy.replace(content, placeholder);
     } else {
       const placeholder: string = MD_HTML_PLACEHOLDER_ + index;
 
-      contentsAvoidMarkdown.push(
-        { placeholder: openTag + placeholder + closedTag, content: openTag + tagContent + closedTag }
-      );
+      contentsAvoidMarkdown.push({
+        placeholder: openTag + placeholder + closedTag,
+        content: openTag + tagContent + closedTag,
+      });
 
-      const isCodeBlockOnMarkDown = defineIsCodeBlock(markdownStringCopy, fullTag);
+      const isCodeBlockOnMarkDown = defineIsCodeBlock(
+        markdownStringCopy,
+        fullTag
+      );
       if (!isCodeBlockOnMarkDown)
-        markdownStringCopy = markdownStringCopy.replace(fullTag, openTag + placeholder + closedTag);
+        markdownStringCopy = markdownStringCopy.replace(
+          fullTag,
+          openTag + placeholder + closedTag
+        );
     }
   }
 
-  function defineIsCodeBlock (markdownStringCopy: string, fullTag: string): boolean {
-
+  function defineIsCodeBlock(
+    markdownStringCopy: string,
+    fullTag: string
+  ): boolean {
     const startIndex: number = markdownStringCopy.indexOf(fullTag);
-    let searchString: string = markdownStringCopy.slice(startIndex - 8, startIndex);
+    let searchString: string = markdownStringCopy.slice(
+      startIndex - 8,
+      startIndex
+    );
 
     const tab = " ".repeat(4);
     const lineBreak = "\n";
     const lineBreakLinux = "\r\n";
 
-    return searchString.includes(`${lineBreakLinux }${lineBreakLinux }${tab}`) || searchString.includes(`${lineBreak }${lineBreak }${tab}`);
+    return (
+      searchString.includes(`${lineBreakLinux}${lineBreakLinux}${tab}`) ||
+      searchString.includes(`${lineBreak}${lineBreak}${tab}`)
+    );
   }
 
-  return { docWithHtmlPlaceholders: markdownStringCopy, contentsAvoidMarkdown }
-}
+  return { docWithHtmlPlaceholders: markdownStringCopy, contentsAvoidMarkdown };
+};

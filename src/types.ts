@@ -1,6 +1,9 @@
 export type Attributes = {
   [key: string]: { [key: string]: string };
 };
+export type SegmentsMap = {
+  [id: string]: Segment;
+};
 
 export interface Segment {
   id: string;

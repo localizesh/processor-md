@@ -365,7 +365,15 @@ const prepareMdast: Attacher = (option: any) => {
           }
         }
 
-        if (contentsAvoidMarkdown.length) {
+        if(node.type === "yaml"){
+          if (contentsAvoidMarkdown.length) {
+            contentsAvoidMarkdown.forEach((placeholder: any)=> {
+              node.value = node.value.replace(placeholder.placeholder, placeholder.content)
+            })
+          }
+        }
+
+        if (contentsAvoidMarkdown.length && node.type !== "yaml") {
           const htmlPlaceholder = contentsAvoidMarkdown.find(
             (placeholder: any) => node.value === placeholder.placeholder
           );

@@ -697,6 +697,8 @@ class MdProcessor implements Processor {
       })
       .runSync(hast) as MdastRoot;
 
+    let listBulletLastUsed: string[] = []
+
     return unified()
       .use(gfm)
       .use(stringify, {
@@ -808,11 +810,11 @@ class MdProcessor implements Processor {
           },
           list: (node, _, state, info) => {
             const marker = node.properties?.marker || node.marker;
-
             const exit = state.enter("list");
             const tracker = state.createTracker(info);
 
             state.bulletCurrent = marker;
+            listBulletLastUsed.push(marker)
             state.options.listItemIndent = "one";
 
             let value = tracker.move(
@@ -820,6 +822,9 @@ class MdProcessor implements Processor {
                 ...info,
               })
             );
+
+            listBulletLastUsed.pop()
+            state.bulletCurrent = listBulletLastUsed[listBulletLastUsed.length - 1]
             exit();
             return value;
           },

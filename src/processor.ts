@@ -365,7 +365,15 @@ const prepareMdast: Attacher = (option: any) => {
           }
         }
 
-        if (contentsAvoidMarkdown.length) {
+        if(node.type === "yaml"){
+          if (contentsAvoidMarkdown.length) {
+            contentsAvoidMarkdown.forEach((placeholder: any)=> {
+              node.value = node.value.replace(placeholder.placeholder, placeholder.content)
+            })
+          }
+        }
+
+        if (contentsAvoidMarkdown.length && node.type !== "yaml") {
           const htmlPlaceholder = contentsAvoidMarkdown.find(
             (placeholder: any) => node.value === placeholder.placeholder
           );
@@ -689,6 +697,8 @@ class MdProcessor implements Processor {
       })
       .runSync(hast) as MdastRoot;
 
+    let listBulletLastUsed: string[] = []
+
     return unified()
       .use(gfm)
       .use(stringify, {
@@ -800,11 +810,11 @@ class MdProcessor implements Processor {
           },
           list: (node, _, state, info) => {
             const marker = node.properties?.marker || node.marker;
-
             const exit = state.enter("list");
             const tracker = state.createTracker(info);
 
             state.bulletCurrent = marker;
+            listBulletLastUsed.push(marker)
             state.options.listItemIndent = "one";
 
             let value = tracker.move(
@@ -812,6 +822,9 @@ class MdProcessor implements Processor {
                 ...info,
               })
             );
+
+            listBulletLastUsed.pop()
+            state.bulletCurrent = listBulletLastUsed[listBulletLastUsed.length - 1]
             exit();
             return value;
           },

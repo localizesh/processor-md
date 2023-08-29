@@ -839,7 +839,7 @@ class MdProcessor implements Processor {
             function map(line: string, _: number, blank: boolean): string {
               const row: string = (blank ? '' : ' ') + line
 
-              return line ? '>' + row : row;
+              return (line || _ > 0) ? '>' + row : row;
             }
 
             const exit = state.enter('blockquote')

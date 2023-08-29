@@ -835,6 +835,24 @@ class MdProcessor implements Processor {
 
             return state.options.ruleSpaces ? value.slice(0, -1) : value;
           },
+          blockquote: (node, _, state, info) => {
+            function map(line: string, _: number, blank: boolean): string {
+              const row: string = (blank ? '' : ' ') + line
+
+              return line ? '>' + row : row;
+            }
+
+            const exit = state.enter('blockquote')
+            const tracker = state.createTracker(info)
+            tracker.move('> ')
+            tracker.shift(2)
+            const value = state.indentLines(
+              state.containerFlow(node, tracker.current()),
+              map
+            )
+            exit()
+            return value
+          },
         },
       })
       .stringify(mdast) as string;

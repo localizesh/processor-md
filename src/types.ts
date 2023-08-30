@@ -1,4 +1,4 @@
-export type Attributes = {
+export type Tags = {
   [key: string]: { [key: string]: string };
 };
 export type SegmentsMap = {
@@ -8,14 +8,14 @@ export type SegmentsMap = {
 export interface Segment {
   id: string;
   text: string;
-  attributes?: Attributes;
+  tags?: Tags;
 }
 
 export interface LayoutElement {
   value?: string;
   type: string;
   tagName: string;
-  attributes?: Attributes;
+  tags?: Tags;
   children: LayoutNode[];
 }
 

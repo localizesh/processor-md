@@ -12,7 +12,7 @@ export const segmentParentNodeToHast = (
   const resultHast: Element = {
     type: "element",
     tagName: tagName,
-    properties: segment?.attributes || {},
+    properties: segment?.tags || {},
     children: state.all(node),
   };
   return resultHast;

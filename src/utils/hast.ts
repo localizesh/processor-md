@@ -10,7 +10,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       parentTagName: rootNode.tagName,
     },
   } = options;
-  let attributes: any = {};
+  let tags: any = {};
 
   const toStringRecursive = (node: any, context: any) => {
     const result = [];
@@ -19,7 +19,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       const nodeTagKey = `${node.tagName}${context.index - 1}`;
 
       if (Object.keys(node.properties).length)
-        attributes = { ...attributes, [nodeTagKey]: node.properties };
+        tags = { ...tags, [nodeTagKey]: node.properties };
 
       return node.tagName === IMAGE_TAG
         ? `{${nodeTagKey} alt="${
@@ -35,7 +35,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       const index = context.index;
 
       if (Object.keys(node.properties).length)
-        attributes = { ...attributes, [nodeTagKey]: node.properties };
+        tags = { ...tags, [nodeTagKey]: node.properties };
 
       const tagStringOpen = index && isTagOnSourceDoc ? `{${nodeTagKey}}` : ``;
       const tagStringClose =
@@ -53,5 +53,5 @@ export const hastToString = (rootNode: any, options: any = {}) => {
     return result.join("");
   };
 
-  return { text: toStringRecursive(rootNode, rootContext).trim(), attributes };
+  return { text: toStringRecursive(rootNode, rootContext).trim(), tags };
 };

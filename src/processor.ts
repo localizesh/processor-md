@@ -9,7 +9,7 @@ import raw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
 import { Element, Root as HastRoot } from "hast";
 import {
-  Attributes,
+  Tags,
   Document,
   Layout,
   LayoutElement,
@@ -55,27 +55,27 @@ const convertMdastTagToHast = (tag: string) => {
   return tagsMap[tag] ? tagsMap[tag] : tag;
 };
 
-const convertMdastAttributesToHast = (attributes: any) => {
-  let newAttributes: Attributes = {};
-  const attributesMapLinks: Record<string, string> = {
+const convertMdastTagsToHast = (tags: any) => {
+  let newTags: Tags = {};
+  const tagsMapLinks: Record<string, string> = {
     url: "href",
   };
-  const attributesMapImg: Record<string, string> = {
+  const tagsMapImg: Record<string, string> = {
     url: "src",
   };
 
-  for (const key in attributes) {
-    if (attributes.hasOwnProperty(key)) {
-      const innerObject = attributes[key];
+  for (const key in tags) {
+    if (tags.hasOwnProperty(key)) {
+      const innerObject = tags[key];
       const transformedInnerObject: any = {};
-      const attributesMap = key.includes("img")
-        ? attributesMapImg
-        : attributesMapLinks;
+      const tagsMap = key.includes("img")
+        ? tagsMapImg
+        : tagsMapLinks;
 
       for (const innerKey in innerObject) {
         if (innerObject.hasOwnProperty(innerKey)) {
-          if (attributesMap.hasOwnProperty(innerKey)) {
-            transformedInnerObject[attributesMap[innerKey]] =
+          if (tagsMap.hasOwnProperty(innerKey)) {
+            transformedInnerObject[tagsMap[innerKey]] =
               innerObject[innerKey];
           } else {
             transformedInnerObject[innerKey] = innerObject[innerKey];
@@ -83,11 +83,11 @@ const convertMdastAttributesToHast = (attributes: any) => {
         }
       }
 
-      newAttributes[key] = transformedInnerObject;
+      newTags[key] = transformedInnerObject;
     }
   }
 
-  return newAttributes;
+  return newTags;
 };
 
 function parseHTMLTags(html: string) {
@@ -108,7 +108,7 @@ function parseHTMLTags(html: string) {
 function convertMdastNodeToText(node: any, mdast?: any) {
   let resultNodeText = "";
   let tagCount = 0;
-  let attributes: Attributes = {};
+  let tags: Tags = {};
   const htmlTags: number[] = [];
 
   const nodeToString = (node: any): string => {
@@ -143,9 +143,9 @@ function convertMdastNodeToText(node: any, mdast?: any) {
 
       if (tagName) {
         value = `{${tagName}${tagCountTemp}}`;
-        attributes[tagName + tagCountTemp] = { ...htmlAttributes };
+        tags[tagName + tagCountTemp] = { ...htmlAttributes };
         if (node.marker)
-          attributes[tagName + tagCountTemp].marker = node.marker;
+          tags[tagName + tagCountTemp].marker = node.marker;
         htmlTags.push(tagCount);
         tagCount++;
       }
@@ -161,7 +161,7 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       const tagCountTemp = tagCount;
 
       tagNameWithIndex = tag + tagCountTemp;
-      setAttributes(node, tagNameWithIndex);
+      setTags(node, tagNameWithIndex);
       tagCount++;
 
       const content = node.children.map(nodeToString).join("");
@@ -172,7 +172,7 @@ function convertMdastNodeToText(node: any, mdast?: any) {
         let value: string;
         tagNameWithIndex = tag + tagCount;
 
-        setAttributes(node, tagNameWithIndex);
+        setTags(node, tagNameWithIndex);
 
         if (node.type === "image") {
           value = `{${tag}${tagCount}}`;
@@ -191,7 +191,7 @@ function convertMdastNodeToText(node: any, mdast?: any) {
     }
   };
 
-  const setAttributes = (child: any, tag: string): void => {
+  const setTags = (child: any, tag: string): void => {
     if (
       child.url ||
       child.title ||
@@ -221,7 +221,7 @@ function convertMdastNodeToText(node: any, mdast?: any) {
         attr.identifier = child.identifier;
       }
 
-      attributes[tag] = { ...attributes[tag], ...attr };
+      tags[tag] = { ...tags[tag], ...attr };
     }
   };
 
@@ -235,9 +235,9 @@ function convertMdastNodeToText(node: any, mdast?: any) {
     return {
       type: "text",
       value: resultNodeText,
-      attributes:
-        Object.keys(attributes).length > 0
-          ? { attributes: JSON.stringify(attributes) }
+      tags:
+        Object.keys(tags).length > 0
+          ? { tags: JSON.stringify(tags) }
           : {},
     };
   }
@@ -282,8 +282,8 @@ function parseStringToStructure(segment: Segment): Element[] {
           elements.unshift(element);
         }
       } else {
-        if (segment.attributes) {
-          properties = segment.attributes[tagWithIndex];
+        if (segment.tags) {
+          properties = segment.tags[tagWithIndex];
         }
 
         const element = {
@@ -514,7 +514,7 @@ class MdProcessor implements Processor {
                 cell.children[0].properties.marker = segment.children[0].marker;
               } else {
                 cell = state.one(child, parent);
-                cell.properties = segment?.attributes || {};
+                cell.properties = segment?.tags || {};
                 cell.children = segment ? [segment] : [];
               }
 
@@ -863,14 +863,14 @@ class MdProcessor implements Processor {
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
-      const attributes = node.attributes;
+      const tags = node.tags;
       const id: string = sha256(
-        node.value + (node.attributes ? JSON.stringify(attributes) : "")
+        node.value + (node.tags ? JSON.stringify(tags) : "")
       );
       const segment: Segment = {
         id,
         text: node.value || "",
-        ...(attributes && { attributes }),
+        ...(tags && { tags }),
       };
 
       segments.push(segment);
@@ -902,12 +902,12 @@ class MdProcessor implements Processor {
 
     tree.children.forEach((child: any) => {
       visitParents(child, { type: "element" }, (node: any) => {
-        if (node.properties?.attributes) {
-          node.children[0].attributes = convertMdastAttributesToHast(
-            JSON.parse(node.properties.attributes)
+        if (node.properties?.tags) {
+          node.children[0].tags = convertMdastTagsToHast(
+            JSON.parse(node.properties.tags)
           );
 
-          delete node.properties.attributes;
+          delete node.properties.tags;
         }
 
         if (node.tagName === "td" || node.tagName === "th") {
@@ -915,10 +915,10 @@ class MdProcessor implements Processor {
             node.children.length > 1 &&
             node.children.some((el: any) => el.type === "element")
           ) {
-            const { text, attributes } = hastToString(node);
+            const { text, tags } = hastToString(node);
 
             if (text) {
-              node.children = [{ type: "text", value: text, attributes }];
+              node.children = [{ type: "text", value: text, tags }];
             }
           }
         }
@@ -932,7 +932,7 @@ class MdProcessor implements Processor {
           node.children.push({
             type: "text",
             value: `{${tagName}}`,
-            attributes: { [tagName]: node.properties },
+            tags: { [tagName]: node.properties },
           });
         }
       });

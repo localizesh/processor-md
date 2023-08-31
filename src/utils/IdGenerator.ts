@@ -8,29 +8,31 @@ type Content = {
 };
 
 export class IdGenerator {
-    private segmentsMap: Record<string, number>;
+    private contentMap: Record<string, number>;
 
     constructor() {
-        this.segmentsMap = {};
+        this.contentMap = {};
     }
 
-    public generateId(text: string | undefined = "", otherStrings: Record<string, string>) {
-        const otherString = Object.values(otherStrings).join("");
-        const key = text + otherString;
-        const uniqueId = this.segmentsMap[key] ? this.segmentsMap[key] : 1;
+    public generateId(text: string | undefined = "", tags: string | undefined = "") {
+        const key = text + tags;
+        const uniqueId = this.contentMap[key] | 1;
 
         const content: Content = {
             resourceId: "123",
             text,
-            tags: otherString,
+            tags: tags,
             index: uniqueId,
         };
 
-        if (this.segmentsMap.hasOwnProperty(key)) {
-            this.segmentsMap[key] += 1;
+        if (this.contentMap.hasOwnProperty(key)) {
+            this.contentMap[key] += 1;
         } else {
-            this.segmentsMap[key] = 1;
+            this.contentMap[key] = 1;
         }
+
+        console.log("content QQ: ", content)
+        console.log("this.contentMap QQ: ", this.contentMap)
 
         return sha256(JSON.stringify(content));
     }

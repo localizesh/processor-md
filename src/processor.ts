@@ -865,7 +865,7 @@ class MdProcessor implements Processor {
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(node.value, {tags: tags ? JSON.stringify(tags) : ""})
+      const id: string = idGenerator.generateId(node.value, tags ? JSON.stringify(tags) : "")
       const segment: Segment = {
         id,
         text: node.value || "",

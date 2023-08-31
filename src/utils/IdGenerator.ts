@@ -1,4 +1,5 @@
 import { sha256 } from "js-sha256";
+import {Tags} from "../types";
 
 type Content = {
     resourceId: string;
@@ -14,14 +15,14 @@ export class IdGenerator {
         this.contentMap = {};
     }
 
-    public generateId(text: string | undefined = "", tags: string | undefined = "") {
-        const key = text + tags;
+    public generateId(text: string | undefined = "", tags: Tags | undefined) {
+        const tagsStr = tags ? JSON.stringify(tags) : ""
+        const key = text + tagsStr;
         const uniqueId = this.contentMap[key] | 1;
-
         const content: Content = {
             resourceId: "123",
             text,
-            tags: tags,
+            tags: tagsStr,
             index: uniqueId,
         };
 
@@ -30,9 +31,6 @@ export class IdGenerator {
         } else {
             this.contentMap[key] = 1;
         }
-
-        console.log("content QQ: ", content)
-        console.log("this.contentMap QQ: ", this.contentMap)
 
         return sha256(JSON.stringify(content));
     }

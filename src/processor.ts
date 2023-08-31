@@ -34,7 +34,6 @@ import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import { replaceHtmlBeforeMdast } from "./utils/html.js";
-import removeDuplicateSegments from "./utils/removeDuplicateSegments.js";
 import { IdGenerator } from "./utils/IdGenerator.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -609,7 +608,6 @@ class MdProcessor implements Processor {
     const { layout, segments } = this.hastToSegments(hast);
 
     removePosition(layout);
-    removeDuplicateSegments(segments)
 
     return { layout: layout, segments };
   }
@@ -865,7 +863,7 @@ class MdProcessor implements Processor {
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(node.value, tags ? JSON.stringify(tags) : "")
+      const id: string = idGenerator.generateId(node.value, tags)
       const segment: Segment = {
         id,
         text: node.value || "",

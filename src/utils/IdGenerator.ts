@@ -2,7 +2,7 @@ import { sha256 } from "js-sha256";
 import {Tags} from "../types";
 
 type Content = {
-    resourceId: string;
+    context: string;
     text: string;
     tags: string;
     index: number;
@@ -20,7 +20,7 @@ export class IdGenerator {
         const key = text + tagsStr;
         const uniqueId = this.contentMap[key] | 1;
         const content: Content = {
-            resourceId: "123",
+            context: sha256(text),
             text,
             tags: tagsStr,
             index: uniqueId,

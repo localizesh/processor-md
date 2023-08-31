@@ -15,12 +15,12 @@ export class IdGenerator {
         this.contentMap = {};
     }
 
-    public generateId(text: string | undefined = "", tags: Tags | undefined) {
+    public generateId(text: string | undefined = "", tags: Tags | undefined, context: string) {
         const tagsStr = tags ? JSON.stringify(tags) : ""
         const key = text + tagsStr;
         const uniqueId = this.contentMap[key] | 1;
         const content: Content = {
-            context: sha256(text),
+            context: sha256(context),
             text,
             tags: tagsStr,
             index: uniqueId,

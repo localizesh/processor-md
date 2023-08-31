@@ -605,7 +605,7 @@ class MdProcessor implements Processor {
 
     pastCodeBlockToHast(hast);
 
-    const { layout, segments } = this.hastToSegments(hast);
+    const { layout, segments } = this.hastToSegments(hast, doc);
 
     removePosition(layout);
 
@@ -856,14 +856,14 @@ class MdProcessor implements Processor {
       .stringify(mdast) as string;
   }
 
-  private hastToSegments(tree: HastRoot): Document {
+  private hastToSegments(tree: HastRoot, doc: string): Document {
     const idGenerator = new IdGenerator();
     const segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(node.value, tags)
+      const id: string = idGenerator.generateId(node.value, tags, doc)
       const segment: Segment = {
         id,
         text: node.value || "",

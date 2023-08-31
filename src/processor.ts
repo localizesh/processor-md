@@ -34,8 +34,8 @@ import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import { replaceHtmlBeforeMdast } from "./utils/html.js";
-import { sha256 } from "js-sha256";
 import removeDuplicateSegments from "./utils/removeDuplicateSegments.js";
+import { IdGenerator } from "./utils/IdGenerator.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -859,14 +859,13 @@ class MdProcessor implements Processor {
   }
 
   private hastToSegments(tree: HastRoot): Document {
+    const idGenerator = new IdGenerator();
     const segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = sha256(
-        node.value + (node.tags ? JSON.stringify(tags) : "")
-      );
+      const id: string = idGenerator.generateId(node.value, {tags: tags ? JSON.stringify(tags) : ""})
       const segment: Segment = {
         id,
         text: node.value || "",

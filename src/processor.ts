@@ -16,7 +16,7 @@ import {
   LayoutNode,
   Processor,
   Segment,
-  SegmentsMap,
+  SegmentsMap, Context,
 } from "./types";
 import { MdastRoot } from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
@@ -451,7 +451,7 @@ const extractNumberFromGLCodeBlockString = (inputString: string): string => {
 };
 
 class MdProcessor implements Processor {
-  public parse(doc: string): Document {
+  public parse(doc: string, ctx?: Context): Document {
     let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
@@ -605,14 +605,14 @@ class MdProcessor implements Processor {
 
     pastCodeBlockToHast(hast);
 
-    const { layout, segments } = this.hastToSegments(hast, doc);
+    const { layout, segments } = this.hastToSegments(hast, ctx);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document): string {
+  public stringify(data: Document, ctx?: Context): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -856,14 +856,14 @@ class MdProcessor implements Processor {
       .stringify(mdast) as string;
   }
 
-  private hastToSegments(tree: HastRoot, doc: string): Document {
-    const idGenerator = new IdGenerator();
+  private hastToSegments(tree: HastRoot, ctx: Context): Document {
+    const idGenerator = new IdGenerator(ctx);
     const segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(node.value, tags, doc)
+      const id: string = idGenerator.generateId(node.value, tags)
       const segment: Segment = {
         id,
         text: node.value || "",

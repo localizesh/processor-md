@@ -5,6 +5,8 @@ export type SegmentsMap = {
   [id: string]: Segment;
 };
 
+export type Context = any;
+
 export interface Segment {
   id: string;
   text: string;
@@ -37,6 +39,6 @@ export interface Document {
 }
 
 export interface Processor {
-  parse(doc: string): Document;
-  stringify(doc: Document): string;
+  parse(doc: string, ctx?: Context): Document;
+  stringify(doc: Document, ctx?: Context): string;
 }

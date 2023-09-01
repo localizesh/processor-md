@@ -1,28 +1,29 @@
 import { sha256 } from "js-sha256";
-import {Tags} from "../types";
+import {Context, Tags} from "../types";
 
 type Content = {
-    context: string;
+    context?: Context;
     text: string;
-    tags: string;
+    tags?: Tags;
     index: number;
 };
 
 export class IdGenerator {
+    private context: Context;
     private contentMap: Record<string, number>;
 
-    constructor() {
+    constructor(context: Context) {
+        this.context = context;
         this.contentMap = {};
     }
 
-    public generateId(text: string | undefined = "", tags: Tags | undefined, context: string) {
-        const tagsStr = tags ? JSON.stringify(tags) : ""
-        const key = text + tagsStr;
+    public generateId(text: string | undefined = "", tags?: Tags) {
+        const key = text + tags ? JSON.stringify(tags) : "";
         const uniqueId = this.contentMap[key] | 1;
         const content: Content = {
-            context: sha256(context),
+            context: this.context,
             text,
-            tags: tagsStr,
+            tags,
             index: uniqueId,
         };
 

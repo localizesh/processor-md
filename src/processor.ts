@@ -16,7 +16,7 @@ import {
   LayoutNode,
   Processor,
   Segment,
-  SegmentsMap,
+  SegmentsMap, Context,
 } from "./types";
 import { MdastRoot } from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
@@ -34,8 +34,7 @@ import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import { replaceHtmlBeforeMdast } from "./utils/html.js";
-import { sha256 } from "js-sha256";
-import removeDuplicateSegments from "./utils/removeDuplicateSegments.js";
+import { IdGenerator } from "./utils/IdGenerator.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -452,7 +451,7 @@ const extractNumberFromGLCodeBlockString = (inputString: string): string => {
 };
 
 class MdProcessor implements Processor {
-  public parse(doc: string): Document {
+  public parse(doc: string, ctx?: Context): Document {
     let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
@@ -606,15 +605,14 @@ class MdProcessor implements Processor {
 
     pastCodeBlockToHast(hast);
 
-    const { layout, segments } = this.hastToSegments(hast);
+    const { layout, segments } = this.hastToSegments(hast, ctx);
 
     removePosition(layout);
-    removeDuplicateSegments(segments)
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document): string {
+  public stringify(data: Document, ctx?: Context): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -858,15 +856,14 @@ class MdProcessor implements Processor {
       .stringify(mdast) as string;
   }
 
-  private hastToSegments(tree: HastRoot): Document {
+  private hastToSegments(tree: HastRoot, ctx: Context): Document {
+    const idGenerator = new IdGenerator(ctx);
     const segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
       const tags = node.tags;
-      const id: string = sha256(
-        node.value + (node.tags ? JSON.stringify(tags) : "")
-      );
+      const id: string = idGenerator.generateId(node.value, tags)
       const segment: Segment = {
         id,
         text: node.value || "",

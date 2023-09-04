@@ -5,7 +5,7 @@ import parse from "remark-parse";
 import remark2rehype, { all } from "remark-rehype";
 import rehype2remark, { all as toMdastAll } from "rehype-remark";
 import stringify from "remark-stringify";
-import raw from "rehype-raw";
+import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
 import { Element, Root as HastRoot } from "hast";
 import {
@@ -600,7 +600,7 @@ class MdProcessor implements Processor {
           definition: (h, node, parent) => node,
         },
       })
-      .use(raw, { passThrough: ["yaml", "definition"] })
+      .use(raw, { passThrough: ["yaml", "definition"] } as unknown as Options)
       .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);

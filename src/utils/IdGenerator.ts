@@ -17,21 +17,21 @@ export class IdGenerator {
         this.contentMap = {};
     }
 
-    public generateId(text: string | undefined = "", tags?: Tags) {
-        const key = text + tags ? JSON.stringify(tags) : "";
-        const uniqueId = this.contentMap[key] | 1;
-        const content: Content = {
-            context: this.context,
-            text,
-            tags,
-            index: uniqueId,
-        };
+    public generateId(text: string | undefined = "", tags?: Tags): string {
+        const key: string = text + (tags ? JSON.stringify(tags) : "");
 
         if (this.contentMap.hasOwnProperty(key)) {
             this.contentMap[key] += 1;
         } else {
             this.contentMap[key] = 1;
         }
+
+        const content: Content = {
+            context: this.context,
+            text,
+            tags,
+            index: this.contentMap[key],
+        };
 
         return sha256(JSON.stringify(content));
     }

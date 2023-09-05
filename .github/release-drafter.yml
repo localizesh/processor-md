@@ -37,11 +37,9 @@ autolabeler:
       - '/add/i'
 
 version-resolver:
-  major:
-    labels:
-      - 'breaking'
   minor:
     labels:
+      - 'breaking'
       - 'feature'
   patch:
     labels:

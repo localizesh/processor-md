@@ -63,7 +63,7 @@ export const replaceHtmlBeforeMdast = (
   markdownString: string
 ): { docWithHtmlPlaceholders: string; contentsAvoidMarkdown: any[] } => {
   const HTML_SIMPLE_TAG: RegExp =
-    /((<(aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|pre|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
+    /((<(aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
 
   const MD_HTML_PLACEHOLDER_: string = "MD_HTML_PLACEHOLDER_";
 

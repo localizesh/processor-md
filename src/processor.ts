@@ -29,7 +29,9 @@ import {
   linkHastToMdast,
   tableHastToMdast,
   divHastToMdast,
+  headerHastToMdast
 } from "./handlers/hast-to-mdast/handlers.js";
+import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
 import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
@@ -327,15 +329,33 @@ const keepMarkerPlugin: Attacher = (option: any) => {
           "table",
           "html",
           "thematicBreak",
+          "heading"
         ].includes(node.type),
       (node: any, parent) => {
-        let marker = doc.charAt(node.position?.start?.offset);
-        if (node.type === "strong") marker += marker;
-        if (node.type === "list") {
-          marker += doc.charAt(node.position?.start?.offset + 1).trim();
-          if (marker.length > 1) marker = marker[marker.length - 1];
+
+        let marker: string = doc.charAt(node.position?.start?.offset);
+        switch (node.type) {
+          case "strong": {
+            marker += marker;
+            break;
+          }
+          case "list": {
+            marker += doc.charAt(node.position?.start?.offset + 1).trim();
+            if (marker.length > 1) marker = marker[marker.length - 1];
+            break;
+          }
+          case "html": {
+            marker = "html";
+            break;
+          }
+          case "heading": {
+            if(marker !== "#") {
+              marker = doc.charAt(node.position?.end?.offset - 1).trim();
+            }
+            break;
+          }
         }
-        if (node.type === "html") marker = "html";
+
         node.marker = marker;
       }
     );
@@ -691,6 +711,8 @@ class MdProcessor implements Processor {
             return { type: "thematicBreak", properties: node.properties };
           },
           definition: (h, node, parent) => node,
+          h2: (h, node) => headerHastToMdast(h, node),
+          h1: (h, node) => headerHastToMdast(h, node),
         },
       })
       .runSync(hast) as MdastRoot;
@@ -851,6 +873,7 @@ class MdProcessor implements Processor {
             exit()
             return value
           },
+          heading: (node, _, state, info) => headingMdastToMd(node, state, info)
         },
       })
       .stringify(mdast) as string;

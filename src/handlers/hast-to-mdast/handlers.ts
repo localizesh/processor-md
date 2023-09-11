@@ -99,3 +99,14 @@ export const divHastToMdast = (h: any, node: any) => {
   };
   return element;
 };
+
+export const headerHastToMdast = (h: any, node: any) => {
+  const depth = Number(node.tagName.charAt(1)) || 1
+  let heading: any = {
+    properties: node.properties,
+    type: "heading",
+    children: toMdastAll(h, node),
+    depth
+  };
+  return heading;
+}

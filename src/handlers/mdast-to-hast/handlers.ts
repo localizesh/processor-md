@@ -15,5 +15,9 @@ export const segmentParentNodeToHast = (
     properties: segment?.tags || {},
     children: state.all(node),
   };
+  if("marker" in node) {
+    //@ts-ignore
+    resultHast.properties.marker = node.marker
+  }
   return resultHast;
 };

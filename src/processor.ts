@@ -226,10 +226,6 @@ function convertMdastNodeToText(node: any, mdast?: any) {
     }
   };
 
-  if (node.children.length === 1 && node.children[0].type === "inlineCode") {
-    return node;
-  }
-
   resultNodeText = node.children.map(nodeToString).join("");
 
   if (resultNodeText) {

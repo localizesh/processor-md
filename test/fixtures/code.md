@@ -131,3 +131,5 @@ Code block without header
 ~~~
 Code block
 ~~~
+
+`Simple inline code`

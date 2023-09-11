@@ -1,6 +1,6 @@
 # Markdown syntax
 
-Web**Fundamental** provides a wide variety of styled elements and CSS
+Web **Fundamental** provides a wide variety of styled elements and CSS
 classes to use in documentation. Although you may supplement these styles with
 custom CSS, you should only use custom CSS when strictly necessary. If you
 find that you need to create a new style that will apply to more than a
@@ -53,3 +53,9 @@ are styled like regular text, so readers won't be able to tell.
     #### Heading 4
     ##### Heading 5
     ###### Heading 6
+
+An h1 header
+============
+
+An h2 header _text_, [Link](https://placehold.it/350x150)
+-------------------

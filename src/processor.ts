@@ -35,7 +35,7 @@ import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
 import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
-import { replaceHtmlBeforeMdast } from "./utils/html.js";
+import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, replaceHtmlBeforeMdast} from "./utils/html.js";
 import { IdGenerator } from "./utils/IdGenerator.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
@@ -393,8 +393,14 @@ const prepareMdast: Attacher = (option: any) => {
             (placeholder: any) => node.value === placeholder.placeholder
           );
 
-          if (htmlPlaceholder) node.value = htmlPlaceholder.content;
+          if (htmlPlaceholder) {
+            node.value = htmlPlaceholder.content;
+            if (AVOID_HTML_TAGS.includes(htmlPlaceholder.tagName)) {
+              node.type = AVOID_HTML_TYPE;
+            }
+          }
         }
+
       }
     );
   };
@@ -405,8 +411,9 @@ const convertToHtmlType: Attacher = () => {
   const transformer: Transformer = (ast, _) => {
     visitParents(
       ast,
-      (node) => "properties" in node,
+      (node) => "properties" in node || node.type === AVOID_HTML_TYPE,
       (node: any, parent) => {
+
         if (node?.properties?.marker === "html") {
           let properties = { ...node.properties };
           delete properties.marker;
@@ -422,6 +429,7 @@ const convertToHtmlType: Attacher = () => {
           node.type = "text";
           node.value = value;
         }
+        if(node.type === AVOID_HTML_TYPE) node.type = "html";
       }
     );
   };
@@ -485,7 +493,7 @@ class MdProcessor implements Processor {
       .use(keepMarkerPlugin, { doc: docWithHtmlPlaceholders })
       .use(prepareMdast, { contentsAvoidMarkdown })
       .use(remark2rehype, {
-        passThrough: ["definition"],
+        passThrough: ["definition", AVOID_HTML_TYPE],
         allowDangerousHtml: true,
         handlers: {
           code: (h, node, parent) => {
@@ -616,7 +624,7 @@ class MdProcessor implements Processor {
           definition: (h, node, parent) => node,
         },
       })
-      .use(raw, { passThrough: ["yaml", "definition"] } as unknown as Options)
+      .use(raw, { passThrough: ["yaml", "definition", AVOID_HTML_TYPE] } as unknown as Options)
       .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);
@@ -636,6 +644,17 @@ class MdProcessor implements Processor {
       .use(rehype2remark, {
         newlines: true,
         handlers: {
+          html: (h, node, parent) => {
+            return {
+              type: "paragraph",
+              children: [
+                {
+                  type: "text",
+                  value: node.value
+                }
+              ]
+            }
+          },
           pre: (h, node, parent) => {
             const isPreCodeWrapper =
               node.children.length === 1 && node.children[0].tagName === "code";
@@ -911,7 +930,7 @@ class MdProcessor implements Processor {
         };
       }
 
-      if (node.type === "comment" || node.type === "definition") return node;
+      if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE) return node;
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

@@ -1,5 +1,7 @@
 Text
 
+<iframe title="Пример README.md" src="demos/example/" height="330"></iframe>
+
 ---
 
 >  First citation level
@@ -23,3 +25,19 @@ If there are differences, the official style guide takes precedence unless other
 
 [install]: https://www.rust-lang.org/install.html
 [notes]: https://github.com/rust-lang/rust/blob/master/RELEASES.md#version-1510-2021-03-25
+
+<html>
+
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+  </head>
+
+  <body>
+    <script>
+      const arr = [];
+    </script>
+  </body>
+
+</html>

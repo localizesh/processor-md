@@ -1,3 +1,6 @@
+export const AVOID_HTML_TYPE = "avoidHTML";
+export const AVOID_HTML_TAGS = ["iframe", "html"];
+
 const getTagArray = (str: string, tagName: string): string[] => {
   const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, "g");
   const strItem: string[] = [];
@@ -63,7 +66,7 @@ export const replaceHtmlBeforeMdast = (
   markdownString: string
 ): { docWithHtmlPlaceholders: string; contentsAvoidMarkdown: any[] } => {
   const HTML_SIMPLE_TAG: RegExp =
-    /((<(aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
+    /((<(html|aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
 
   const MD_HTML_PLACEHOLDER_: string = "MD_HTML_PLACEHOLDER_";
 
@@ -101,6 +104,7 @@ export const replaceHtmlBeforeMdast = (
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
         content: openTag + content + closedTag,
+        tagName
       });
 
       markdownStringCopy = markdownStringCopy.replace(content, placeholder);
@@ -110,6 +114,7 @@ export const replaceHtmlBeforeMdast = (
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
         content: openTag + tagContent + closedTag,
+        tagName
       });
 
       const isCodeBlockOnMarkDown = defineIsCodeBlock(

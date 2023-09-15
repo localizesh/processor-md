@@ -359,6 +359,30 @@ const keepMarkerPlugin: Attacher = (option: any) => {
   return transformer;
 };
 
+const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
+  const {doc} = option;
+  const transformer: Transformer = (ast, _) => {
+    visitParents(
+      ast,
+      (node: any) => node.type === "element" && !node?.properties?.marker && node.position,
+      (node: any, parent) => {
+
+        const {start, end} = node.position;
+        const text: string = doc.slice(start.offset, end.offset);
+        let isHtml: boolean = text.indexOf(`<${node.tagName}`) !== -1;
+
+        if (isHtml) {
+          node.properties = {
+            ...node.properties,
+            marker: "html"
+          }
+        }
+      }
+    );
+  };
+  return transformer;
+};
+
 const prepareMdast: Attacher = (option: any) => {
   const { contentsAvoidMarkdown } = option;
 
@@ -426,7 +450,7 @@ const convertToHtmlType: Attacher = () => {
             { ...node, properties },
             { allowDangerousCharacters: true, allowDangerousHtml: true }
           );
-          node.type = "text";
+          node.type = "html";
           node.value = value;
         }
         if(node.type === AVOID_HTML_TYPE) node.type = "html";
@@ -496,6 +520,19 @@ class MdProcessor implements Processor {
         passThrough: ["definition", AVOID_HTML_TYPE],
         allowDangerousHtml: true,
         handlers: {
+          html: (state, node) => {
+              const result: any = {
+                ...node,
+                properties: {
+                  ...node.properties,
+                  marker: "html"
+                },
+                type: 'raw',
+                value: node.value
+              }
+              state.patch(node, result)
+              return state.applyData(node, result)
+          },
           code: (h, node, parent) => {
             const properties: any = {};
             if (node.lang) properties.lang = node.lang;
@@ -625,6 +662,7 @@ class MdProcessor implements Processor {
         },
       })
       .use(raw, { passThrough: ["yaml", "definition", AVOID_HTML_TYPE] } as unknown as Options)
+      .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
       .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);

@@ -103,7 +103,9 @@ export const replaceHtmlBeforeMdast = (
 
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
+        placeholderWithoutTags: placeholder,
         content: openTag + content + closedTag,
+        contentWithoutTags: content,
         tagName
       });
 
@@ -113,7 +115,9 @@ export const replaceHtmlBeforeMdast = (
 
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
+        placeholderWithoutTags: placeholder,
         content: openTag + tagContent + closedTag,
+        contentWithoutTags: tagContent,
         tagName
       });
 

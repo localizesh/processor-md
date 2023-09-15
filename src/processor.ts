@@ -389,7 +389,7 @@ const prepareMdast: Attacher = (option: any) => {
   const transformer: Transformer = (ast, _) => {
     visitParents(
       ast,
-      (node) => node.type !== "text",
+      (node) => ["link", "yaml", "text", "html"].includes(node.type),
       (node: any, parent) => {
         if (node.type === "link") {
           const isLinkUrlLAndLinkTextHasSameValue: boolean =
@@ -412,13 +412,15 @@ const prepareMdast: Attacher = (option: any) => {
           }
         }
 
-        if (contentsAvoidMarkdown.length && node.type !== "yaml") {
+        if (contentsAvoidMarkdown.length && node.type !== "yaml" && "value" in node) {
           const htmlPlaceholder = contentsAvoidMarkdown.find(
-            (placeholder: any) => node.value === placeholder.placeholder
+            (placeholder: any) => node.value === placeholder.placeholder || node.value === placeholder.placeholderWithoutTags
           );
 
           if (htmlPlaceholder) {
-            node.value = htmlPlaceholder.content;
+            node.value =
+              node.value.includes(`<${htmlPlaceholder.tagName}`) ? htmlPlaceholder.content : htmlPlaceholder.contentWithoutTags;
+
             if (AVOID_HTML_TAGS.includes(htmlPlaceholder.tagName)) {
               node.type = AVOID_HTML_TYPE;
             }

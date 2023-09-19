@@ -522,19 +522,6 @@ class MdProcessor implements Processor {
         passThrough: ["definition", AVOID_HTML_TYPE],
         allowDangerousHtml: true,
         handlers: {
-          html: (state, node) => {
-              const result: any = {
-                ...node,
-                properties: {
-                  ...node.properties,
-                  marker: "html"
-                },
-                type: 'raw',
-                value: node.value
-              }
-              state.patch(node, result)
-              return state.applyData(node, result)
-          },
           code: (h, node, parent) => {
             const properties: any = {};
             if (node.lang) properties.lang = node.lang;

@@ -19,6 +19,7 @@ export interface LayoutElement {
   tagName: string;
   tags?: Tags;
   children: LayoutNode[];
+  properties?: any
 }
 
 export interface LayoutSegment {

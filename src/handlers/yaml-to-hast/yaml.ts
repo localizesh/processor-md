@@ -25,7 +25,12 @@ const hastToString = (rootMdast: Element): string => {
       }, {});
     } else if (yamlSequenceTags.includes(mdast?.tagName)) {
       const children = mdast.children.map((value: Element) => {
-        return hastToStringRecursive(value);
+        const str: any = hastToStringRecursive(
+          value.tagName === "li" ?
+            ("children" in value.children[0] ? value.children[0].children[0] : value.children[0]) :
+            value
+        );
+        return str;
       });
       result = mdast?.tagName === "li" ? children[0] : children;
     } else if (mdast?.tagName === "tr") {
@@ -95,7 +100,14 @@ const stringToHast = (rootString: string) => {
           return {
             type: "element",
             tagName: "li",
-            children: [stringToMdastRecursive(value)],
+            children: [
+              {
+                type: "element",
+                tagName: "p",
+                children:  [stringToMdastRecursive(value)],
+                properties: {},
+              }
+            ],
             properties: {},
           };
         }),

@@ -948,7 +948,10 @@ class MdProcessor implements Processor {
         }
       }
 
-      if (node.type === "element" || node.type === "yaml") {
+      const isNoConvertNode: boolean =
+        "properties" in node && node.properties?.type === "yamlKey";
+
+      if ((node.type === "element" || node.type === "yaml") && !isNoConvertNode) {
         const children = node.children.map(convertNode);
 
         return {
@@ -957,7 +960,7 @@ class MdProcessor implements Processor {
         };
       }
 
-      if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE) return node;
+      if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE || isNoConvertNode) return node;
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

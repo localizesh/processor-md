@@ -1,5 +1,5 @@
-export const AVOID_HTML_TYPE = "avoidHTML";
-export const AVOID_HTML_TAGS = ["iframe", "html"];
+export const AVOID_HTML_TYPE: string = "html!";
+export const AVOID_HTML_TAGS: string[] = ["iframe", "html"];
 
 const getTagArray = (str: string, tagName: string): string[] => {
   const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, "g");
@@ -103,7 +103,9 @@ export const replaceHtmlBeforeMdast = (
 
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
+        placeholderWithoutTags: placeholder,
         content: openTag + content + closedTag,
+        contentWithoutTags: content,
         tagName
       });
 
@@ -113,7 +115,9 @@ export const replaceHtmlBeforeMdast = (
 
       contentsAvoidMarkdown.push({
         placeholder: openTag + placeholder + closedTag,
+        placeholderWithoutTags: placeholder,
         content: openTag + tagContent + closedTag,
+        contentWithoutTags: tagContent,
         tagName
       });
 

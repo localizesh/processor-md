@@ -359,13 +359,37 @@ const keepMarkerPlugin: Attacher = (option: any) => {
   return transformer;
 };
 
+const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
+  const {doc} = option;
+  const transformer: Transformer = (ast, _) => {
+    visitParents(
+      ast,
+      (node: any) => node.type === "element" && !node?.properties?.marker && node.position,
+      (node: any, parent) => {
+
+        const {start, end} = node.position;
+        const text: string = doc.slice(start.offset, end.offset);
+        let isHtml: boolean = text.indexOf(`<${node.tagName}`) !== -1;
+
+        if (isHtml) {
+          node.properties = {
+            ...node.properties,
+            marker: "html"
+          }
+        }
+      }
+    );
+  };
+  return transformer;
+};
+
 const prepareMdast: Attacher = (option: any) => {
   const { contentsAvoidMarkdown } = option;
 
   const transformer: Transformer = (ast, _) => {
     visitParents(
       ast,
-      (node) => node.type !== "text",
+      (node) => ["link", "yaml", "text", "html"].includes(node.type),
       (node: any, parent) => {
         if (node.type === "link") {
           const isLinkUrlLAndLinkTextHasSameValue: boolean =
@@ -388,13 +412,15 @@ const prepareMdast: Attacher = (option: any) => {
           }
         }
 
-        if (contentsAvoidMarkdown.length && node.type !== "yaml") {
+        if (contentsAvoidMarkdown.length && node.type !== "yaml" && "value" in node) {
           const htmlPlaceholder = contentsAvoidMarkdown.find(
-            (placeholder: any) => node.value === placeholder.placeholder
+            (placeholder: any) => node.value === placeholder.placeholder || node.value === placeholder.placeholderWithoutTags
           );
 
           if (htmlPlaceholder) {
-            node.value = htmlPlaceholder.content;
+            node.value =
+              node.value.includes(`<${htmlPlaceholder.tagName}`) ? htmlPlaceholder.content : htmlPlaceholder.contentWithoutTags;
+
             if (AVOID_HTML_TAGS.includes(htmlPlaceholder.tagName)) {
               node.type = AVOID_HTML_TYPE;
             }
@@ -426,7 +452,7 @@ const convertToHtmlType: Attacher = () => {
             { ...node, properties },
             { allowDangerousCharacters: true, allowDangerousHtml: true }
           );
-          node.type = "text";
+          node.type = "html";
           node.value = value;
         }
         if(node.type === AVOID_HTML_TYPE) node.type = "html";
@@ -625,6 +651,7 @@ class MdProcessor implements Processor {
         },
       })
       .use(raw, { passThrough: ["yaml", "definition", AVOID_HTML_TYPE] } as unknown as Options)
+      .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
       .runSync(mdast) as HastRoot;
 
     pastCodeBlockToHast(hast);

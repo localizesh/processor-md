@@ -20,6 +20,10 @@ If you don't have it already, you can [get `rustup`][install]
 from the appropriate page on our website, and check out the
 [detailed release notes for 1.51.0][notes] on GitHub.
 
+<aside>
+Text on aside tag
+</aside>
+
 Note: This document is meant to supplement the [Google's developer documentation style guide](/style/). 
 If there are differences, the official style guide takes precedence unless otherwise specified.
 

@@ -1,5 +1,5 @@
-export const AVOID_HTML_TYPE = "avoidHTML";
-export const AVOID_HTML_TAGS = ["iframe", "html"];
+export const AVOID_HTML_TYPE: string = "html!";
+export const AVOID_HTML_TAGS: string[] = ["iframe", "html"];
 
 const getTagArray = (str: string, tagName: string): string[] => {
   const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, "g");

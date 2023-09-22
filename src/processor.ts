@@ -389,7 +389,7 @@ const prepareMdast: Attacher = (option: any) => {
   const transformer: Transformer = (ast, _) => {
     visitParents(
       ast,
-      (node) => ["link", "yaml", "text", "html"].includes(node.type),
+      (node) => ["link", "yaml", "text", "html", "code"].includes(node.type),
       (node: any, parent) => {
         if (node.type === "link") {
           const isLinkUrlLAndLinkTextHasSameValue: boolean =

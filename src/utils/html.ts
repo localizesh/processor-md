@@ -148,6 +148,8 @@ export const replaceHtmlBeforeMdast = (
     const lineBreakLinux = "\r\n";
 
     return (
+      searchString.trim() === "```" ||
+      searchString.trim() === "~~~" ||
       searchString.includes(`${lineBreakLinux}${lineBreakLinux}${tab}`) ||
       searchString.includes(`${lineBreak}${lineBreak}${tab}`)
     );

@@ -51,6 +51,7 @@ const convertMdastTagToHast = (tag: string) => {
     emphasis: "em",
     image: "img",
     linkReference: "a",
+    delete: "del"
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;

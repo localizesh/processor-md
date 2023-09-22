@@ -1,5 +1,7 @@
 Text
 
+~~Strikethrough *text*~~
+
 <iframe title="Пример README.md" src="demos/example/" height="330"></iframe>
 
 ---

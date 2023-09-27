@@ -370,7 +370,8 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
 
         const {start, end} = node.position;
         const text: string = doc.slice(start.offset, end.offset);
-        let isHtml: boolean = text.indexOf(`<${node.tagName}`) !== -1;
+        const isHtml: boolean =
+          text.indexOf(`<${node.tagName}>`) !== -1 || text.indexOf(`<${node.tagName} `) !== -1;
 
         if (isHtml) {
           node.properties = {

@@ -21,11 +21,10 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       if (Object.keys(node.properties).length)
         tags = { ...tags, [nodeTagKey]: node.properties };
 
-      return node.tagName === IMAGE_TAG
-        ? `{${nodeTagKey} alt="${
-            node.properties.alt ? node.properties.alt : ""
-          }"}`
+      return node.tagName === (IMAGE_TAG && node.properties.alt)
+        ? `{${nodeTagKey} alt="${node.properties.alt}"}`
         : `{${nodeTagKey}}`;
+
     } else if (HAST_TYPES.some((el) => el === node.type)) {
       const isTagOnSourceDoc: boolean = !!node.position;
 

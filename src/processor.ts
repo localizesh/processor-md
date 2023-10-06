@@ -17,9 +17,9 @@ import {
   Processor,
   Segment,
   Context,
-  AvoidHtmlNode
+  AvoidHtmlNode,
+  IdGenerator
 } from "@localizeio/lib";
-import { IdGenerator } from  "@localizeio/lib/dist/generators.js";
 import { SegmentsMap } from "./types"
 import { MdastRoot } from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";

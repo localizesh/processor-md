@@ -16,8 +16,11 @@ import {
   LayoutNode,
   Processor,
   Segment,
-  SegmentsMap, Context,
-} from "./types";
+  Context,
+  AvoidHtmlNode
+} from "@localizeio/lib";
+import { IdGenerator } from  "@localizeio/lib/dist/generators.js";
+import { SegmentsMap } from "./types"
 import { MdastRoot } from "rehype-remark/lib";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
@@ -36,7 +39,6 @@ import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, replaceHtmlBeforeMdast} from "./utils/html.js";
-import { IdGenerator } from "./utils/IdGenerator.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -424,6 +426,7 @@ const prepareMdast: Attacher = (option: any) => {
               node.value.includes(`<${htmlPlaceholder.tagName}`) ? htmlPlaceholder.content : htmlPlaceholder.contentWithoutTags;
 
             if (AVOID_HTML_TAGS.includes(htmlPlaceholder.tagName)) {
+              const curentNode: AvoidHtmlNode = node;
               node.type = AVOID_HTML_TYPE;
             }
           }

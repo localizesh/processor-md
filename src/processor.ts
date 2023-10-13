@@ -953,6 +953,36 @@ class MdProcessor implements Processor {
         }
       }
 
+      const isHtmlNode: boolean = node.type === "element" && node.properties?.marker === "html";
+      if (isHtmlNode && "tagName" in node) {
+        if (node.tagName === "a" || node.tagName === "img") {
+          const {text, tags} = hastToString(node, {rootContext: {index: 0}});
+
+          return {
+            type: "element",
+            tagName: "p",
+            properties: {},
+            children: [
+              {type: "segment", id: addSegment({...node, value: text, tags})}
+            ],
+          }
+        }
+
+        const childHasImgOrLink: boolean = node.children.findIndex((child: LayoutNode): boolean =>
+          'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
+
+        if (childHasImgOrLink) {
+          const {text, tags} = hastToString(node);
+
+          return {
+            ...node,
+            children: [
+              {type: "segment", id: addSegment({...node, value: text, tags: tags})}
+            ],
+          }
+        }
+      }
+
       const isNoConvertNode: boolean =
         "properties" in node && node.properties?.type === "yamlKey";
 

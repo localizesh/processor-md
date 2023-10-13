@@ -43,8 +43,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       result.push(
         `${tagStringOpen}${(node.children || [])
           .map((childNode: any) => toStringRecursive(childNode, context))
-          .join("")
-          .trim()} ${tagStringClose}`
+          .join("")}${tagStringClose}`
       );
     } else if (TEXT_TYPES.some((el) => el === node.type)) {
       result.push(node.value);
@@ -52,5 +51,5 @@ export const hastToString = (rootNode: any, options: any = {}) => {
     return result.join("");
   };
 
-  return { text: toStringRecursive(rootNode, rootContext).trim(), tags };
+  return { text: toStringRecursive(rootNode, rootContext), tags };
 };

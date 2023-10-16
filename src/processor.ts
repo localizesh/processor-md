@@ -353,6 +353,10 @@ const keepMarkerPlugin: Attacher = (option: any) => {
             }
             break;
           }
+          case "thematicBreak": {
+              marker = doc.substring(node.position?.start?.offset, node.position?.end?.offset);
+            break;
+          }
         }
 
         node.marker = marker;
@@ -897,12 +901,9 @@ class MdProcessor implements Processor {
             exit();
             return value;
           },
-          thematicBreak: (node, parent, state) => {
-            let marker = node?.properties.marker;
-            if (marker !== "-" && marker !== "_") marker = "*";
-            const value = marker.repeat(3);
-
-            return state.options.ruleSpaces ? value.slice(0, -1) : value;
+          thematicBreak: (node) => {
+            let marker: string = node?.properties.marker;
+            return marker ? marker : "---";
           },
           blockquote: (node, _, state, info) => {
             function map(line: string, _: number, blank: boolean): string {

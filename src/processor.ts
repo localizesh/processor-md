@@ -401,7 +401,9 @@ const prepareMdast: Attacher = (option: any) => {
             node.type === "link" &&
             node.marker === "h";
 
-          if (isLinkUrlLAndLinkTextHasSameValue) {
+          const isEmail: boolean = (node.title === null && node.url.includes("mailto:"));
+
+          if (isLinkUrlLAndLinkTextHasSameValue || isEmail) {
             node.type = "text";
             node.value = node?.children[0].value;
             delete node.children;

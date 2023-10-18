@@ -1,6 +1,14 @@
 export const AVOID_HTML_TYPE: string = "html!";
 export const AVOID_HTML_TAGS: string[] = ["iframe", "html"];
 
+export interface PlaceholderContent {
+  content: string;
+  contentWithoutTags: string;
+  placeholder: string;
+  placeholderWithoutTags: string;
+  tagName: string;
+}
+
 const getTagArray = (str: string, tagName: string): string[] => {
   const regexp: RegExp = new RegExp(`(?:<)(\/?${tagName}.*?)(?=>)`, "g");
   const strItem: string[] = [];
@@ -64,13 +72,13 @@ const fetchNestedTags = (str: string, tagName: string): string | null => {
 
 export const replaceHtmlBeforeMdast = (
   markdownString: string
-): { docWithHtmlPlaceholders: string; contentsAvoidMarkdown: any[] } => {
+): { docWithHtmlPlaceholders: string; contentsAvoidMarkdown: PlaceholderContent[] } => {
   const HTML_SIMPLE_TAG: RegExp =
-    /((<(html|aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
+    /((<(pre|code|html|aside|blockquote|body|dl|details|div|figure|footer|head|header|iframe|main|noscript|object|ol|q|ruby|samp|script|section|style|table|template|ul).*?>)((?:.|\n|\r\n)*?))(<\/\3>)/g;
 
   const MD_HTML_PLACEHOLDER_: string = "MD_HTML_PLACEHOLDER_";
 
-  const contentsAvoidMarkdown: any[] = [];
+  const contentsAvoidMarkdown: PlaceholderContent[] = [];
   let markdownStringCopy: string = markdownString;
 
   let matchedElem;

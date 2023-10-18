@@ -38,7 +38,7 @@ import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
 import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
-import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, replaceHtmlBeforeMdast} from "./utils/html.js";
+import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
 
 const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
 const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
@@ -391,13 +391,14 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
   return transformer;
 };
 
-const prepareMdast: Attacher = (option: any) => {
+const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderContent[]}) => {
   const { contentsAvoidMarkdown } = option;
+  const contentsAvoidMarkdownCopy: PlaceholderContent[] = [...contentsAvoidMarkdown];
 
   const transformer: Transformer = (ast, _) => {
     visitParents(
       ast,
-      (node) => ["link", "yaml", "text", "html", "code"].includes(node.type),
+      (node) => ["link", "yaml", "text", "html", "code", "inlineCode"].includes(node.type),
       (node: any, parent) => {
         if (node.type === "link") {
           const isLinkUrlLAndLinkTextHasSameValue: boolean =
@@ -416,25 +417,32 @@ const prepareMdast: Attacher = (option: any) => {
 
         if(node.type === "yaml"){
           if (contentsAvoidMarkdown.length) {
-            contentsAvoidMarkdown.forEach((placeholder: any)=> {
+            contentsAvoidMarkdown.forEach((placeholder: PlaceholderContent)=> {
               node.value = node.value.replace(placeholder.placeholder, placeholder.content)
             })
           }
         }
 
-        if (contentsAvoidMarkdown.length && node.type !== "yaml" && "value" in node) {
-          const htmlPlaceholder = contentsAvoidMarkdown.find(
-            (placeholder: any) => node.value === placeholder.placeholder || node.value === placeholder.placeholderWithoutTags
-          );
+        if (contentsAvoidMarkdownCopy.length && node.type !== "yaml" && "value" in node) {
 
-          if (htmlPlaceholder) {
-            node.value =
-              node.value.includes(`<${htmlPlaceholder.tagName}`) ? htmlPlaceholder.content : htmlPlaceholder.contentWithoutTags;
+          const htmlPlaceholders: PlaceholderContent[] = contentsAvoidMarkdownCopy.reduceRight(
+            (acc: PlaceholderContent[], curr: PlaceholderContent, i: number, arr: PlaceholderContent[]) => {
+              if (node.value.includes(curr.placeholderWithoutTags)) {
+                acc.push(curr);
+                arr.splice(i, 1);
+              }
+              return acc;
+            }, []);
 
-            if (AVOID_HTML_TAGS.includes(htmlPlaceholder.tagName)) {
-              const curentNode: AvoidHtmlNode = node;
-              node.type = AVOID_HTML_TYPE;
-            }
+          if (htmlPlaceholders.length) {
+            htmlPlaceholders.forEach((placeholder: PlaceholderContent) => {
+              node.value = node.value.replace(placeholder.placeholderWithoutTags, placeholder.contentWithoutTags);
+
+              if (AVOID_HTML_TAGS.includes(placeholder.tagName)) {
+                node.type = AVOID_HTML_TYPE;
+              }
+            })
+
           }
         }
 
@@ -513,12 +521,14 @@ const extractNumberFromGLCodeBlockString = (inputString: string): string => {
 
 class MdProcessor implements Processor {
   public parse(doc: string, ctx?: Context): Document {
+    /*
     let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
 
     modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
+     */
 
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
-      replaceHtmlBeforeMdast(modifiedDoc);
+      replaceHtmlBeforeMdast(doc);
 
     const mdast = unified()
       .use(parse)
@@ -665,7 +675,7 @@ class MdProcessor implements Processor {
       .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
       .runSync(mdast) as HastRoot;
 
-    pastCodeBlockToHast(hast);
+    // pastCodeBlockToHast(hast);
 
     const { layout, segments } = this.hastToSegments(hast, ctx);
 

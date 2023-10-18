@@ -40,8 +40,6 @@ import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
 
-const regexCodeBlock: RegExp = /<code\b(?![^`]*`)[^>]*>(.*?)<\/code>/gs;
-const regexPreBlock: RegExp = /<pre\b(?![^`]*`)[^>]*>(.*?)<\/pre>/gs;
 const replacedStrings: string[] = [];
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
 let replacementIndex = 0;
@@ -481,51 +479,8 @@ const convertToHtmlType: Attacher = () => {
   return transformer;
 };
 
-const cutBlockFromDoc = (inputString: string, regex: RegExp) => {
-  const replacementTemplate: string = "GL_CODE_BLOCK_";
-
-  return inputString.replace(regex, (match, group) => {
-    const content = group.trim();
-    replacedStrings.push(content);
-    const replacement: string = match.replace(
-      content,
-      `${replacementTemplate}${replacementIndex}`
-    );
-    replacementIndex++;
-    return replacement;
-  });
-};
-
-const pastCodeBlockToHast = (hast: HastRoot) => {
-  visitParents(hast, { type: "text" }, (child: any) => {
-    child.value = extractNumberFromGLCodeBlockString(child.value);
-  });
-};
-
-const extractNumberFromGLCodeBlockString = (inputString: string): string => {
-  const regex = /GL_CODE_BLOCK_(\d+)/;
-  let match;
-
-  while ((match = regex.exec(inputString)) !== null) {
-    if (match && match.length > 1) {
-      const numberString = parseInt(match[1], 10);
-      inputString = inputString.replace(
-        match[0],
-        replacedStrings[numberString]
-      );
-    }
-  }
-
-  return inputString;
-};
-
 class MdProcessor implements Processor {
   public parse(doc: string, ctx?: Context): Document {
-    /*
-    let modifiedDoc: string = cutBlockFromDoc(doc, regexPreBlock);
-
-    modifiedDoc = cutBlockFromDoc(modifiedDoc, regexCodeBlock);
-     */
 
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
       replaceHtmlBeforeMdast(doc);
@@ -674,8 +629,6 @@ class MdProcessor implements Processor {
       .use(raw, { passThrough: ["yaml", "definition", AVOID_HTML_TYPE] } as unknown as Options)
       .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
       .runSync(mdast) as HastRoot;
-
-    // pastCodeBlockToHast(hast);
 
     const { layout, segments } = this.hastToSegments(hast, ctx);
 

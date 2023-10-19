@@ -78,9 +78,9 @@ export const tableHastToMdast = (h: any, node: any) => {
     const res: string = toHtml(node);
     return { type: "html", value: res };
   }
-  //@ts-ignore
-  const align: String[] | undefined = node.properties?.align
-    ? node.properties?.align?.split(" ")
+
+  const align: Array<string | null> | undefined = node.properties?.align
+    ? JSON.parse(node.properties?.align)
     : undefined;
 
   const element: any = {

@@ -5,9 +5,14 @@
 
 
 | header1 | header2 | header2 |
-| ---------- | ---------- | ---------- |
+| :--------- | :--------: | ---------: |
 | Text      | Text      | Text      |
 | Text      | Text      | Text      |
+
+| First Header  | Second Header |
+| ------------- | ------------: |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
 
 ---
 

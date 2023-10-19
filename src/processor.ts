@@ -606,7 +606,7 @@ class MdProcessor implements Processor {
             };
           },
           table: (h, node, parent) => {
-            const properties: any = { align: node.align };
+            const properties: any = { align: JSON.stringify(node.align) };
             if (node.marker) properties.marker = node.marker;
             return {
               type: "element",

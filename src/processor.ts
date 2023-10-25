@@ -635,7 +635,7 @@ class MdProcessor implements Processor {
     this.passThroughTypes = this.passThroughTypes.concat(passThroughTypes);
   }
 
-  protected markdownToMdastParse(doc: string): MdastRoot {
+  protected parseMarkdownToMdast(doc: string): MdastRoot {
     return unified()
         .use(parse)
         .use(remarkFrontmatter, ["yaml"])
@@ -643,7 +643,7 @@ class MdProcessor implements Processor {
         .parse(doc);
   }
 
-  protected mdastToMarkdownParse(mdast: MdastRoot): string {
+  protected parseMdastToMarkdown(mdast: MdastRoot): string {
     return unified()
         .use(gfm)
         .use(stringify, {
@@ -656,7 +656,7 @@ class MdProcessor implements Processor {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
-    const mdast = this.markdownToMdastParse(docWithHtmlPlaceholders)
+    const mdast = this.parseMarkdownToMdast(docWithHtmlPlaceholders)
 
     const hast = unified()
         .use(keepMarkerPlugin, { doc: docWithHtmlPlaceholders })
@@ -903,7 +903,7 @@ class MdProcessor implements Processor {
         })
         .runSync(hast) as MdastRoot;
 
-    return this.mdastToMarkdownParse(mdast)
+    return this.parseMdastToMarkdown(mdast)
   }
 
   protected getElementFromConvertHastToSegment(node: LayoutNode, isNoConvertNode: boolean, convertNode: any): any {

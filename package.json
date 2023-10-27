@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc --project tsconfig.build.json",
+    "build": "npm run postinstall && npm run clean && tsc --project tsconfig.build.json",
     "test": "mocha",
     "postinstall": "patch-package"
   },

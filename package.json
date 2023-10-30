@@ -5,11 +5,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "/dist"
+    "/dist",
+    "/patches"
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run postinstall && npm run clean && tsc --project tsconfig.build.json",
+    "build": "npm run clean && tsc --project tsconfig.build.json",
     "test": "mocha",
     "postinstall": "patch-package"
   },

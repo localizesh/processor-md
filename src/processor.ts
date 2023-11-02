@@ -441,23 +441,39 @@ const convertToHtmlType: Attacher = () => {
         (node) => "properties" in node || node.type === AVOID_HTML_TYPE,
         (node: any, parent) => {
 
-          if (node?.properties?.marker === "html") {
-            let properties = { ...node.properties };
-            delete properties.marker;
-            visitParents(
-                node,
-                (child) => "properties" in child && node !== child,
-                (child: any, _) => delete child?.properties?.marker
-            );
-            const value: string = toHtml(
-                { ...node, properties },
-                { allowDangerousCharacters: true, allowDangerousHtml: true }
-            );
-            node.type = "html";
-            node.value = value;
-          }
-          if(node.type === AVOID_HTML_TYPE) node.type = "html";
+        if (node?.properties?.marker === "html") {
+          let properties = { ...node.properties };
+          delete properties.marker;
+          visitParents(
+            node,
+            (child) => "properties" in child && node !== child,
+            (child: any, _) => {
+              if (child.tagName === "li") {
+                const newChildren: LayoutNode[] = [];
+
+                child.children.map((textChild: LayoutNode) => {
+                  if ("tagName" in textChild && textChild.tagName === "p") {
+                    newChildren.push(...textChild.children);
+                  } else {
+                    newChildren.push(textChild);
+                  }
+                })
+
+                child.children = [...newChildren];
+              }
+
+              delete child?.properties?.marker
+            }
+          );
+          const value: string = toHtml(
+            { ...node, properties },
+            { allowDangerousCharacters: true, allowDangerousHtml: true }
+          );
+          node.type = "html";
+          node.value = value;
         }
+        if(node.type === AVOID_HTML_TYPE) node.type = "html";
+      }
     );
   };
   return transformer;
@@ -906,9 +922,15 @@ class MdProcessor implements Processor {
     return this.parseMdastToMarkdown(mdast)
   }
 
-  protected getElementFromConvertHastToSegment(node: LayoutNode, isNoConvertNode: boolean, convertNode: any): any {
+  protected getElementFromConvertHastToSegment(node: LayoutNode, isNoConvertNode: boolean, isNodeList: boolean, convertNode: any): any {
     if ((node.type === "element" || node.type === "yaml") && !isNoConvertNode) {
-      const children = node.children.map(convertNode);
+      const children: LayoutNode[] = node.children.map((child: LayoutNode) => {
+        if (node.properties?.marker === "html" && isNodeList) {
+          "properties" in child && (child.properties.marker = "html");
+        }
+
+        return convertNode(child);
+      });
 
       return {
         ...node,
@@ -937,6 +959,10 @@ class MdProcessor implements Processor {
       return segment.id;
     };
 
+    const checkIsList = (node: LayoutNode): boolean => {
+      return "tagName" in node && (node.tagName === ListTypes.ul || node.tagName === ListTypes.ol);
+    };
+
     const convertNode = (node: LayoutNode): LayoutNode => {
       if (node.type === "text") {
         if (node.value?.trim() === "") {
@@ -948,6 +974,44 @@ class MdProcessor implements Processor {
 
       const isHtmlNode: boolean = node.type === "element" && node.properties?.marker === "html";
       if (isHtmlNode && "tagName" in node) {
+        if (node.tagName === "li") {
+          const listChild: LayoutNode | undefined = node.children.find(checkIsList);
+
+          if (listChild) {
+            const childrenLength: number = node.children.length - 1;
+
+            node.children = node.children.filter((child: LayoutNode, index: number) => {
+              if (!checkIsList(child) && index !== childrenLength) {
+                return child;
+              }
+            });
+          }
+
+          const {text, tags} = hastToString(node);
+
+          const resultNode: LayoutNode = {
+            ...node,
+            children: [
+              {
+                type: "element",
+                tagName: "p",
+                properties: {},
+                children: [
+                  {type: "segment", id: addSegment({...node, value: text, tags})}
+                ],
+              }
+            ]
+          };
+
+          if (listChild) {
+            "properties" in listChild && (listChild.properties.marker = "html");
+
+            resultNode.children.push(convertNode(listChild));
+          }
+
+          return resultNode;
+        }
+
         if (node.tagName === "a" || node.tagName === "img") {
           const {text, tags} = hastToString(node, {rootContext: {index: 0}});
 
@@ -979,7 +1043,9 @@ class MdProcessor implements Processor {
       const isNoConvertNode: boolean =
           "properties" in node && node.properties?.type === "yamlKey";
 
-      const nodeElement = this.getElementFromConvertHastToSegment(node, isNoConvertNode, convertNode)
+      const isNodeList: boolean = checkIsList(node);
+
+      const nodeElement = this.getElementFromConvertHastToSegment(node, isNoConvertNode, isNodeList, convertNode)
 
       if(nodeElement) return nodeElement
 

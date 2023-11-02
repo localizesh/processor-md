@@ -247,7 +247,11 @@ function parseStringToStructure(segment: Segment): Element[] {
 
       const closingIndex: number = text.indexOf("}", i + 1);
       const tagWithIndex: string = text.substring(i + 1, closingIndex);
-      const tag: string = tagWithIndex.replace(/\d/g, "");
+
+      const headingTagRegExp: RegExp = /^(\/)?h(\d)*$/;
+      const tag: string = headingTagRegExp.test(tagWithIndex)
+        ? tagWithIndex.replace(/\d(?!.*\d)/, "")
+        : tagWithIndex.replace(/\d/g, "");
 
       if (tag.startsWith("/")) {
         const closingTag: string = tag.substring(1);

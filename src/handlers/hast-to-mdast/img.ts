@@ -8,7 +8,7 @@ export default function img(node: any, parent: any): any {
     return { type: "html", value: res };
   }
 
-  if (parent?.type === "element") {
+  if (parent?.type === "element" || parent?.type === "html") {
     const { src = "", title = null, alt = "" } = node.properties || {};
 
     return {

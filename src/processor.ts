@@ -40,7 +40,7 @@ import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
-import {Parent} from "mdast";
+import {Paragraph, Parent} from "mdast";
 
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
 
@@ -446,8 +446,6 @@ const convertToHtmlType: Attacher = () => {
         (node: any, parent) => {
 
         if (node?.properties?.marker === "html") {
-          let properties = { ...node.properties };
-          delete properties.marker;
           visitParents(
             node,
             (child) => "properties" in child && node !== child,
@@ -462,19 +460,12 @@ const convertToHtmlType: Attacher = () => {
                     newChildren.push(textChild);
                   }
                 })
-
+                delete child?.properties?.marker
                 child.children = [...newChildren];
               }
-
-              delete child?.properties?.marker
             }
           );
-          const value: string = toHtml(
-            { ...node, properties },
-            { allowDangerousCharacters: true, allowDangerousHtml: true }
-          );
-          node.type = "html";
-          node.value = value;
+          if(node.tagName !== "li") node.type = "html";
         }
         if(node.type === AVOID_HTML_TYPE) node.type = "html";
       }
@@ -835,15 +826,49 @@ class MdProcessor implements Processor {
           newlines: true,
           handlers: {
             html: (h, node) => {
-              return {
+              node?.properties?.marker === "html" && delete node?.properties?.marker;
+
+              const isAvoidHtmlType = node.value;
+              if(isAvoidHtmlType) {
+                return {
+                  type: "paragraph",
+                  children: [{type: "text", value: node.value}],
+                }
+              }
+              const isTableOrList = node.tagName === "table" || node.tagName === "ul" || node.tagName === "ol";
+
+              if(isTableOrList) {
+                visitParents(node, (node) => node.type === "html", (child, _) => {
+                  child.type = "element";
+                })
+              }
+              const outerHtml: string = toHtml(
+                {
+                  ...node, type: "element",
+                  children: isTableOrList ? node.children : []
+                },
+                { allowDangerousCharacters: true, allowDangerousHtml: true }
+              );
+
+              if (isTableOrList) {
+                return {
+                  type: "text",
+                  value: outerHtml,
+                };
+              }
+
+              const index: number = outerHtml.indexOf("></");
+              const innerNodes = toMdastAll(h, node);
+              const htmlLevel: any = {
+                properties: node.properties,
                 type: "paragraph",
                 children: [
-                  {
-                    type: "text",
-                    value: node.value
-                  }
-                ]
-              }
+                  {type: "text", value: outerHtml.slice(0, index + 1)},
+                  ...innerNodes,
+                  {type: "text", value: outerHtml.slice(index + 1)}
+                ],
+              };
+              return htmlLevel;
             },
             pre: (h, node) => {
               const isPreCodeWrapper =

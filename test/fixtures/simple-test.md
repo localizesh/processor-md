@@ -33,18 +33,44 @@ If there are differences, the official style guide takes precedence unless other
 [notes]: https://github.com/rust-lang/rust/blob/master/RELEASES.md#version-1510-2021-03-25
 
 <html>
-
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
   </head>
-
   <body>
     <script>
       const arr = [];
     </script>
   </body>
-
 </html>
+
+<div style="align-items: center">
+  <div>
+    <p>text <em>value</em></p>
+    <p>text</p>
+  </div>
+</div>
+
+<div><p><b>text1 *text2* _text2_ `text3`</b></p></div>
+
+<div>
+  <p>
+    <b>text1 *text2* _text2_ `text3`</b>
+  </p>
+</div>
+
+text
+
+<ul style="list-style: none">
+  <li>Text <em>value</em></li>
+  <li>Text</li>
+  <li>Text
+    <ul>
+      <li>Text <em>value</em></li>
+      <li>Text</li>
+      <li>Text</li>
+    </ul>
+  </li>
+</ul>
 

@@ -828,18 +828,19 @@ class MdProcessor implements Processor {
             html: (h, node) => {
               node?.properties?.marker === "html" && delete node?.properties?.marker;
 
-              const isAvoidHtmlType = node.value;
+              const isAvoidHtmlType: string | undefined = node.value;
               if(isAvoidHtmlType) {
                 return {
                   type: "paragraph",
                   children: [{type: "text", value: node.value}],
                 }
               }
-              const isTableOrList = node.tagName === "table" || node.tagName === "ul" || node.tagName === "ol";
+              const isTableOrList: boolean = ["table", "ul", "ol", "div"].includes(node.tagName);
 
               if(isTableOrList) {
                 visitParents(node, (node) => node.type === "html", (child, _) => {
                   child.type = "element";
+                  delete child?.properties?.marker;
                 })
               }
               const outerHtml: string = toHtml(
@@ -852,8 +853,8 @@ class MdProcessor implements Processor {
 
               if (isTableOrList) {
                 return {
-                  type: "text",
-                  value: outerHtml,
+                    type: "paragraph",
+                    children: [{type: "text", value: outerHtml}],
                 };
               }
 

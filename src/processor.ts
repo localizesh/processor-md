@@ -709,6 +709,12 @@ class MdProcessor implements Processor {
             },
             tableRow: (state, node, parent) => {
               const cells: any[] = [];
+              const isTableHeadOnGfmTable: boolean =
+                parent ? parent.children.reduce((acc, tableRow, index) => {
+                  if (index === 0 && tableRow === node) acc = true;
+                  return acc;
+                }, false) : false;
+
               visitParents(node, { type: "tableCell" }, (child) => {
                 const segment: any = convertMdastNodeToText(child);
                 let cell: any;
@@ -721,13 +727,13 @@ class MdProcessor implements Processor {
                   cell.properties = segment?.tags || {};
                   cell.children = segment ? [segment] : [];
                 }
-
+                if(isTableHeadOnGfmTable) cell.tagName = "th";
                 cells.push(cell);
               });
 
               return {
                 type: "element",
-                tagName: "tr",
+                tagName: isTableHeadOnGfmTable ? "thead" : "tr",
                 properties: {},
                 children: cells,
               };

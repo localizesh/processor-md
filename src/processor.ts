@@ -1100,10 +1100,19 @@ class MdProcessor implements Processor {
           delete node.properties.tags;
         }
 
-        if (node.tagName === "td" || node.tagName === "th") {
+        const childrenContentLenght: number =
+          node.children.reduce((acc: number, child: any) => {
+            if (child.type === "element" || child?.value?.trim()) acc += 1;
+            return acc;
+          }, 0);
+
+        const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutNode): boolean =>
+          'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
+
+        if (node.tagName === "td" || node.tagName === "th" || hasNodeImgOrLink) {
           if (
-              node.children.length > 1 &&
-              node.children.some((el: any) => el.type === "element")
+            (childrenContentLenght > 1 && node.children.some((el: any) => el.type === "element")) ||
+            hasNodeImgOrLink
           ) {
             const { text, tags } = hastToString(node);
 

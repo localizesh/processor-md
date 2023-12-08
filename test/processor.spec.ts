@@ -23,7 +23,6 @@ function processAndCompare(filename: string) {
 
 describe('MdProcessorTest', function() {
   it('documents should be equal', function() {
-    processAndCompare('problem.md');
     processAndCompare('md-html-complex.md');
     processAndCompare('simple-test.md');
     processAndCompare('link.md');

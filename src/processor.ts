@@ -423,8 +423,8 @@ const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderConte
             if (htmlPlaceholders.length) {
               htmlPlaceholders.forEach((placeholder: PlaceholderContent) => {
                 node.value = node.value.replace(placeholder.placeholderWithoutTags, placeholder.contentWithoutTags);
-
-                if (AVOID_HTML_TAGS.includes(placeholder.tagName)) {
+                const isNotCodeNode = !["code", "inlineCode"].includes(node.type);
+                if (AVOID_HTML_TAGS.includes(placeholder.tagName) && isNotCodeNode) {
                   node.type = AVOID_HTML_TYPE;
                 }
               })

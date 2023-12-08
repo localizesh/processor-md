@@ -145,10 +145,11 @@ export const replaceHtmlBeforeMdast = (
     markdownStringCopy: string,
     fullTag: string
   ): boolean {
-    const startIndex: number = markdownStringCopy.indexOf(fullTag);
-    let searchString: string = markdownStringCopy.slice(
-      startIndex - 8,
-      startIndex
+    const endIndex: number = markdownStringCopy.indexOf(fullTag);
+    const startIndex: number = endIndex < 8 ? 0 : endIndex - 8;
+    const searchString: string = markdownStringCopy.slice(
+      startIndex,
+      endIndex
     );
 
     const tab = " ".repeat(4);
@@ -156,8 +157,6 @@ export const replaceHtmlBeforeMdast = (
     const lineBreakLinux = "\r\n";
 
     return (
-      searchString.trim() === "```" ||
-      searchString.trim() === "~~~" ||
       searchString.includes(`${lineBreakLinux}${lineBreakLinux}${tab}`) ||
       searchString.includes(`${lineBreak}${lineBreak}${tab}`)
     );

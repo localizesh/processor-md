@@ -39,3 +39,11 @@ _Text, than nothing. <strong>Text after</strong>_
         </tr>
       </tbody>
 </table>
+
+`<iframe title="Зачёркивание" src="demos/strikethrough/" height="150"></iframe>`
+
+```
+<aside title="Зачёркивание" src="demos/strikethrough/" height="150"></aside>
+<iframe title="Зачёркивание" src="demos/strikethrough/" height="150"></iframe>
+
+```

@@ -474,10 +474,16 @@ const convertToHtmlType: Attacher = () => {
 };
 
 class MdProcessor implements Processor {
+  private context: Context;
+  private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
   private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE]
-  private yamlProcessor = new YamlProcessor("test");
+
+  constructor(context: Context) {
+    this.context = context;
+    this.yamlProcessor = new YamlProcessor(context)
+  }
 
   protected getMdastToStringHandlers(): Record<string, Function> {
     let listBulletLastUsed: string[] = []
@@ -663,7 +669,7 @@ class MdProcessor implements Processor {
         .stringify(mdast) as string;
   }
 
-  public parse(doc: string, ctx?: Context): Document {
+  public parse(doc: string): Document {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
@@ -816,14 +822,14 @@ class MdProcessor implements Processor {
         .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
         .runSync(mdast) as HastRoot;
 
-    const { layout, segments } = this.hastToSegments(hast, ctx);
+    const { layout, segments } = this.hastToSegments(hast);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document, ctx?: Context): string {
+  public stringify(data: Document): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -978,8 +984,8 @@ class MdProcessor implements Processor {
     return null
   }
 
-  private hastToSegments(tree: HastRoot, ctx: Context): Document {
-    const idGenerator = new IdGenerator(ctx);
+  private hastToSegments(tree: HastRoot): Document {
+    const idGenerator = new IdGenerator(this.context);
     let segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
@@ -1085,8 +1091,8 @@ class MdProcessor implements Processor {
 
       if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE) return node;
 
-      if(node.type === "yaml" && node.value){
-        const yamlDoc = this.yamlProcessor.parse(node.value )
+      if(node.type === "yaml" && node.value) {
+        const yamlDoc = this.yamlProcessor.parse(node.value)
 
         segments = segments.concat(yamlDoc.segments)
 

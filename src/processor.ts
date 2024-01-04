@@ -17,7 +17,6 @@ import {
   Processor,
   Segment,
   Context,
-  AvoidHtmlNode,
   IdGenerator
 } from "@localizeio/lib";
 import { SegmentsMap } from "./types"
@@ -25,7 +24,6 @@ import { MdastRoot } from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
-import yaml from "./handlers/yaml-to-hast/yaml.js";
 import cheerio from "cheerio";
 import {
   listToMdast,
@@ -39,8 +37,9 @@ import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
 import { toHtml } from "hast-util-to-html";
 import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
-import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
-import {Paragraph, Parent} from "mdast";
+import { AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast } from "./utils/html.js";
+import { Parent } from "mdast";
+import YamlProcessor from "@localizeio/yaml";
 
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
 
@@ -478,6 +477,7 @@ class MdProcessor implements Processor {
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
   private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE]
+  private yamlProcessor = new YamlProcessor("test");
 
   protected getMdastToStringHandlers(): Record<string, Function> {
     let listBulletLastUsed: string[] = []
@@ -738,7 +738,7 @@ class MdProcessor implements Processor {
                 children: cells,
               };
             },
-            yaml: (state, node) => yaml.stringToHast(node.value),
+            yaml: (state, node) => node,
             footnoteReference: (state, node) => {
               return { type: "text", value: `[^${node.label}]` };
             },
@@ -911,14 +911,15 @@ class MdProcessor implements Processor {
             },
             img: (h, node, parent) => img(node, parent),
             yaml: (h, node) => {
-              const result = yaml.hastToString(node);
+              const yamlStr = this.yamlProcessor.stringify(data)
+
               return {
                 type: "paragraph",
                 position: undefined,
                 children: [
                   {
                     type: "text",
-                    value: result,
+                    value: `---\n${yamlStr}---`,
                   },
                 ],
               };
@@ -958,8 +959,8 @@ class MdProcessor implements Processor {
     return this.parseMdastToMarkdown(mdast)
   }
 
-  protected getElementFromConvertHastToSegment(node: LayoutNode, isNoConvertNode: boolean, isNodeList: boolean, convertNode: any): any {
-    if ((node.type === "element" || node.type === "yaml") && !isNoConvertNode) {
+  protected getElementFromConvertHastToSegment(node: LayoutNode, isNodeList: boolean, convertNode: any): any {
+    if (node.type === "element") {
       const children: LayoutNode[] = node.children.map((child: LayoutNode) => {
         if (node.properties?.marker === "html" && isNodeList) {
           "properties" in child && (child.properties.marker = "html");
@@ -979,7 +980,7 @@ class MdProcessor implements Processor {
 
   private hastToSegments(tree: HastRoot, ctx: Context): Document {
     const idGenerator = new IdGenerator(ctx);
-    const segments: Segment[] = [];
+    let segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
     const addSegment = (node: LayoutElement): string => {
@@ -1076,16 +1077,21 @@ class MdProcessor implements Processor {
         }
       }
 
-      const isNoConvertNode: boolean =
-          "properties" in node && node.properties?.type === "yamlKey";
-
       const isNodeList: boolean = checkIsList(node);
 
-      const nodeElement = this.getElementFromConvertHastToSegment(node, isNoConvertNode, isNodeList, convertNode)
+      const nodeElement = this.getElementFromConvertHastToSegment(node, isNodeList, convertNode)
 
       if(nodeElement) return nodeElement
 
-      if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE || isNoConvertNode) return node;
+      if (node.type === "comment" || node.type === "definition" || node.type === AVOID_HTML_TYPE) return node;
+
+      if(node.type === "yaml" && node.value){
+        const yamlDoc = this.yamlProcessor.parse(node.value )
+
+        segments = segments.concat(yamlDoc.segments)
+
+        return yamlDoc.layout.children[0]
+      }
 
       throw new Error(`Unsupported node type: ${node.type}`);
     };

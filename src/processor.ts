@@ -479,6 +479,12 @@ class MdProcessor implements Processor {
   private hastToMdastHandlers: Record<string, Function> = {};
   private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE]
 
+  private context: Context;
+
+  constructor(context: Context) {
+    this.context = context;
+  }
+
   protected getMdastToStringHandlers(): Record<string, Function> {
     let listBulletLastUsed: string[] = []
 
@@ -663,7 +669,7 @@ class MdProcessor implements Processor {
         .stringify(mdast) as string;
   }
 
-  public parse(doc: string, ctx?: Context): Document {
+  public parse(doc: string): Document {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
@@ -816,14 +822,14 @@ class MdProcessor implements Processor {
         .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
         .runSync(mdast) as HastRoot;
 
-    const { layout, segments } = this.hastToSegments(hast, ctx);
+    const { layout, segments } = this.hastToSegments(hast, this.context);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document, ctx?: Context): string {
+  public stringify(data: Document): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()

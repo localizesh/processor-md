@@ -1,3 +1,21 @@
+<details>
+    <summary>Explain Equation (Click to Expand)</summary>
+</details>
+
+<summary>Explain Equation (Click to Expand)</summary>
+
+<summary>
+    <details>Explain Equation (Click to Expand)</details>
+</summary>
+
+<details>
+    Explain Equation (Click to Expand)
+</details>
+
+<details>Explain Equation (Click to Expand)</details>
+
+We remember the Hadamard performs the following transformations on one qubit:
+
 Text <sub>than, _other and some [Link](https://placehold.it/350x150) tag_</sub> text 
 
 Text <sub>than, _other and some <strong>into </strong> tag_</sub> text

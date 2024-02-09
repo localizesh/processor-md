@@ -353,6 +353,7 @@ const keepMarkerPlugin: Attacher = (option: any) => {
 
 const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
   const {doc} = option;
+  const allowHtmlTags = ["summary"]
   const transformer: Transformer = (ast, _) => {
     visitParents(
         ast,
@@ -362,7 +363,7 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
           const {start, end} = node.position;
           const text: string = doc.slice(start.offset, end.offset);
           const isHtml: boolean =
-              text.indexOf(`<${node.tagName}>`) !== -1 || text.indexOf(`<${node.tagName} `) !== -1;
+              text.indexOf(`<${node.tagName}>`) !== -1 || text.indexOf(`<${node.tagName} `) !== -1 || allowHtmlTags.includes(node.tagName);
 
           if (isHtml) {
             node.properties = {

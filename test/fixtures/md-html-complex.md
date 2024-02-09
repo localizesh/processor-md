@@ -14,6 +14,14 @@
 
 <details>Explain Equation (Click to Expand)</details>
 
+<details>
+    <summary>Explain Equation (Click to Expand)</summary>
+
+We remember the Hadamard performs the following transformations on one qubit.
+
+You will hopefully now see how we arrive at the equation above.
+</details>
+
 We remember the Hadamard performs the following transformations on one qubit:
 
 Text <sub>than, _other and some [Link](https://placehold.it/350x150) tag_</sub> text 

@@ -46,8 +46,8 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "@localizeio/lib": "^0.2.0",
-    "@localizeio/yaml": "^0.1.1"
+    "@localizeio/lib": "^0.3.0",
+    "@localizeio/yaml": "^0.1.2"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

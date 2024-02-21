@@ -217,7 +217,7 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       value: resultNodeText,
       tags:
           Object.keys(tags).length > 0
-              ? { tags: JSON.stringify(tags) }
+              ? {tags: JSON.stringify(tags, (key, value) => typeof value === "bigint" ? value.toString() : value)}
               : {},
     };
   }

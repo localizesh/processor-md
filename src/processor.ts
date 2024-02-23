@@ -479,7 +479,8 @@ class MdProcessor implements Processor {
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
-  private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE]
+  private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE];
+  protected mdast: any = {};
 
   constructor(context: Context) {
     this.context = context;
@@ -641,6 +642,12 @@ class MdProcessor implements Processor {
     }
   }
 
+  protected mdParagraphHandler(state: any, node: any, mdast: MdastRoot) {
+    const segment: any = convertMdastNodeToText(node, mdast);
+    const tagName: string = node.depth ? "h" + node.depth : "p";
+    return segmentParentNodeToHast(state, node, segment, tagName);
+  }
+
   protected addMdastToHastHandler(handlers: Record<string, Function>) {
     this.mdastToHastHandlers = { ...this.mdastToHastHandlers, ...handlers };
   }
@@ -674,7 +681,8 @@ class MdProcessor implements Processor {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
-    const mdast = this.parseMarkdownToMdast(docWithHtmlPlaceholders)
+    const mdast = this.parseMarkdownToMdast(docWithHtmlPlaceholders);
+    this.mdast = mdast;
 
     const hast = unified()
         .use(keepMarkerPlugin, { doc: docWithHtmlPlaceholders })
@@ -710,9 +718,7 @@ class MdProcessor implements Processor {
               };
             },
             heading: (state, node) => {
-              const segment: any = convertMdastNodeToText(node);
-              const tagName: string = "h" + node.depth;
-              return segmentParentNodeToHast(state, node, segment, tagName);
+              return this.mdParagraphHandler(state, node, mdast);
             },
             tableRow: (state, node, parent) => {
               const cells: any[] = [];

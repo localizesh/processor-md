@@ -9,7 +9,7 @@
     "/patches"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rimraf -rf dist",
     "build": "npm run clean && tsc --project tsconfig.build.json",
     "test": "mocha",
     "postinstall": "patch-package-ignore-missing --ignore-missing"

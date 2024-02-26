@@ -660,12 +660,13 @@ class MdProcessor implements Processor {
     this.passThroughTypes = this.passThroughTypes.concat(passThroughTypes);
   }
 
-  protected parseMarkdownToMdast(doc: string): MdastRoot {
-    return unified()
-        .use(parse)
-        .use(remarkFrontmatter, ["yaml"])
-        .use(gfm)
-        .parse(doc);
+  protected parseMarkdownToMdast(doc: string): { mdast: MdastRoot, newDoc: string } {
+    const mdast: MdastRoot = unified()
+      .use(parse)
+      .use(remarkFrontmatter, ["yaml"])
+      .use(gfm)
+      .parse(doc);
+    return { mdast: mdast, newDoc: doc };
   }
 
   protected parseMdastToMarkdown(mdast: MdastRoot): string {
@@ -681,21 +682,18 @@ class MdProcessor implements Processor {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
-    const mdast = this.parseMarkdownToMdast(docWithHtmlPlaceholders);
+    const { mdast, newDoc } = this.parseMarkdownToMdast(docWithHtmlPlaceholders);
     this.mdast = mdast;
 
     const hast = unified()
-        .use(keepMarkerPlugin, { doc: docWithHtmlPlaceholders })
+        .use(keepMarkerPlugin, { doc: newDoc })
         .use(prepareMdast, { contentsAvoidMarkdown })
         .use(remark2rehype, {
           passThrough: ["definition", AVOID_HTML_TYPE],
           allowDangerousHtml: true,
           handlers: {
             paragraph: (state, node) => {
-              const segment: any = convertMdastNodeToText(node, mdast);
-              const tagName: string = "p";
-              return segmentParentNodeToHast(state, node, segment, tagName);
-
+              return this.mdParagraphHandler(state, node, mdast);
             },
             code: (state, node) => {
               const properties: any = {};

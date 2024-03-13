@@ -1072,20 +1072,6 @@ class MdProcessor implements Processor {
             ],
           }
         }
-
-        const childHasImgOrLink: boolean = node.children.findIndex((child: LayoutNode): boolean =>
-            'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
-
-        if (childHasImgOrLink) {
-          const {text, tags} = hastToString(node);
-
-          return {
-            ...node,
-            children: [
-              {type: "segment", id: addSegment({...node, value: text, tags: tags})}
-            ],
-          }
-        }
       }
 
       const isNodeList: boolean = checkIsList(node);

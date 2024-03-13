@@ -46,6 +46,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
           .join("")}${tagStringClose}`
       );
     } else if (TEXT_TYPES.some((el) => el === node.type)) {
+      node.tags && (tags = { ...tags, ...node.tags });
       result.push(node.value);
     }
     return result.join("");

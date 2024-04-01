@@ -475,16 +475,14 @@ const convertToHtmlType: Attacher = () => {
 };
 
 class MdProcessor implements Processor {
-  private context: Context;
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
   private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE];
   protected mdast: any = {};
 
-  constructor(context: Context) {
-    this.context = context;
-    this.yamlProcessor = new YamlProcessor(context)
+  constructor() {
+    this.yamlProcessor = new YamlProcessor("context")
   }
 
   protected getMdastToStringHandlers(): Record<string, Function> {
@@ -678,7 +676,7 @@ class MdProcessor implements Processor {
         .stringify(mdast) as string;
   }
 
-  public parse(doc: string): Document {
+  public parse(doc: string, ctx?: Context): Document {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
@@ -827,14 +825,14 @@ class MdProcessor implements Processor {
         .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
         .runSync(mdast) as HastRoot;
 
-    const { layout, segments } = this.hastToSegments(hast);
+    const { layout, segments } = this.hastToSegments(hast,ctx);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document): string {
+  public stringify(data: Document, ctx?: Context): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -989,8 +987,8 @@ class MdProcessor implements Processor {
     return null
   }
 
-  private hastToSegments(tree: HastRoot): Document {
-    const idGenerator = new IdGenerator(this.context);
+  private hastToSegments(tree: HastRoot, ctx: Context): Document {
+    const idGenerator = new IdGenerator(ctx);
     let segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 

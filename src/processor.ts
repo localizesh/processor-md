@@ -1,44 +1,44 @@
-import { visitParents } from "unist-util-visit-parents";
-import { unified, Transformer, Attacher } from "unified";
+import {visitParents} from "unist-util-visit-parents";
+import {Attacher, Transformer, unified} from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype, { all } from "remark-rehype";
-import rehype2remark, { all as toMdastAll } from "rehype-remark";
+import remark2rehype, {all} from "remark-rehype";
+import rehype2remark, {all as toMdastAll} from "rehype-remark";
 import stringify from "remark-stringify";
 import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
-import { Element, Root as HastRoot } from "hast";
+import {Element, Root as HastRoot} from "hast";
 import {
-  Tags,
+  Context,
   Document,
+  IdGenerator,
   Layout,
   LayoutElement,
   LayoutNode,
   Processor,
   Segment,
-  Context,
-  IdGenerator
+  Tags
 } from "@localizeio/lib";
-import { SegmentsMap } from "./types"
-import { MdastRoot } from "rehype-remark/lib";
+import {SegmentsMap} from "./types"
+import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
-import { removePosition } from "unist-util-remove-position";
+import {removePosition} from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
 import cheerio from "cheerio";
 import {
+  divHastToMdast,
+  headerHastToMdast,
+  linkHastToMdast,
   listToMdast,
   ListTypes,
-  linkHastToMdast,
-  tableHastToMdast,
-  divHastToMdast,
-  headerHastToMdast
+  tableHastToMdast
 } from "./handlers/hast-to-mdast/handlers.js";
 import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
-import { toHtml } from "hast-util-to-html";
-import { segmentParentNodeToHast } from "./handlers/mdast-to-hast/handlers.js";
-import { hastToString } from "./utils/hast.js";
-import { AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast } from "./utils/html.js";
-import { Parent } from "mdast";
+import {toHtml} from "hast-util-to-html";
+import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
+import {hastToString} from "./utils/hast.js";
+import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
+import {Parent} from "mdast";
 import YamlProcessor from "@localizeio/yaml";
 
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
@@ -377,8 +377,22 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
   return transformer;
 };
 
-const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderContent[]}) => {
-  const { contentsAvoidMarkdown } = option;
+const replaceMdxPlaceholders = (text: string, placeholdersObj: any) => {
+  const placeholderRegex = /MDX_PLACEHOLDER_\d+/g;
+  const replacePlaceholder = (match: string): any => {
+    if (placeholdersObj.hasOwnProperty(match)) {
+      return placeholdersObj[match];
+    } else {
+      return match;
+    }
+  };
+
+  return text.replace(placeholderRegex, replacePlaceholder);
+};
+
+
+const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderContent[], placeholdersObj: {key: string, value: string}}) => {
+  const { contentsAvoidMarkdown, placeholdersObj } = option;
   const contentsAvoidMarkdownCopy: PlaceholderContent[] = [...contentsAvoidMarkdown];
 
   const transformer: Transformer = (ast, _) => {
@@ -432,6 +446,10 @@ const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderConte
             }
           }
 
+          if(node.type === "code") {
+            node.value = replaceMdxPlaceholders(node.value, placeholdersObj)
+          }
+
         }
     );
   };
@@ -474,17 +492,45 @@ const convertToHtmlType: Attacher = () => {
   return transformer;
 };
 
+const replaceMdxComponents = (str: string) => {
+  let counter = 0;
+  const reactComponentRegex = /<([A-Z][a-z0-9]+)\b[^>]*>[\s\S]*?(?:(?!<\1>).)*<\/\1>/gs;
+  const placeholdersObj: any = {};
+
+  const replaceRecursive = (text: string) => {
+    let replacedText = text;
+    let match;
+
+    while ((match = reactComponentRegex.exec(text)) !== null) {
+      counter++;
+      const [fullMatch, componentName] = match;
+      const startIndex = match.index;
+      const endIndex = startIndex + fullMatch.length;
+      const placeholder = `    MDX_PLACEHOLDER_${counter}`;
+      const replacedContent = fullMatch;
+      const before = replacedText.slice(0, startIndex);
+      const after = replacedText.slice(endIndex);
+      replacedText = before + placeholder + after;
+      placeholdersObj[placeholder.trim()] = replacedContent;
+      text = before + placeholder + after;
+      reactComponentRegex.lastIndex = startIndex;
+    }
+
+    return replacedText;
+  };
+
+  const docWithMDXPlaceholders = replaceRecursive(str);
+  return { docWithMDXPlaceholders, placeholdersObj };
+};
 class MdProcessor implements Processor {
-  private context: Context;
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
   private passThroughTypes: string[] = ["yaml", "definition", AVOID_HTML_TYPE];
   protected mdast: any = {};
 
-  constructor(context: Context) {
-    this.context = context;
-    this.yamlProcessor = new YamlProcessor(context)
+  constructor() {
+    this.yamlProcessor = new YamlProcessor("context")
   }
 
   protected getMdastToStringHandlers(): Record<string, Function> {
@@ -678,16 +724,18 @@ class MdProcessor implements Processor {
         .stringify(mdast) as string;
   }
 
-  public parse(doc: string): Document {
+  public parse(doc: string, ctx?: Context): Document {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
-    const { mdast, newDoc } = this.parseMarkdownToMdast(docWithHtmlPlaceholders);
+    const { docWithMDXPlaceholders, placeholdersObj } = replaceMdxComponents(docWithHtmlPlaceholders)
+
+    const { mdast, newDoc } = this.parseMarkdownToMdast(docWithMDXPlaceholders);
     this.mdast = mdast;
 
     const hast = unified()
         .use(keepMarkerPlugin, { doc: newDoc })
-        .use(prepareMdast, { contentsAvoidMarkdown })
+        .use(prepareMdast, { contentsAvoidMarkdown, placeholdersObj })
         .use(remark2rehype, {
           passThrough: ["definition", AVOID_HTML_TYPE],
           allowDangerousHtml: true,
@@ -827,14 +875,14 @@ class MdProcessor implements Processor {
         .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
         .runSync(mdast) as HastRoot;
 
-    const { layout, segments } = this.hastToSegments(hast);
+    const { layout, segments } = this.hastToSegments(hast,ctx);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document): string {
+  public stringify(data: Document, ctx?: Context): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -989,8 +1037,8 @@ class MdProcessor implements Processor {
     return null
   }
 
-  private hastToSegments(tree: HastRoot): Document {
-    const idGenerator = new IdGenerator(this.context);
+  private hastToSegments(tree: HastRoot, ctx: Context): Document {
+    const idGenerator = new IdGenerator(ctx);
     let segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 

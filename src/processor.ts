@@ -371,11 +371,30 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
               marker: "html"
             }
           }
+
+          if(node.tagName === "pre") {
+            const childrenContentLenght: number = getChildrenContentLenght(node);
+            if(childrenContentLenght > 1) {
+              const preBlock = toHtml(node.children);
+              node.children = [
+                {type: "text", value: "\n" + preBlock}
+              ];
+            }
+          }
+
         }
     );
   };
   return transformer;
 };
+
+const getChildrenContentLenght = (node: LayoutElement): number => {
+  const childrenContentLenght: number = node.children.reduce((acc: number, child: any) => {
+    if (child.type === "element" || child?.value?.trim()) acc += 1;
+    return acc;
+  }, 0);
+  return childrenContentLenght;
+}
 
 const replaceMdxPlaceholders = (text: string, placeholdersObj: any) => {
   const placeholderRegex = /MDX_PLACEHOLDER_\d+/g;
@@ -813,7 +832,7 @@ class MdProcessor implements Processor {
                 type: "element",
                 tagName: "p",
                 children,
-                properties: {},
+                properties: {marker: "footnoteDefinition"},
               };
             },
             listItem: (state, node) => {
@@ -1122,6 +1141,19 @@ class MdProcessor implements Processor {
         }
       }
 
+      const isFootnoteDefinition: boolean = node.type === "element" && node?.properties?.marker === "footnoteDefinition";
+      if(isFootnoteDefinition) {
+        const {text, tags} = hastToString(node, {rootContext: {index: isFootnoteDefinition ? 0 : -1}});
+        if ("children" in node) {
+          return {
+            ...node,
+            children: [
+              {type: "segment", id: addSegment({...node, value: text, tags})}
+            ]
+          }
+        }
+      }
+
       const isNodeList: boolean = checkIsList(node);
 
       const nodeElement = this.getElementFromConvertHastToSegment(node, isNodeList, convertNode)
@@ -1151,11 +1183,7 @@ class MdProcessor implements Processor {
           delete node.properties.tags;
         }
 
-        const childrenContentLenght: number =
-          node.children.reduce((acc: number, child: any) => {
-            if (child.type === "element" || child?.value?.trim()) acc += 1;
-            return acc;
-          }, 0);
+        const childrenContentLenght: number = getChildrenContentLenght(node);
 
         const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutNode): boolean =>
           'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;

@@ -38,6 +38,14 @@ Text <sub>than, _other and some <strong>into </strong> tag_</sub> text
 _Text, than nothing. <strong>Text after</strong>_
 </div>
 
+<div data-md-type=\"block_html\">
+  <pre>
+    echo sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+    <code>sudo apt-key add -</code>
+    <code>sudo apt-get update</code>
+  </pre>
+</div>
+
 <table class="responsive">
       <tbody>
         <tr>

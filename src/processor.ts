@@ -13,13 +13,12 @@ import {
   Document,
   IdGenerator,
   Layout,
-  LayoutElement,
   LayoutNode,
   Processor,
   Segment,
   Tags
-} from "@localizeio/lib";
-import {SegmentsMap} from "./types"
+} from "@localizesh/sdk";
+import {SegmentsMap, LayoutElementWithTags} from "./types"
 import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
 import {removePosition} from "unist-util-remove-position";
@@ -388,7 +387,7 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
   return transformer;
 };
 
-const getChildrenContentLenght = (node: LayoutElement): number => {
+const getChildrenContentLenght = (node: LayoutElementWithTags): number => {
   const childrenContentLenght: number = node.children.reduce((acc: number, child: any) => {
     if (child.type === "element" || child?.value?.trim()) acc += 1;
     return acc;
@@ -1057,13 +1056,13 @@ class MdProcessor implements Processor {
   }
 
   private hastToSegments(tree: HastRoot, ctx: Context): Document {
-    const idGenerator = new IdGenerator(ctx);
+    const idGenerator = new IdGenerator();
     let segments: Segment[] = [];
     const layout: Layout = { type: "root", children: [] };
 
-    const addSegment = (node: LayoutElement): string => {
+    const addSegment = (node: LayoutElementWithTags): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(node.value, tags)
+      const id: string = idGenerator.generateId(node.value as string, tags, ctx)
       const segment: Segment = {
         id,
         text: node.value || "",

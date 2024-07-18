@@ -7,18 +7,9 @@ import rehype2remark, {all as toMdastAll} from "rehype-remark";
 import stringify from "remark-stringify";
 import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
-import {Element, Root as HastRoot} from "hast";
-import {
-  Context,
-  Document,
-  IdGenerator,
-  Layout,
-  LayoutNode,
-  Processor,
-  Segment,
-  Tags
-} from "@localizesh/sdk";
-import {SegmentsMap, LayoutElementWithTags} from "./types"
+import {Element, ElementContent, Root as HastRoot} from "hast";
+import {Context, Document, IdGenerator, LayoutElement, LayoutRoot, Processor, Segment, Tags} from "@localizesh/sdk";
+import {SegmentsMap} from "./types"
 import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
 import {removePosition} from "unist-util-remove-position";
@@ -38,7 +29,7 @@ import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
 import {hastToString} from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
 import {Parent} from "mdast";
-import YamlProcessor from "@localizeio/yaml";
+import YamlProcessor from "@localizesh/processor-yaml";
 
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
 
@@ -372,8 +363,8 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
           }
 
           if(node.tagName === "pre") {
-            const childrenContentLenght: number = getChildrenContentLenght(node);
-            if(childrenContentLenght > 1) {
+            const childrenContentLength: number = getChildrenContentLength(node);
+            if(childrenContentLength > 1) {
               const preBlock = toHtml(node.children);
               node.children = [
                 {type: "text", value: "\n" + preBlock}
@@ -387,12 +378,11 @@ const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
   return transformer;
 };
 
-const getChildrenContentLenght = (node: LayoutElementWithTags): number => {
-  const childrenContentLenght: number = node.children.reduce((acc: number, child: any) => {
+const getChildrenContentLength = (node: LayoutElement): number => {
+  return node.children.reduce((acc: number, child: any) => {
     if (child.type === "element" || child?.value?.trim()) acc += 1;
     return acc;
   }, 0);
-  return childrenContentLenght;
 }
 
 const replaceMdxPlaceholders = (text: string, placeholdersObj: any) => {
@@ -487,9 +477,9 @@ const convertToHtmlType: Attacher = () => {
             (child) => "properties" in child && node !== child,
             (child: any, _) => {
               if (child.tagName === "li") {
-                const newChildren: LayoutNode[] = [];
+                const newChildren: ElementContent[] = [];
 
-                child.children.map((textChild: LayoutNode) => {
+                child.children.map((textChild: Element) => {
                   if ("tagName" in textChild && textChild.tagName === "p") {
                     newChildren.push(...textChild.children);
                   } else {
@@ -1036,9 +1026,9 @@ class MdProcessor implements Processor {
     return this.parseMdastToMarkdown(mdast)
   }
 
-  protected getElementFromConvertHastToSegment(node: LayoutNode, isNodeList: boolean, convertNode: any): any {
+  protected getElementFromConvertHastToSegment(node: LayoutElement, isNodeList: boolean, convertNode: any): any {
     if (node.type === "element") {
-      const children: LayoutNode[] = node.children.map((child: LayoutNode) => {
+      const children: LayoutElement[] = node.children.map((child: any) => {
         if (node.properties?.marker === "html" && isNodeList) {
           "properties" in child && (child.properties.marker = "html");
         }
@@ -1058,9 +1048,9 @@ class MdProcessor implements Processor {
   private hastToSegments(tree: HastRoot, ctx: Context): Document {
     const idGenerator = new IdGenerator();
     let segments: Segment[] = [];
-    const layout: Layout = { type: "root", children: [] };
+    const layout: LayoutRoot = { type: "root", children: [] };
 
-    const addSegment = (node: LayoutElementWithTags): string => {
+    const addSegment = (node: any): string => {
       const tags = node.tags;
       const id: string = idGenerator.generateId(node.value as string, tags, ctx)
       const segment: Segment = {
@@ -1073,11 +1063,11 @@ class MdProcessor implements Processor {
       return segment.id;
     };
 
-    const checkIsList = (node: LayoutNode): boolean => {
+    const checkIsList = (node: LayoutElement): boolean => {
       return "tagName" in node && (node.tagName === ListTypes.ul || node.tagName === ListTypes.ol);
     };
 
-    const convertNode = (node: LayoutNode): LayoutNode => {
+    const convertNode = (node: any) => {
       if (node.type === "text") {
         if (node.value?.trim() === "") {
           return node;
@@ -1089,12 +1079,12 @@ class MdProcessor implements Processor {
       const isHtmlNode: boolean = node.type === "element" && node.properties?.marker === "html";
       if (isHtmlNode && "tagName" in node) {
         if (node.tagName === "li") {
-          const listChild: LayoutNode | undefined = node.children.find(checkIsList);
+          const listChild: LayoutElement | undefined = node.children.find(checkIsList);
 
           if (listChild) {
             const childrenLength: number = node.children.length - 1;
 
-            node.children = node.children.filter((child: LayoutNode, index: number) => {
+            node.children = node.children.filter((child: LayoutElement, index: number) => {
               if (!checkIsList(child) && index !== childrenLength) {
                 return child;
               }
@@ -1103,7 +1093,7 @@ class MdProcessor implements Processor {
 
           const {text, tags} = hastToString(node);
 
-          const resultNode: LayoutNode = {
+          const resultNode: Element = {
             ...node,
             children: [
               {
@@ -1182,14 +1172,14 @@ class MdProcessor implements Processor {
           delete node.properties.tags;
         }
 
-        const childrenContentLenght: number = getChildrenContentLenght(node);
+        const childrenContentLength: number = getChildrenContentLength(node);
 
-        const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutNode): boolean =>
+        const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutElement): boolean =>
           'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
 
         if (node.tagName === "td" || node.tagName === "th" || hasNodeImgOrLink) {
           if (
-            (childrenContentLenght > 1 && node.children.some((el: any) => el.type === "element")) ||
+            (childrenContentLength > 1 && node.children.some((el: any) => el.type === "element")) ||
             hasNodeImgOrLink
           ) {
             const { text, tags } = hastToString(node);

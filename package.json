@@ -1,6 +1,6 @@
 {
-  "name": "@localizeio/md",
-  "repository": "localizeio/md",
+  "name": "@localizesh/processor-md",
+  "repository": "localizesh/processor-md",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "@localizesh/processor-yaml": "^0.1.1",
     "@localizesh/sdk": "^0.2.0",
     "cheerio": "^1.0.0-rc.12",
-    "hast-util-to-html": "^9.0.0",
+    "hast-util-to-html": "^9.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-remark": "^9.1.2",
     "rehype-sanitize": "^6.0.0",
@@ -33,17 +33,17 @@
     "unist-util-visit-parents": "^6.0.1"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.6",
-    "@types/hast": "^3.0.1",
-    "@types/js-yaml": "^4.0.6",
-    "@types/mdast": "^4.0.0",
-    "@types/mocha": "^10.0.1",
-    "@types/unist": "^3.0.0",
-    "chai": "^4.3.8",
-    "mocha": "^10.2.0",
+    "@types/chai": "^4.3.16",
+    "@types/hast": "^3.0.4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mdast": "^4.0.4",
+    "@types/mocha": "^10.0.7",
+    "@types/unist": "^3.0.2",
+    "chai": "^5.1.1",
+    "mocha": "^10.7.0",
     "patch-package-ignore-missing": "^7.0.1-2",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

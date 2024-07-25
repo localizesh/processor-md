@@ -15,8 +15,8 @@
     "postinstall": "patch-package-ignore-missing --ignore-missing"
   },
   "dependencies": {
-    "@localizeio/yaml": "^0.2.0",
-    "@localizesh/sdk": "^0.1.0",
+    "@localizesh/processor-yaml": "^0.1.1",
+    "@localizesh/sdk": "^0.2.0",
     "cheerio": "^1.0.0-rc.12",
     "hast-util-to-html": "^9.0.0",
     "rehype-raw": "^7.0.0",

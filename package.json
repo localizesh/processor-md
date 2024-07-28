@@ -15,8 +15,7 @@
     "postinstall": "patch-package-ignore-missing --ignore-missing"
   },
   "dependencies": {
-    "@localizesh/processor-yaml": "^0.1.1",
-    "@localizesh/sdk": "^0.2.0",
+    "@localizesh/processor-yaml": "^0.1.2",
     "cheerio": "^1.0.0-rc.12",
     "hast-util-to-html": "^9.0.1",
     "rehype-raw": "^7.0.0",
@@ -28,7 +27,7 @@
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
     "remark-stringify": "^10.0.2",
-    "unified": "10.1.2",
+    "unified": "^10.1.2",
     "unist-util-remove-position": "^5.0.0",
     "unist-util-visit-parents": "^6.0.1"
   },
@@ -44,5 +43,8 @@
     "patch-package-ignore-missing": "^7.0.1-2",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "@localizesh/sdk": "^0.2.0"
   }
 }

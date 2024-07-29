@@ -454,7 +454,7 @@ const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderConte
             }
           }
 
-          if(node.type === "code") {
+          if(node.type === "code" || node.type === "text") {
             node.value = replaceMdxPlaceholders(node.value, placeholdersObj)
           }
 

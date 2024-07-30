@@ -239,8 +239,8 @@ function parseStringToStructure(segment: Segment): Element[] {
 
       const headingTagRegExp: RegExp = /^(\/)?h(\d)*$/;
       const tag: string = headingTagRegExp.test(tagWithIndex)
-        ? tagWithIndex.replace(/\d(?!.*\d)/, "")
-        : tagWithIndex.replace(/\d/g, "");
+          ? tagWithIndex.replace(/\d(?!.*\d)/, "")
+          : tagWithIndex.replace(/\d/g, "");
 
       if (tag.startsWith("/")) {
         const closingTag: string = tag.substring(1);
@@ -454,7 +454,7 @@ const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderConte
             }
           }
 
-          if(node.type === "code" || node.type === "text") {
+          if(node.type === "code") {
             node.value = replaceMdxPlaceholders(node.value, placeholdersObj)
           }
 
@@ -471,30 +471,30 @@ const convertToHtmlType: Attacher = () => {
         (node) => "properties" in node || node.type === AVOID_HTML_TYPE,
         (node: any, parent) => {
 
-        if (node?.properties?.marker === "html") {
-          visitParents(
-            node,
-            (child) => "properties" in child && node !== child,
-            (child: any, _) => {
-              if (child.tagName === "li") {
-                const newChildren: ElementContent[] = [];
+          if (node?.properties?.marker === "html") {
+            visitParents(
+                node,
+                (child) => "properties" in child && node !== child,
+                (child: any, _) => {
+                  if (child.tagName === "li") {
+                    const newChildren: ElementContent[] = [];
 
-                child.children.map((textChild: Element) => {
-                  if ("tagName" in textChild && textChild.tagName === "p") {
-                    newChildren.push(...textChild.children);
-                  } else {
-                    newChildren.push(textChild);
+                    child.children.map((textChild: Element) => {
+                      if ("tagName" in textChild && textChild.tagName === "p") {
+                        newChildren.push(...textChild.children);
+                      } else {
+                        newChildren.push(textChild);
+                      }
+                    })
+                    delete child?.properties?.marker
+                    child.children = [...newChildren];
                   }
-                })
-                delete child?.properties?.marker
-                child.children = [...newChildren];
-              }
-            }
-          );
-          if(node.tagName !== "li") node.type = "html";
+                }
+            );
+            if(node.tagName !== "li") node.type = "html";
+          }
+          if(node.type === AVOID_HTML_TYPE) node.type = "html";
         }
-        if(node.type === AVOID_HTML_TYPE) node.type = "html";
-      }
     );
   };
   return transformer;
@@ -716,10 +716,10 @@ class MdProcessor implements Processor {
 
   protected parseMarkdownToMdast(doc: string): { mdast: MdastRoot, newDoc: string } {
     const mdast: MdastRoot = unified()
-      .use(parse)
-      .use(remarkFrontmatter, ["yaml"])
-      .use(gfm)
-      .parse(doc);
+        .use(parse)
+        .use(remarkFrontmatter, ["yaml"])
+        .use(gfm)
+        .parse(doc);
     return { mdast: mdast, newDoc: doc };
   }
 
@@ -777,10 +777,10 @@ class MdProcessor implements Processor {
             tableRow: (state, node, parent) => {
               const cells: any[] = [];
               const isTableHeadOnGfmTable: boolean =
-                parent ? parent.children.reduce((acc, tableRow, index) => {
-                  if (index === 0 && tableRow === node) acc = true;
-                  return acc;
-                }, false) : false;
+                  parent ? parent.children.reduce((acc, tableRow, index) => {
+                    if (index === 0 && tableRow === node) acc = true;
+                    return acc;
+                  }, false) : false;
 
               visitParents(node, { type: "tableCell" }, (child) => {
                 const segment: any = convertMdastNodeToText(child);
@@ -917,17 +917,17 @@ class MdProcessor implements Processor {
                 })
               }
               const outerHtml: string = toHtml(
-                {
-                  ...node, type: "element",
-                  children: isTableOrList ? node.children : []
-                },
-                { allowDangerousCharacters: true, allowDangerousHtml: true }
+                  {
+                    ...node, type: "element",
+                    children: isTableOrList ? node.children : []
+                  },
+                  { allowDangerousCharacters: true, allowDangerousHtml: true }
               );
 
               if (isTableOrList) {
                 return {
-                    type: "paragraph",
-                    children: [{type: "text", value: outerHtml}],
+                  type: "paragraph",
+                  children: [{type: "text", value: outerHtml}],
                 };
               }
 
@@ -1175,12 +1175,12 @@ class MdProcessor implements Processor {
         const childrenContentLength: number = getChildrenContentLength(node);
 
         const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutElement): boolean =>
-          'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
+            'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
 
         if (node.tagName === "td" || node.tagName === "th" || hasNodeImgOrLink) {
           if (
-            (childrenContentLength > 1 && node.children.some((el: any) => el.type === "element")) ||
-            hasNodeImgOrLink
+              (childrenContentLength > 1 && node.children.some((el: any) => el.type === "element")) ||
+              hasNodeImgOrLink
           ) {
             const { text, tags } = hastToString(node);
 

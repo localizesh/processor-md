@@ -538,7 +538,7 @@ class MdProcessor implements Processor {
   protected mdast: any = {};
 
   constructor() {
-    this.yamlProcessor = new YamlProcessor("context")
+    this.yamlProcessor = new YamlProcessor()
   }
 
   protected getMdastToStringHandlers(): Record<string, Function> {

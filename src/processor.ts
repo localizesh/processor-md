@@ -8,7 +8,17 @@ import stringify from "remark-stringify";
 import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
 import {Element, ElementContent, Root as HastRoot} from "hast";
-import {Context, Document, IdGenerator, LayoutElement, LayoutRoot, Processor, Segment, Tags} from "@localizesh/sdk";
+import {
+  Context,
+  Document,
+  IdGenerator,
+  LayoutElement,
+  LayoutRoot,
+  Processor,
+  Segment,
+  TagAttributes,
+  Tags
+} from "@localizesh/sdk";
 import {SegmentsMap} from "./types"
 import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
@@ -60,18 +70,21 @@ const convertMdastTagsToHast = (tags: any) => {
   for (const key in tags) {
     if (tags.hasOwnProperty(key)) {
       const innerObject = tags[key];
-      const transformedInnerObject: any = {};
+      const transformedInnerObject: TagAttributes = {};
       const tagsMap = key.includes("img")
           ? tagsMapImg
           : tagsMapLinks;
 
       for (const innerKey in innerObject) {
         if (innerObject.hasOwnProperty(innerKey)) {
+          const innerValue = innerObject[innerKey]
+          const tagAttributeValue: string =
+            typeof innerValue === "object" ? JSON.stringify(innerValue) : innerValue;
+
           if (tagsMap.hasOwnProperty(innerKey)) {
-            transformedInnerObject[tagsMap[innerKey]] =
-                innerObject[innerKey];
+            transformedInnerObject[tagsMap[innerKey]] = tagAttributeValue;
           } else {
-            transformedInnerObject[innerKey] = innerObject[innerKey];
+            transformedInnerObject[innerKey] = tagAttributeValue;
           }
         }
       }
@@ -257,6 +270,14 @@ function parseStringToStructure(segment: Segment): Element[] {
         }
       } else {
         if (segment.tags) {
+          const tagAttributes: TagAttributes = segment.tags[tagWithIndex];
+          for (const tagAttrKey in tagAttributes) {
+            const tagAttr = tagAttributes[tagAttrKey]
+            const isStringifiedObject: boolean = (tagAttr.charAt(0) === "{" && tagAttr.charAt(tagAttr.length - 1) === "}");
+            if(isStringifiedObject) {
+              tagAttributes[tagAttrKey] = JSON.parse(tagAttr)
+            }
+          }
           properties = segment.tags[tagWithIndex];
         }
 

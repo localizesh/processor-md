@@ -24,7 +24,7 @@ import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
 import {removePosition} from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
-import cheerio from "cheerio";
+import * as cheerio from 'cheerio';
 import {
   divHastToMdast,
   headerHastToMdast,

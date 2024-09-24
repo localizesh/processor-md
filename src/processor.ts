@@ -8,7 +8,17 @@ import stringify from "remark-stringify";
 import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
 import {Element, ElementContent, Root as HastRoot} from "hast";
-import {Context, Document, IdGenerator, LayoutElement, LayoutRoot, Processor, Segment, Tags} from "@localizesh/sdk";
+import {
+  Context,
+  Document,
+  IdGenerator,
+  LayoutElement,
+  LayoutRoot,
+  Processor,
+  Segment,
+  TagAttributes,
+  Tags
+} from "@localizesh/sdk";
 import {SegmentsMap} from "./types"
 import {MdastRoot} from "rehype-remark/lib";
 import type {Info, State} from 'mdast-util-to-markdown/lib/types.js'
@@ -60,18 +70,21 @@ const convertMdastTagsToHast = (tags: any) => {
   for (const key in tags) {
     if (tags.hasOwnProperty(key)) {
       const innerObject = tags[key];
-      const transformedInnerObject: any = {};
+      const transformedInnerObject: TagAttributes = {};
       const tagsMap = key.includes("img")
           ? tagsMapImg
           : tagsMapLinks;
 
       for (const innerKey in innerObject) {
         if (innerObject.hasOwnProperty(innerKey)) {
+          const innerValue = innerObject[innerKey]
+          const tagAttributeValue: string =
+            typeof innerValue === "object" ? JSON.stringify(innerValue) : innerValue;
+
           if (tagsMap.hasOwnProperty(innerKey)) {
-            transformedInnerObject[tagsMap[innerKey]] =
-                innerObject[innerKey];
+            transformedInnerObject[tagsMap[innerKey]] = tagAttributeValue;
           } else {
-            transformedInnerObject[innerKey] = innerObject[innerKey];
+            transformedInnerObject[innerKey] = tagAttributeValue;
           }
         }
       }
@@ -239,8 +252,8 @@ function parseStringToStructure(segment: Segment): Element[] {
 
       const headingTagRegExp: RegExp = /^(\/)?h(\d)*$/;
       const tag: string = headingTagRegExp.test(tagWithIndex)
-        ? tagWithIndex.replace(/\d(?!.*\d)/, "")
-        : tagWithIndex.replace(/\d/g, "");
+          ? tagWithIndex.replace(/\d(?!.*\d)/, "")
+          : tagWithIndex.replace(/\d/g, "");
 
       if (tag.startsWith("/")) {
         const closingTag: string = tag.substring(1);
@@ -257,6 +270,14 @@ function parseStringToStructure(segment: Segment): Element[] {
         }
       } else {
         if (segment.tags) {
+          const tagAttributes: TagAttributes = segment.tags[tagWithIndex];
+          for (const tagAttrKey in tagAttributes) {
+            const tagAttr = tagAttributes[tagAttrKey]
+            const isStringifiedObject: boolean = (tagAttr.charAt(0) === "{" && tagAttr.charAt(tagAttr.length - 1) === "}");
+            if(isStringifiedObject) {
+              tagAttributes[tagAttrKey] = JSON.parse(tagAttr)
+            }
+          }
           properties = segment.tags[tagWithIndex];
         }
 
@@ -471,30 +492,30 @@ const convertToHtmlType: Attacher = () => {
         (node) => "properties" in node || node.type === AVOID_HTML_TYPE,
         (node: any, parent) => {
 
-        if (node?.properties?.marker === "html") {
-          visitParents(
-            node,
-            (child) => "properties" in child && node !== child,
-            (child: any, _) => {
-              if (child.tagName === "li") {
-                const newChildren: ElementContent[] = [];
+          if (node?.properties?.marker === "html") {
+            visitParents(
+                node,
+                (child) => "properties" in child && node !== child,
+                (child: any, _) => {
+                  if (child.tagName === "li") {
+                    const newChildren: ElementContent[] = [];
 
-                child.children.map((textChild: Element) => {
-                  if ("tagName" in textChild && textChild.tagName === "p") {
-                    newChildren.push(...textChild.children);
-                  } else {
-                    newChildren.push(textChild);
+                    child.children.map((textChild: Element) => {
+                      if ("tagName" in textChild && textChild.tagName === "p") {
+                        newChildren.push(...textChild.children);
+                      } else {
+                        newChildren.push(textChild);
+                      }
+                    })
+                    delete child?.properties?.marker
+                    child.children = [...newChildren];
                   }
-                })
-                delete child?.properties?.marker
-                child.children = [...newChildren];
-              }
-            }
-          );
-          if(node.tagName !== "li") node.type = "html";
+                }
+            );
+            if(node.tagName !== "li") node.type = "html";
+          }
+          if(node.type === AVOID_HTML_TYPE) node.type = "html";
         }
-        if(node.type === AVOID_HTML_TYPE) node.type = "html";
-      }
     );
   };
   return transformer;
@@ -538,7 +559,7 @@ class MdProcessor implements Processor {
   protected mdast: any = {};
 
   constructor() {
-    this.yamlProcessor = new YamlProcessor("context")
+    this.yamlProcessor = new YamlProcessor()
   }
 
   protected getMdastToStringHandlers(): Record<string, Function> {
@@ -716,10 +737,10 @@ class MdProcessor implements Processor {
 
   protected parseMarkdownToMdast(doc: string): { mdast: MdastRoot, newDoc: string } {
     const mdast: MdastRoot = unified()
-      .use(parse)
-      .use(remarkFrontmatter, ["yaml"])
-      .use(gfm)
-      .parse(doc);
+        .use(parse)
+        .use(remarkFrontmatter, ["yaml"])
+        .use(gfm)
+        .parse(doc);
     return { mdast: mdast, newDoc: doc };
   }
 
@@ -777,10 +798,10 @@ class MdProcessor implements Processor {
             tableRow: (state, node, parent) => {
               const cells: any[] = [];
               const isTableHeadOnGfmTable: boolean =
-                parent ? parent.children.reduce((acc, tableRow, index) => {
-                  if (index === 0 && tableRow === node) acc = true;
-                  return acc;
-                }, false) : false;
+                  parent ? parent.children.reduce((acc, tableRow, index) => {
+                    if (index === 0 && tableRow === node) acc = true;
+                    return acc;
+                  }, false) : false;
 
               visitParents(node, { type: "tableCell" }, (child) => {
                 const segment: any = convertMdastNodeToText(child);
@@ -917,17 +938,17 @@ class MdProcessor implements Processor {
                 })
               }
               const outerHtml: string = toHtml(
-                {
-                  ...node, type: "element",
-                  children: isTableOrList ? node.children : []
-                },
-                { allowDangerousCharacters: true, allowDangerousHtml: true }
+                  {
+                    ...node, type: "element",
+                    children: isTableOrList ? node.children : []
+                  },
+                  { allowDangerousCharacters: true, allowDangerousHtml: true }
               );
 
               if (isTableOrList) {
                 return {
-                    type: "paragraph",
-                    children: [{type: "text", value: outerHtml}],
+                  type: "paragraph",
+                  children: [{type: "text", value: outerHtml}],
                 };
               }
 
@@ -1175,12 +1196,12 @@ class MdProcessor implements Processor {
         const childrenContentLength: number = getChildrenContentLength(node);
 
         const hasNodeImgOrLink: boolean = node.children.findIndex((child: LayoutElement): boolean =>
-          'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
+            'tagName' in child && (child?.tagName === "a" || child?.tagName === "img")) >= 0;
 
         if (node.tagName === "td" || node.tagName === "th" || hasNodeImgOrLink) {
           if (
-            (childrenContentLength > 1 && node.children.some((el: any) => el.type === "element")) ||
-            hasNodeImgOrLink
+              (childrenContentLength > 1 && node.children.some((el: any) => el.type === "element")) ||
+              hasNodeImgOrLink
           ) {
             const { text, tags } = hastToString(node);
 

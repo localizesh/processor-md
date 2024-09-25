@@ -1,4 +1,5 @@
 import {assert} from "chai";
+import eol from "eol";
 
 import fs from "fs";
 import path from "path";
@@ -22,8 +23,8 @@ function processAndCompare(filename: string) {
 }
 
 function processAndCompareWithExpected(filename: string) {
-  const inDoc = fs.readFileSync(path.join('test', 'fixtures', filename), { encoding: 'utf-8' });
-  const inDocExpected = fs.readFileSync(path.join('test', 'expected', filename), { encoding: 'utf-8' });
+  const inDoc = eol.lf(fs.readFileSync(path.join('test', 'fixtures', filename), { encoding: 'utf-8' }));
+  const inDocExpected = eol.lf(fs.readFileSync(path.join('test', 'expected', filename), { encoding: 'utf-8' }));
 
 
   const doc = processor.parse(inDoc);

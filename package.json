@@ -39,6 +39,7 @@
     "@types/mocha": "^10.0.8",
     "@types/unist": "^3.0.3",
     "chai": "^5.1.1",
+    "eol": "^0.10.0",
     "mocha": "^10.7.3",
     "patch-package-ignore-missing": "^7.0.1-2",
     "ts-node": "^10.9.2",

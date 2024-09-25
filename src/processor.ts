@@ -40,6 +40,7 @@ import {hastToString} from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
 import {Parent} from "mdast";
 import YamlProcessor from "@localizesh/processor-yaml";
+import {deleteFields as deletePositionFields} from "./utils/deleteFields.js";
 
 const allowedTagsRegex: RegExp = /^\/?[a-zA-Z]+\d+$/;
 
@@ -77,10 +78,13 @@ const convertMdastTagsToHast = (tags: any) => {
 
       for (const innerKey in innerObject) {
         if (innerObject.hasOwnProperty(innerKey)) {
-          const innerValue = innerObject[innerKey]
-          const tagAttributeValue: string =
-            typeof innerValue === "object" ? JSON.stringify(innerValue) : innerValue;
+          let tagAttributeValue = innerObject[innerKey]
 
+          const tagAttributeValueIsObject: boolean = typeof tagAttributeValue === "object";
+          if(tagAttributeValueIsObject) {
+            deletePositionFields(tagAttributeValue)
+            tagAttributeValue = JSON.stringify(tagAttributeValue)
+          }
           if (tagsMap.hasOwnProperty(innerKey)) {
             transformedInnerObject[tagsMap[innerKey]] = tagAttributeValue;
           } else {
@@ -273,7 +277,9 @@ function parseStringToStructure(segment: Segment): Element[] {
           const tagAttributes: TagAttributes = segment.tags[tagWithIndex];
           for (const tagAttrKey in tagAttributes) {
             const tagAttr = tagAttributes[tagAttrKey]
-            const isStringifiedObject: boolean = (tagAttr.charAt(0) === "{" && tagAttr.charAt(tagAttr.length - 1) === "}");
+            const isStringifiedObject: boolean =
+              (typeof tagAttr === "string" && tagAttr?.charAt(0) === "{" && tagAttr?.charAt(tagAttr.length - 1) === "}");
+
             if(isStringifiedObject) {
               tagAttributes[tagAttrKey] = JSON.parse(tagAttr)
             }

@@ -278,7 +278,8 @@ function parseStringToStructure(segment: Segment): Element[] {
           for (const tagAttrKey in tagAttributes) {
             const tagAttr = tagAttributes[tagAttrKey]
             const isStringifiedObject: boolean =
-              (typeof tagAttr === "string" && tagAttr?.charAt(0) === "{" && tagAttr?.charAt(tagAttr.length - 1) === "}");
+              (typeof tagAttr === "string" && tagAttr?.charAt(0) === "{" && tagAttr?.charAt(tagAttr.length - 1) === "}") ||
+              (typeof tagAttr === "string" && tagAttr?.charAt(0) === "[" && tagAttr?.charAt(tagAttr.length - 1) === "]");
 
             if(isStringifiedObject) {
               tagAttributes[tagAttrKey] = JSON.parse(tagAttr)

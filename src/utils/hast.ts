@@ -36,7 +36,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
 
       const nodePropertiesKeys = Object.keys(node.properties);
       if (nodePropertiesKeys.length) {
-        const tagAttributes = nodePropertiesKeys.reduce((acc: TagAttributes, propKey) => {
+        const tagAttributes: TagAttributes = nodePropertiesKeys.reduce((acc: TagAttributes, propKey) => {
           const tagAttributeValue = node.properties[propKey];
           const tagAttributeValueIsObject: boolean = typeof tagAttributeValue === "object";
           acc[propKey] = tagAttributeValueIsObject ? JSON.stringify(tagAttributeValue) : tagAttributeValue;

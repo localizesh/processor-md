@@ -72,25 +72,48 @@ long narrow lists.
 | ---------------------------- | --------------------------------- | ------------------------------- |
 | `auto` `break` `case` `char` | `const` `continue` `default` `do` | `double` `else` `enum` `extern` |
 
-    <table class="columns">
-      <tr>
-        <td>
-          <code>auto</code><br />
-          <code>break</code><br />
-          <code>case</code><br />
-          <code>char</code>
-        </td>
-        <td>
-          <code>const</code><br />
-          <code>continue</code><br />
-          <code>default</code><br />
-          <code>do</code>
-        </td>
-        <td>
-          <code>double</code><br />
-          <code>else</code><br />
-          <code>enum</code><br />
-          <code>extern</code>
-        </td>
-      </tr>
-    </table>
+<table class="columns">
+  <tr>
+    <td>
+      <code>auto</code><br />
+      <code>break</code><br />
+      <code>case</code><br />
+      <code>char</code>
+    </td>
+    <td>
+      <code>const</code><br />
+      <code>continue</code><br />
+      <code>default</code><br />
+      <code>do</code>
+    </td>
+    <td>
+      <code>double</code><br />
+      <code>else</code><br />
+      <code>enum</code><br />
+      <code>extern</code>
+    </td>
+  </tr>
+</table>
+
+<table class="table table-bordered">
+  <thead class="thead-light">
+    <tr>
+      <th>✅&nbsp; Do this</th>
+      <th>❌&nbsp; Don't do this</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code class="highlighter-rouge">
+        [link](https://www.example.com/my%20great%20page)
+        </code>
+      </td>
+      <td>
+        <code class="highlighter-rouge">
+        [link](https://www.example.com/my great page)
+        </code>
+      </td>
+    </tr>
+  </tbody>
+</table>

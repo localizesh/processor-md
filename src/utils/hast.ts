@@ -2,6 +2,7 @@ const HAST_TYPES: string[] = ["element"];
 const TEXT_TYPES: string[] = ["text"];
 const IMAGE_TAG: string = "img";
 const SELF_CLOSING_TAGS: string[] = ["img", "br", "hr"];
+import {TagAttributes, Tags} from "@localizesh/sdk";
 
 export const hastToString = (rootNode: any, options: any = {}) => {
   const {
@@ -10,7 +11,7 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       parentTagName: rootNode.tagName,
     },
   } = options;
-  let tags: any = {};
+  let tags: Tags = {};
 
   const toStringRecursive = (node: any, context: any) => {
     const result = [];
@@ -33,8 +34,16 @@ export const hastToString = (rootNode: any, options: any = {}) => {
       const nodeTagKey = `${node.tagName}${context.index - 1}`;
       const index = context.index;
 
-      if (Object.keys(node.properties).length)
-        tags = { ...tags, [nodeTagKey]: node.properties };
+      const nodePropertiesKeys = Object.keys(node.properties);
+      if (nodePropertiesKeys.length) {
+        const tagAttributes: TagAttributes = nodePropertiesKeys.reduce((acc: TagAttributes, propKey) => {
+          const tagAttributeValue = node.properties[propKey];
+          const tagAttributeValueIsObject: boolean = typeof tagAttributeValue === "object";
+          acc[propKey] = tagAttributeValueIsObject ? JSON.stringify(tagAttributeValue) : tagAttributeValue;
+          return acc;
+        }, {})
+        tags = { ...tags, [nodeTagKey]: tagAttributes };
+      }
 
       const tagStringOpen = index && isTagOnSourceDoc ? `{${nodeTagKey}}` : ``;
       const tagStringClose =

@@ -30,4 +30,16 @@ girls:
   - filles2
   - filles3
 date: 2023-04-14
+arrays:
+  - index  
+  - - first
+    - 1
+    - 2
+    - 3
+  
+second: [
+  true, 
+  false, 
+  1
+]
 ---

@@ -585,7 +585,7 @@ class MdProcessor implements Processor {
         };
 
         if (!marker) {
-          const strCode = unified().use(stringify).stringify(codeIndented);
+          const strCode = unified().use(stringify, {fences: false}).stringify(codeIndented);
           return strCode.trimRight();
         }
         const exit = state.enter("codeIndented");

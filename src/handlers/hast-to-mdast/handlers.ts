@@ -1,4 +1,3 @@
-import { all as toMdastAll } from "rehype-remark";
 import { Root as HastRoot } from "hast";
 import { toHtml } from "hast-util-to-html";
 import { visitParents } from "unist-util-visit-parents";
@@ -24,7 +23,7 @@ export const listToMdast = (h: any, node: any, type: ListTypes) => {
     spread,
     properties: node.properties,
     type: "list",
-    children: toMdastAll(h, node),
+    children: h.all(node),
   };
   return element;
 };
@@ -35,7 +34,7 @@ export const linkHastToMdast = (h: any, node: any, hast?: HastRoot) => {
   const url = node.properties?.href ? node.properties?.href : "";
 
   if (isLinkReference && hast) {
-    const children = toMdastAll(h, node);
+    const children = h.all(node);
 
     visitParents(
       hast,
@@ -66,7 +65,7 @@ export const linkHastToMdast = (h: any, node: any, hast?: HastRoot) => {
     properties: node.properties,
     url,
     type: "link",
-    children: toMdastAll(h, node),
+    children: h.all(node),
   };
   return element;
 };
@@ -87,7 +86,7 @@ export const tableHastToMdast = (h: any, node: any) => {
     properties: node.properties,
     align,
     type: "table",
-    children: toMdastAll(h, node),
+    children: h.all(node),
   };
   return element;
 };
@@ -105,7 +104,7 @@ export const headerHastToMdast = (h: any, node: any) => {
   let heading: any = {
     properties: node.properties,
     type: "heading",
-    children: toMdastAll(h, node),
+    children: h.all(node),
     depth
   };
   return heading;

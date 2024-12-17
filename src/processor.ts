@@ -974,6 +974,21 @@ class MdProcessor implements Processor {
               };
               return htmlLevel;
             },
+            yaml: (h, node) => {
+              debugger
+              const yamlStr = this.yamlProcessor.stringify(data)
+
+              return {
+                type: "paragraph",
+                position: undefined,
+                children: [
+                  {
+                    type: "text",
+                    value: `---\n${yamlStr}---`,
+                  },
+                ],
+              };
+            },
           },
           handlers: {
             pre: (h, node: any) => {
@@ -1009,20 +1024,6 @@ class MdProcessor implements Processor {
               return inlineCode;
             },
             img: (h, node, parent) => img(node, parent),
-            yaml: (h, node) => {
-              const yamlStr = this.yamlProcessor.stringify(data)
-
-              return {
-                type: "paragraph",
-                position: undefined,
-                children: [
-                  {
-                    type: "text",
-                    value: `---\n${yamlStr}---`,
-                  },
-                ],
-              };
-            },
             em: (h, node) => {
               let emphasis: any = {
                 properties: node.properties,

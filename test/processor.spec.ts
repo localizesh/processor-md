@@ -36,24 +36,24 @@ function processAndCompareWithExpected(filename: string) {
 
 describe('MdProcessorTest', function() {
   it('documents should be equal', function() {
-    // processAndCompare('md-html-complex.md');
-    // processAndCompare('html-links.md');
-    // processAndCompare('simple-test.md');
-    // processAndCompare('link.md');
-    // processAndCompare('headings.md');
-    // processAndCompare('comments.md');
-    // processAndCompare('code.md');
-    // processAndCompare('images.md');
-    // processAndCompare('images-html.md');
-    // processAndCompare('lists.md');
-    // processAndCompare('tables.md');
-    // processAndCompare('gfm-table.md');
-    // processAndCompare('misc.md');
-    // processAndCompare('frontmatter.md');
-    // processAndCompare('footnote.md');
-    // processAndCompare('task-list.md');
-    // processAndCompare('thematic-break.md');
-    // processAndCompareWithExpected('mdx-simple-test.mdx');
+    processAndCompare('md-html-complex.md');
+    processAndCompare('html-links.md');
+    processAndCompare('simple-test.md');
+    processAndCompare('link.md');
+    processAndCompare('headings.md');
+    processAndCompare('comments.md');
+    processAndCompare('code.md');
+    processAndCompare('images.md');
+    processAndCompare('images-html.md');
+    processAndCompare('lists.md');
+    processAndCompare('tables.md');
+    processAndCompare('gfm-table.md');
+    processAndCompare('misc.md');
+    processAndCompare('frontmatter.md');
+    processAndCompare('footnote.md');
+    processAndCompare('task-list.md');
+    processAndCompare('thematic-break.md');
+    processAndCompareWithExpected('mdx-simple-test.mdx');
   });
 });
 

@@ -1,20 +1,20 @@
 diff --git a/node_modules/hast-util-to-html/lib/handle/text.js b/node_modules/hast-util-to-html/lib/handle/text.js
-index af08b28..d67742b 100644
+index 03cefde..15e2b86 100644
 --- a/node_modules/hast-util-to-html/lib/handle/text.js
 +++ b/node_modules/hast-util-to-html/lib/handle/text.js
-@@ -28,6 +28,7 @@ const textEntitySubset = ['<', '&']
+@@ -25,6 +25,8 @@ const textEntitySubset = ['<', '&']
   */
  export function text(node, _, parent, state) {
    // Check if content of `node` should be escaped.
++
 +  /*
    return parent &&
      parent.type === 'element' &&
      (parent.tagName === 'script' || parent.tagName === 'style')
-@@ -38,4 +39,7 @@ export function text(node, _, parent, state) {
+@@ -35,4 +37,6 @@ export function text(node, _, parent, state) {
            subset: textEntitySubset
          })
        )
-+
-+    */
-+    return node.value
++  */
++  return node.value
  }

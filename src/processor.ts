@@ -1,13 +1,13 @@
 import {visitParents} from "unist-util-visit-parents";
-import {Attacher, Transformer, unified} from "unified";
+import {Preset, unified, Plugin} from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
-import remark2rehype, {all} from "remark-rehype";
-import rehype2remark, {all as toMdastAll} from "rehype-remark";
+import remark2rehype from "remark-rehype";
+import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw, {Options} from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
-import {Element, ElementContent, Root as HastRoot} from "hast";
+import {Element, ElementContent, Root as HastRoot, Text as HastText} from "hast";
 import {
   Context,
   Document,
@@ -291,7 +291,7 @@ function parseStringToStructure(segment: Segment): Element[] {
         const element = {
           type: "element",
           tagName: tag,
-          properties: properties,
+          properties: properties || {},
           children: [],
         };
 
@@ -314,9 +314,9 @@ function parseStringToStructure(segment: Segment): Element[] {
   return stack;
 }
 
-const keepMarkerPlugin: Attacher = (option: any) => {
+const keepMarkerPlugin = (option: {doc: string}) => {
   const { doc } = option;
-  const transformer: Transformer = (ast, _) => {
+  const transformer = (ast: HastRoot) => {
     visitParents(
         ast,
         (node) =>
@@ -369,10 +369,10 @@ const keepMarkerPlugin: Attacher = (option: any) => {
   return transformer;
 };
 
-const postProcessHtmlMarker: Attacher = (option: {doc: string}) => {
+const postProcessHtmlMarker = (option: {doc: string}) => {
   const {doc} = option;
   const allowHtmlTags = ["summary"]
-  const transformer: Transformer = (ast, _) => {
+  const transformer = (ast: HastRoot) => {
     visitParents(
         ast,
         (node: any) => node.type === "element" && !node?.properties?.marker && node.position,
@@ -427,11 +427,11 @@ const replaceMdxPlaceholders = (text: string, placeholdersObj: any) => {
 };
 
 
-const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderContent[], placeholdersObj: {key: string, value: string}}) => {
+const prepareMdast = (option: {contentsAvoidMarkdown: PlaceholderContent[], placeholdersObj: {key: string, value: string}}) => {
   const { contentsAvoidMarkdown, placeholdersObj } = option;
   const contentsAvoidMarkdownCopy: PlaceholderContent[] = [...contentsAvoidMarkdown];
 
-  const transformer: Transformer = (ast, _) => {
+  const transformer = (ast: HastRoot) => {
     visitParents(
         ast,
         (node) => ["link", "yaml", "text", "html", "code", "inlineCode"].includes(node.type),
@@ -492,8 +492,8 @@ const prepareMdast: Attacher = (option: {contentsAvoidMarkdown: PlaceholderConte
   return transformer;
 };
 
-const convertToHtmlType: Attacher = () => {
-  const transformer: Transformer = (ast, _) => {
+const convertToHtmlType = () => {
+  const transformer = (ast: HastRoot) => {
     visitParents(
         ast,
         (node) => "properties" in node || node.type === AVOID_HTML_TYPE,
@@ -585,7 +585,7 @@ class MdProcessor implements Processor {
         };
 
         if (!marker) {
-          const strCode = unified().use(stringify).stringify(codeIndented);
+          const strCode = unified().use(stringify, {fences: false}).stringify(codeIndented);
           return strCode.trimRight();
         }
         const exit = state.enter("codeIndented");
@@ -773,8 +773,9 @@ class MdProcessor implements Processor {
         .use(keepMarkerPlugin, { doc: newDoc })
         .use(prepareMdast, { contentsAvoidMarkdown, placeholdersObj })
         .use(remark2rehype, {
-          passThrough: ["definition", AVOID_HTML_TYPE],
+          passThrough: ["definition"],
           allowDangerousHtml: true,
+          unknownHandler: (state, node) => node,
           handlers: {
             paragraph: (state, node) => {
               return this.mdParagraphHandler(state, node, mdast);
@@ -839,7 +840,7 @@ class MdProcessor implements Processor {
             },
             footnoteDefinition: (state, node) => {
               const paragraphLevel = node.children[0];
-              const paragraphLevelChildrenInHast: any[] = all(state, paragraphLevel);
+              const paragraphLevelChildrenInHast: any[] = state.all(paragraphLevel);
               const footnoteLabel = `[^${node.label}]: `;
               const children = [
                 { type: "text", value: footnoteLabel },
@@ -853,7 +854,7 @@ class MdProcessor implements Processor {
               };
             },
             listItem: (state, node) => {
-              let listItemChildren = all(state, node);
+              let listItemChildren = state.all(node);
               const isTaskItem = node.checked !== null;
               if (isTaskItem) {
                 const checkBox = `[${node.checked ? `x` : ` `}] `;
@@ -882,7 +883,7 @@ class MdProcessor implements Processor {
                 tagName:
                     typeof node.start === "number" ? ListTypes.ol : ListTypes.ul,
                 properties,
-                children: all(state, node),
+                children: state.all(node),
               };
             },
             table: (state, node) => {
@@ -892,7 +893,7 @@ class MdProcessor implements Processor {
                 type: "element",
                 tagName: "table",
                 properties,
-                children: all(state, node),
+                children: state.all(node),
               };
             },
             thematicBreak: (state, node) => {
@@ -925,7 +926,8 @@ class MdProcessor implements Processor {
         .use(convertToHtmlType)
         .use(rehype2remark, {
           newlines: true,
-          handlers: {
+          nodeHandlers: {
+            definition: (h, node) => node,
             html: (h, node) => {
               node?.properties?.marker === "html" && delete node?.properties?.marker;
 
@@ -933,7 +935,7 @@ class MdProcessor implements Processor {
               if(isAvoidHtmlType) {
                 return {
                   type: "paragraph",
-                  children: [{type: "text", value: node.value}],
+                  children: [{type: "text", value: node.value} as HastText],
                 }
               }
               const isTableOrList: boolean = ["table", "ul", "ol", "div"].includes(node.tagName);
@@ -960,7 +962,7 @@ class MdProcessor implements Processor {
               }
 
               const index: number = outerHtml.indexOf("></");
-              const innerNodes = toMdastAll(h, node);
+              const innerNodes = h.all(node);
               const htmlLevel: any = {
                 properties: node.properties,
                 type: "paragraph",
@@ -972,7 +974,24 @@ class MdProcessor implements Processor {
               };
               return htmlLevel;
             },
-            pre: (h, node) => {
+            yaml: (h, node) => {
+              debugger
+              const yamlStr = this.yamlProcessor.stringify(data)
+
+              return {
+                type: "paragraph",
+                position: undefined,
+                children: [
+                  {
+                    type: "text",
+                    value: `---\n${yamlStr}---`,
+                  },
+                ],
+              };
+            },
+          },
+          handlers: {
+            pre: (h, node: any) => {
               const isPreCodeWrapper =
                   node.children.length === 1 && node.children[0].tagName === "code";
               if (isPreCodeWrapper) {
@@ -1000,30 +1019,16 @@ class MdProcessor implements Processor {
               const inlineCode: any = {
                 properties: node.properties,
                 type: "inlineCode",
-                children: toMdastAll(h, node),
+                children: h.all(node),
               };
               return inlineCode;
             },
             img: (h, node, parent) => img(node, parent),
-            yaml: (h, node) => {
-              const yamlStr = this.yamlProcessor.stringify(data)
-
-              return {
-                type: "paragraph",
-                position: undefined,
-                children: [
-                  {
-                    type: "text",
-                    value: `---\n${yamlStr}---`,
-                  },
-                ],
-              };
-            },
             em: (h, node) => {
               let emphasis: any = {
                 properties: node.properties,
                 type: "emphasis",
-                children: toMdastAll(h, node),
+                children: h.all(node),
               };
               return emphasis;
             },
@@ -1031,7 +1036,7 @@ class MdProcessor implements Processor {
               let strong: any = {
                 properties: node.properties,
                 type: "strong",
-                children: toMdastAll(h, node),
+                children: h.all(node),
               };
               return strong;
             },
@@ -1043,7 +1048,6 @@ class MdProcessor implements Processor {
             hr: (h, node) => {
               return { type: "thematicBreak", properties: node.properties };
             },
-            definition: (h, node) => node,
             h2: (h, node) => headerHastToMdast(h, node),
             h1: (h, node) => headerHastToMdast(h, node),
             ...this.hastToMdastHandlers
@@ -1255,7 +1259,7 @@ class MdProcessor implements Processor {
       if (parentTemp.children.length === 1) {
         if (parentTemp.tagName === "img") {
           parentTemp.children = structure[0].children;
-          parentTemp.properties = structure[0].properties;
+          parentTemp.properties = structure[0].properties || {};
         } else {
           parentTemp.children = structure;
         }

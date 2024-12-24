@@ -413,22 +413,8 @@ const getChildrenContentLength = (node: LayoutElement): number => {
   }, 0);
 }
 
-const replaceMdxPlaceholders = (text: string, placeholdersObj: any) => {
-  const placeholderRegex = /MDX_PLACEHOLDER_\d+/g;
-  const replacePlaceholder = (match: string): any => {
-    if (placeholdersObj.hasOwnProperty(match)) {
-      return placeholdersObj[match];
-    } else {
-      return match;
-    }
-  };
-
-  return text.replace(placeholderRegex, replacePlaceholder);
-};
-
-
-const prepareMdast = (option: {contentsAvoidMarkdown: PlaceholderContent[], placeholdersObj: {key: string, value: string}}) => {
-  const { contentsAvoidMarkdown, placeholdersObj } = option;
+const prepareMdast = (option: {contentsAvoidMarkdown: PlaceholderContent[]}) => {
+  const { contentsAvoidMarkdown} = option;
   const contentsAvoidMarkdownCopy: PlaceholderContent[] = [...contentsAvoidMarkdown];
 
   const transformer = (ast: HastRoot) => {
@@ -478,12 +464,7 @@ const prepareMdast = (option: {contentsAvoidMarkdown: PlaceholderContent[], plac
                   node.type = AVOID_HTML_TYPE;
                 }
               })
-
             }
-          }
-
-          if(node.type === "code") {
-            node.value = replaceMdxPlaceholders(node.value, placeholdersObj)
           }
 
         }
@@ -528,36 +509,6 @@ const convertToHtmlType = () => {
   return transformer;
 };
 
-const replaceMdxComponents = (str: string) => {
-  let counter = 0;
-  const reactComponentRegex = /<([A-Z][a-z0-9]+)\b[^>]*>[\s\S]*?(?:(?!<\1>).)*<\/\1>/gs;
-  const placeholdersObj: any = {};
-
-  const replaceRecursive = (text: string) => {
-    let replacedText = text;
-    let match;
-
-    while ((match = reactComponentRegex.exec(text)) !== null) {
-      counter++;
-      const [fullMatch, componentName] = match;
-      const startIndex = match.index;
-      const endIndex = startIndex + fullMatch.length;
-      const placeholder = `    MDX_PLACEHOLDER_${counter}`;
-      const replacedContent = fullMatch;
-      const before = replacedText.slice(0, startIndex);
-      const after = replacedText.slice(endIndex);
-      replacedText = before + placeholder + after;
-      placeholdersObj[placeholder.trim()] = replacedContent;
-      text = before + placeholder + after;
-      reactComponentRegex.lastIndex = startIndex;
-    }
-
-    return replacedText;
-  };
-
-  const docWithMDXPlaceholders = replaceRecursive(str);
-  return { docWithMDXPlaceholders, placeholdersObj };
-};
 class MdProcessor implements Processor {
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
@@ -595,7 +546,7 @@ class MdProcessor implements Processor {
         let value = tracker.move(
             marker +
             (node.lang === "no_lang" ? "" : node.lang) +
-            (marker ? " " : "") +
+            (node.meta ? " " : "") +
             (node.meta ? node.meta : "") +
             lineBreak
         );
@@ -730,12 +681,14 @@ class MdProcessor implements Processor {
     return segmentParentNodeToHast(state, node, segment, tagName);
   }
 
-  protected addMdastToHastHandler(handlers: Record<string, Function>) {
-    this.mdastToHastHandlers = { ...this.mdastToHastHandlers, ...handlers };
+  protected addMdastToHastHandler(
+    handlers: Record<string, Function>, nodeHandlers: Record<string, Function>
+  ) {
+    this.mdastToHastHandlers = {...this.mdastToHastHandlers, ...handlers, ...nodeHandlers};
   }
 
-  protected addHastToMdastHandler(handlers: Record<string, Function>) {
-    this.hastToMdastHandlers = { ...this.hastToMdastHandlers, ...handlers };
+  protected addHastToMdastHandler(handlers: Record<string, Function>, nodeHandlers: Record<string, Function>) {
+    this.hastToMdastHandlers = { ...this.hastToMdastHandlers, ...handlers, ...nodeHandlers };
   }
 
   protected addPassThroughTypes(passThroughTypes: string[]) {
@@ -764,14 +717,12 @@ class MdProcessor implements Processor {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
         replaceHtmlBeforeMdast(doc);
 
-    const { docWithMDXPlaceholders, placeholdersObj } = replaceMdxComponents(docWithHtmlPlaceholders)
-
-    const { mdast, newDoc } = this.parseMarkdownToMdast(docWithMDXPlaceholders);
+    const { mdast, newDoc } = this.parseMarkdownToMdast(docWithHtmlPlaceholders);
     this.mdast = mdast;
 
     const hast = unified()
         .use(keepMarkerPlugin, { doc: newDoc })
-        .use(prepareMdast, { contentsAvoidMarkdown, placeholdersObj })
+        .use(prepareMdast, { contentsAvoidMarkdown })
         .use(remark2rehype, {
           passThrough: ["definition"],
           allowDangerousHtml: true,
@@ -975,7 +926,6 @@ class MdProcessor implements Processor {
               return htmlLevel;
             },
             yaml: (h, node) => {
-              debugger
               const yamlStr = this.yamlProcessor.stringify(data)
 
               return {

@@ -21,3 +21,13 @@ export const segmentParentNodeToHast = (
   }
   return resultHast;
 };
+
+export const breakHandler =  (node: any): Element => {
+  const result: Element = {
+    properties: { ...node.properties, marker: node.marker || "" },
+    type: "element",
+    tagName: node.type === "thematicBreak" ? "hr" : "br",
+    children: [],
+  };
+  return result;
+}

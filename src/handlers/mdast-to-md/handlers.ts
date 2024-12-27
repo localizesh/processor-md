@@ -59,3 +59,14 @@ export const headingMdastToMd = (node: any, state: any, info: any) => {
 
   return value
 }
+
+export const breakHandler = (node: any) => {
+
+  const defaultValues: {[key: string]: string} = {
+    break: "<br>",
+    thematicBreak: "---"
+  }
+
+  let marker: string = node?.properties?.marker;
+  return marker ? marker : (defaultValues[node.type]) || "";
+}

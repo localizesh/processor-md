@@ -53,6 +53,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('footnote.md');
     processAndCompare('task-list.md');
     processAndCompare('thematic-break.md');
+    processAndCompare('break.md');
   });
 });
 

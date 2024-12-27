@@ -1,5 +1,5 @@
 import {visitParents} from "unist-util-visit-parents";
-import {Preset, unified, Plugin} from "unified";
+import {unified} from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype from "remark-rehype";
@@ -33,9 +33,9 @@ import {
   ListTypes,
   tableHastToMdast
 } from "./handlers/hast-to-mdast/handlers.js";
-import {headingMdastToMd} from "./handlers/mdast-to-md/handlers.js";
+import {headingMdastToMd, breakHandler as mdastToMdBreakHandler} from "./handlers/mdast-to-md/handlers.js";
 import {toHtml} from "hast-util-to-html";
-import {segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
+import {breakHandler, segmentParentNodeToHast} from "./handlers/mdast-to-hast/handlers.js";
 import {hastToString} from "./utils/hast.js";
 import {AVOID_HTML_TAGS, AVOID_HTML_TYPE, PlaceholderContent, replaceHtmlBeforeMdast} from "./utils/html.js";
 import {Parent} from "mdast";
@@ -53,7 +53,8 @@ const convertMdastTagToHast = (node: any) => {
     image: "img",
     linkReference: "a",
     mdxJsxTextElement: node.name,
-    delete: "del"
+    delete: "del",
+    break: "br"
   };
 
   return tagsMap[tag] ? tagsMap[tag] : tag;
@@ -196,6 +197,9 @@ function convertMdastNodeToText(node: any, mdast?: any) {
       } else {
         return node.value;
       }
+    } else if(node.type === "break") {
+      setTags(node, `br${tagCount}`);
+      return `{br${tagCount}}`
     } else {
       return "";
     }
@@ -331,7 +335,8 @@ const keepMarkerPlugin = (option: {doc: string}) => {
               "table",
               "html",
               "thematicBreak",
-              "heading"
+              "heading",
+              "break"
             ].includes(node.type),
         (node: any, parent) => {
 
@@ -358,6 +363,10 @@ const keepMarkerPlugin = (option: {doc: string}) => {
             }
             case "thematicBreak": {
               marker = doc.substring(node.position?.start?.offset, node.position?.end?.offset);
+              break;
+            }
+            case "break": {
+              marker = (marker === " " ? "  " : marker) + "\n";
               break;
             }
           }
@@ -649,10 +658,8 @@ class MdProcessor implements Processor {
         exit();
         return value;
       },
-      thematicBreak: (node: any) => {
-        let marker: string = node?.properties.marker;
-        return marker ? marker : "---";
-      },
+      thematicBreak: (node: any) => mdastToMdBreakHandler(node),
+      break: (node: any) => mdastToMdBreakHandler(node),
       blockquote: (node: any, _: Parent | undefined, state: State, info: Info) => {
         function map(line: string, _: number, blank: boolean): string {
           const row: string = (blank ? '' : ' ') + line
@@ -847,14 +854,8 @@ class MdProcessor implements Processor {
                 children: state.all(node),
               };
             },
-            thematicBreak: (state, node) => {
-              return {
-                properties: { ...node.properties, marker: node.marker || "" },
-                type: "element",
-                tagName: "hr",
-                children: [],
-              };
-            },
+            thematicBreak: (h, node) => breakHandler(node),
+            break: (h, node) =>  breakHandler(node),
             definition: (state, node) => node,
             ...this.mdastToHastHandlers
           },
@@ -997,6 +998,9 @@ class MdProcessor implements Processor {
             div: (h, node) => divHastToMdast(h, node),
             hr: (h, node) => {
               return { type: "thematicBreak", properties: node.properties };
+            },
+            br:  (h, node) => {
+              return {type: "break", properties: node.properties};
             },
             h2: (h, node) => headerHastToMdast(h, node),
             h1: (h, node) => headerHastToMdast(h, node),

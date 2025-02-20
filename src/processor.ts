@@ -102,6 +102,7 @@ const convertMdastTagsToHast = (tags: any) => {
 };
 
 function parseHTMLTags(html: string) {
+  const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
   const $ = cheerio.load(html);
   let tagName = "";
   let htmlAttributes = {};
@@ -110,6 +111,9 @@ function parseHTMLTags(html: string) {
       .children()
       .each((index, element: any) => {
         tagName = $(element).prop("tagName")?.toLowerCase() || "";
+        if(isUpperCaseCapitalLetter) {
+          tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
+        }
         htmlAttributes = $(element).get(0).attribs;
       });
 

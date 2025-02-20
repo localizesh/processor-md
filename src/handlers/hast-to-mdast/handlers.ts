@@ -16,14 +16,17 @@ export const listToMdast = (h: any, node: any, type: ListTypes) => {
   }
 
   const spread: boolean = node.properties?.spread === "true";
-  const ordered: boolean = type === ListTypes.ol ? true : false;
+  const ordered: boolean = type === ListTypes.ol;
+
+  const children = h.all(node);
+
   const element: any = {
     start: node.properties?.start,
     ordered,
     spread,
     properties: node.properties,
     type: "list",
-    children: h.all(node),
+    children,
   };
   return element;
 };

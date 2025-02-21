@@ -81,3 +81,5 @@ _Text, than nothing. <strong>Text after</strong>_
 <iframe title="Зачёркивание" src="demos/strikethrough/" height="150"></iframe>
 
 ```
+
+<Note>In this blog we used Meta's Llama-3-8B-Instruct model hosted on Upstash for summarization. You can also use other [Upstash-hosted models](https://upstash.com/docs/qstash/features/llm#upstash-hosted-models) or OpenAI's models for summarization.</Note>

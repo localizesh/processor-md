@@ -660,7 +660,7 @@ class MdProcessor implements Processor {
         listBulletLastUsed.pop()
         state.bulletCurrent = listBulletLastUsed[listBulletLastUsed.length - 1]
         exit();
-        return value.replaceAll("\n\n", " \n");
+        return value;
       },
       thematicBreak: (node: any) => mdastToMdBreakHandler(node),
       break: (node: any) => mdastToMdBreakHandler(node),

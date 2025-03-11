@@ -522,6 +522,19 @@ const convertToHtmlType = () => {
   return transformer;
 };
 
+const footNotePlugin = () => {
+  const transformer = (ast: HastRoot) => {
+    visitParents(
+      ast,
+      (node: any) => "properties" in node && node.properties.marker === "footnoteDefinition",
+      (node: any) => {
+        node.type = "footnoteDefinition";
+      }
+    );
+  };
+  return transformer;
+};
+
 class MdProcessor implements Processor {
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
@@ -801,17 +814,20 @@ class MdProcessor implements Processor {
               return { type: "text", value: `[^${node.label}]` };
             },
             footnoteDefinition: (state, node) => {
-              const paragraphLevel = node.children[0];
-              const paragraphLevelChildrenInHast: any[] = state.all(paragraphLevel);
+
+              let levelChildrenInHast: any[] = state.all(node);
               const footnoteLabel = `[^${node.label}]: `;
-              const children = [
-                { type: "text", value: footnoteLabel },
-                ...paragraphLevelChildrenInHast,
-              ];
+              if (
+                levelChildrenInHast.length &&
+                "value" in levelChildrenInHast[0]?.children[0]
+              ) {
+                levelChildrenInHast[0].children[0].value =  footnoteLabel + " " + levelChildrenInHast[0].children[0].value;
+              }
+
               return {
                 type: "element",
-                tagName: "p",
-                children,
+                tagName: "div",
+                children: levelChildrenInHast,
                 properties: {marker: "footnoteDefinition"},
               };
             },
@@ -879,11 +895,27 @@ class MdProcessor implements Processor {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
+        .use(footNotePlugin)
         .use(convertToHtmlType)
         .use(rehype2remark, {
           newlines: true,
           nodeHandlers: {
             definition: (h, node) => node,
+            footnoteDefinition: (h: any, node: any) => {
+              const children = h.all(node)
+
+              const textWithLabel = children[0].children[0].value;
+              const label = textWithLabel.slice(textWithLabel.indexOf("[^") + 2, textWithLabel.indexOf("]:"));
+
+              children[0].children[0].value = textWithLabel.replace(`[^${label}]: `, "")
+
+              return {
+                type: 'footnoteDefinition',
+                identifier: label,
+                label,
+                children: children
+              }
+            },
             html: (h, node) => {
               node?.properties?.marker === "html" && delete node?.properties?.marker;
 
@@ -1116,19 +1148,6 @@ class MdProcessor implements Processor {
             children: [
               {type: "segment", id: addSegment({...node, value: text, tags})}
             ],
-          }
-        }
-      }
-
-      const isFootnoteDefinition: boolean = node.type === "element" && node?.properties?.marker === "footnoteDefinition";
-      if(isFootnoteDefinition) {
-        const {text, tags} = hastToString(node, {rootContext: {index: isFootnoteDefinition ? 0 : -1}});
-        if ("children" in node) {
-          return {
-            ...node,
-            children: [
-              {type: "segment", id: addSegment({...node, value: text, tags})}
-            ]
           }
         }
       }

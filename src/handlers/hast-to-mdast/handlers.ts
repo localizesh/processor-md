@@ -1,4 +1,5 @@
-import { Root as HastRoot } from "hast";
+import {Root as HastRoot, Element as HastElement} from "hast";
+import {ListItem as MdastListItem} from "mdast";
 import { toHtml } from "hast-util-to-html";
 import { visitParents } from "unist-util-visit-parents";
 
@@ -7,24 +8,31 @@ export enum ListTypes {
   ul = "ul",
 }
 
-export const listToMdast = (h: any, node: any, type: ListTypes) => {
-  const isNodeSyntaxHtml: boolean = !node.properties?.marker;
+export const listToMdast = (h: any, hastNode: HastElement, type: ListTypes) => {
+  const isNodeSyntaxHtml: boolean = !hastNode.properties?.marker;
 
   if (isNodeSyntaxHtml) {
-    const res: string = toHtml(node);
+    const res: string = toHtml(hastNode);
     return { type: "html", value: res };
   }
 
-  const spread: boolean = node.properties?.spread === "true";
+  const spread: boolean = hastNode.properties?.spread === "true";
   const ordered: boolean = type === ListTypes.ol;
 
-  const children = h.all(node);
+  const children = h.all(hastNode);
+
+  children.forEach((listItem: MdastListItem, index: number) => {
+    const hastListItem = hastNode.children[index] as unknown as HastElement;
+    if(hastListItem) {
+      listItem.spread = hastListItem?.properties?.spread === "true";
+    }
+  })
 
   const element: any = {
-    start: node.properties?.start,
+    start: hastNode.properties?.start,
     ordered,
     spread,
-    properties: node.properties,
+    properties: hastNode.properties,
     type: "list",
     children,
   };

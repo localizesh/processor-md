@@ -42,6 +42,19 @@
     * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 4. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
+### Multilevel list with indent
+
+1. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+2. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+3. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+  * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+  * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+4. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 *   This is the first list item.
 *   Here's the second list item.

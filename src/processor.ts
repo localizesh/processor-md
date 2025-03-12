@@ -848,6 +848,7 @@ class MdProcessor implements Processor {
                 tagName: "li",
                 type: "element",
                 children: listItemChildren,
+                properties: {spread: node.spread.toString()}
               };
             },
             list: (state, node) => {

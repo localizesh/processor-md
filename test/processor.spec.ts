@@ -54,6 +54,7 @@ describe('MdProcessorTest', function() {
     processAndCompare('task-list.md');
     processAndCompare('thematic-break.md');
     processAndCompare('break.md');
+    processAndCompare('description-list.md');
   });
 });
 

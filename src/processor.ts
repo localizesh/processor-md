@@ -927,9 +927,9 @@ class MdProcessor implements Processor {
                   children: [{type: "text", value: node.value} as HastText],
                 }
               }
-              const isTableOrList: boolean = ["table", "ul", "ol", "div"].includes(node.tagName);
+              const isTagWithHtmlSyntaxInside: boolean = ["table", "ul", "ol", "div", "dl"].includes(node.tagName);
 
-              if(isTableOrList) {
+              if(isTagWithHtmlSyntaxInside) {
                 visitParents(node, (node) => node.type === "html", (child, _) => {
                   child.type = "element";
                   delete child?.properties?.marker;
@@ -938,12 +938,12 @@ class MdProcessor implements Processor {
               const outerHtml: string = toHtml(
                   {
                     ...node, type: "element",
-                    children: isTableOrList ? node.children : []
+                    children: isTagWithHtmlSyntaxInside ? node.children : []
                   },
                   { allowDangerousCharacters: true, allowDangerousHtml: true }
               );
 
-              if (isTableOrList) {
+              if (isTagWithHtmlSyntaxInside) {
                 return {
                   type: "paragraph",
                   children: [{type: "text", value: outerHtml}],

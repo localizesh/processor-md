@@ -40,7 +40,7 @@
     "@types/unist": "^3.0.3",
     "chai": "^5.2.0",
     "eol": "^0.10.0",
-    "mocha": "^11.1.0",
+    "mocha": "^11.7.3",
     "patch-package-ignore-missing": "^7.0.1-2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"

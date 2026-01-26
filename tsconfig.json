@@ -10,10 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "exclude": ["node_modules"],
-  "ts-node": {
-    "esm": true
-  }
 }

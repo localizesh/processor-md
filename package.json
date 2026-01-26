@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf -rf dist",
     "build": "npm run clean && tsc --project tsconfig.build.json",
-    "test": "mocha",
+    "test": "vitest run",
     "postinstall": "patch-package-ignore-missing --ignore-missing"
   },
   "dependencies": {
@@ -32,18 +32,15 @@
     "unist-util-visit-parents": "^6.0.1"
   },
   "devDependencies": {
-    "@types/chai": "^5.2.1",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/mdast": "^4.0.4",
-    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.0.10",
     "@types/unist": "^3.0.3",
-    "chai": "^5.2.0",
     "eol": "^0.10.0",
-    "mocha": "^11.1.0",
     "patch-package-ignore-missing": "^7.0.1-2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "@localizesh/sdk": "^0.3.2"

@@ -1,4 +1,4 @@
-import {assert} from "chai";
+import { assert, describe, it } from "vitest";
 import eol from "eol";
 
 import fs from "fs";
@@ -9,7 +9,9 @@ import MdProcessor from "../src/processor.js";
 const processor = new MdProcessor();
 
 function processAndCompare(filename: string) {
-  const inDoc = fs.readFileSync(path.join('test', 'fixtures', filename), { encoding: 'utf-8' });
+  const inDoc = fs.readFileSync(path.join("test", "fixtures", filename), {
+    encoding: "utf-8",
+  });
 
   const doc = processor.parse(inDoc);
   const docStr = JSON.stringify(doc);
@@ -23,9 +25,16 @@ function processAndCompare(filename: string) {
 }
 
 function processAndCompareWithExpected(filename: string) {
-  const inDoc = eol.lf(fs.readFileSync(path.join('test', 'fixtures', filename), { encoding: 'utf-8' }));
-  const inDocExpected = eol.lf(fs.readFileSync(path.join('test', 'expected', filename), { encoding: 'utf-8' }));
-
+  const inDoc = eol.lf(
+    fs.readFileSync(path.join("test", "fixtures", filename), {
+      encoding: "utf-8",
+    }),
+  );
+  const inDocExpected = eol.lf(
+    fs.readFileSync(path.join("test", "expected", filename), {
+      encoding: "utf-8",
+    }),
+  );
 
   const doc = processor.parse(inDoc);
   const outDoc = processor.stringify(doc);
@@ -34,29 +43,33 @@ function processAndCompareWithExpected(filename: string) {
   console.log(filename);
 }
 
-describe('MdProcessorTest', function() {
-  it('documents should be equal', function() {
-    processAndCompare('md-html-complex.md');
-    processAndCompare('html-links.md');
-    processAndCompare('simple-test.md');
-    processAndCompare('link.md');
-    processAndCompare('headings.md');
-    processAndCompare('comments.md');
-    processAndCompare('code.md');
-    processAndCompare('images.md');
-    processAndCompare('images-html.md');
-    processAndCompare('lists.md');
-    processAndCompare('tables.md');
-    processAndCompare('gfm-table.md');
-    processAndCompare('misc.md');
-    processAndCompare('frontmatter.md');
-    processAndCompare('footnote.md');
-    processAndCompare('task-list.md');
-    processAndCompare('thematic-break.md');
-    processAndCompare('break.md');
-    processAndCompare('description-list.md');
+describe("MdProcessorTest", function () {
+  const files = [
+    "book-test.md",
+    "md-html-complex.md",
+    "html-links.md",
+    "simple-test.md",
+    "link.md",
+    "headings.md",
+    "comments.md",
+    "code.md",
+    "images.md",
+    "images-html.md",
+    "lists.md",
+    "tables.md",
+    "gfm-table.md",
+    "misc.md",
+    "frontmatter.md",
+    "footnote.md",
+    "task-list.md",
+    "thematic-break.md",
+    "break.md",
+    "description-list.md",
+  ];
+
+  files.forEach((filename) => {
+    it(`should process ${filename} correctly`, function () {
+      processAndCompare(filename);
+    });
   });
 });
-
-
-

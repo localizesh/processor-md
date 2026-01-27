@@ -29,7 +29,7 @@ import { Root as MdastRoot } from "mdast";
 import type { Info, State } from "mdast-util-to-markdown/lib/types.js";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
-import rehypeParse from "rehype-parse";
+import * as cheerio from "cheerio";
 import {
   divHastToMdast,
   headerHastToMdast,
@@ -118,20 +118,20 @@ const convertMdastTagsToHast = (tags: any) => {
 
 function parseHTMLTags(html: string) {
   const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
-  const tree: any = unified().use(rehypeParse, { fragment: true }).parse(html);
+  const $ = cheerio.load(html);
 
   let tagName = "";
   let htmlAttributes = {};
 
-  const element = tree.children.find((node: any) => node.type === "element");
-
-  if (element) {
-    tagName = element.tagName;
-    if (isUpperCaseCapitalLetter) {
-      tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
-    }
-    htmlAttributes = element.properties;
-  }
+  $("body")
+    .children()
+    .each((index, element: any) => {
+      tagName = $(element).prop("tagName")?.toLowerCase() || "";
+      if (isUpperCaseCapitalLetter) {
+        tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
+      }
+      htmlAttributes = $(element).get(0).attribs;
+    });
 
   return { tagName, htmlAttributes };
 }

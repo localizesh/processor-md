@@ -29,7 +29,7 @@ import { Root as MdastRoot } from "mdast";
 import type { Info, State } from "mdast-util-to-markdown/lib/types.js";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
-import * as cheerio from "cheerio";
+import rehypeParse from "rehype-parse";
 import {
   divHastToMdast,
   headerHastToMdast,
@@ -118,19 +118,20 @@ const convertMdastTagsToHast = (tags: any) => {
 
 function parseHTMLTags(html: string) {
   const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
-  const $ = cheerio.load(html);
+  const tree: any = unified().use(rehypeParse, { fragment: true }).parse(html);
+
   let tagName = "";
   let htmlAttributes = {};
 
-  $("body")
-    .children()
-    .each((index, element: any) => {
-      tagName = $(element).prop("tagName")?.toLowerCase() || "";
-      if (isUpperCaseCapitalLetter) {
-        tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
-      }
-      htmlAttributes = $(element).get(0).attribs;
-    });
+  const element = tree.children.find((node: any) => node.type === "element");
+
+  if (element) {
+    tagName = element.tagName;
+    if (isUpperCaseCapitalLetter) {
+      tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
+    }
+    htmlAttributes = element.properties;
+  }
 
   return { tagName, htmlAttributes };
 }
@@ -432,7 +433,10 @@ const postProcessHtmlMarker = (option: { doc: string }) => {
         if (node.tagName === "pre") {
           const childrenContentLength: number = getChildrenContentLength(node);
           if (childrenContentLength > 1) {
-            const preBlock = toHtml(node.children);
+            const preBlock = toHtml(node.children, {
+              allowDangerousCharacters: true,
+              allowDangerousHtml: true,
+            });
             node.children = [{ type: "text", value: "\n" + preBlock }];
           }
         }
@@ -571,6 +575,15 @@ const convertToHtmlType = () => {
   return transformer;
 };
 
+const protectTextNodes = () => {
+  const transformer = (ast: HastRoot) => {
+    visitParents(ast, "text", (node: any) => {
+      node.type = "rawText";
+    });
+  };
+  return transformer;
+};
+
 const footNotePlugin = () => {
   const transformer = (ast: HastRoot) => {
     visitParents(
@@ -583,6 +596,16 @@ const footNotePlugin = () => {
     );
   };
   return transformer;
+};
+
+const revertRawText = (node: any) => {
+  if (node.type === "rawText") {
+    node.type = "text";
+  }
+  if (node.children) {
+    node.children.forEach(revertRawText);
+  }
+  return node;
 };
 
 class MdProcessor implements Processor {
@@ -980,10 +1003,12 @@ class MdProcessor implements Processor {
 
   public stringify(data: Document, ctx?: Context): string {
     const hast = this.segmentsToHast(data);
+    const hastClone = JSON.parse(JSON.stringify(hast));
 
     const mdast: MdastRoot = unified()
       .use(footNotePlugin)
       .use(convertToHtmlType)
+      .use(protectTextNodes)
       .use(rehype2remark, {
         newlines: true,
         nodeHandlers: {
@@ -1038,13 +1063,19 @@ class MdProcessor implements Processor {
                 },
               );
             }
+            const nodeCopy = JSON.parse(JSON.stringify(node));
+            revertRawText(nodeCopy);
+
             const outerHtml: string = toHtml(
               {
-                ...node,
+                ...nodeCopy,
                 type: "element",
-                children: isTagWithHtmlSyntaxInside ? node.children : [],
+                children: isTagWithHtmlSyntaxInside ? nodeCopy.children : [],
               },
-              { allowDangerousCharacters: true, allowDangerousHtml: true },
+              {
+                allowDangerousCharacters: true,
+                allowDangerousHtml: true,
+              },
             );
 
             if (isTagWithHtmlSyntaxInside) {
@@ -1083,6 +1114,9 @@ class MdProcessor implements Processor {
           },
         },
         handlers: {
+          rawText: (h: any, node: any) => {
+            return { type: "text", value: node.value };
+          },
           pre: (h, node: any) => {
             const isPreCodeWrapper =
               node.children.length === 1 && node.children[0].tagName === "code";
@@ -1096,7 +1130,9 @@ class MdProcessor implements Processor {
                 marker: codeNode.properties?.marker,
               };
             } else {
-              const htmlValue = toHtml(node, {
+              const nodeCopy = JSON.parse(JSON.stringify(node));
+              revertRawText(nodeCopy);
+              const htmlValue = toHtml(nodeCopy, {
                 allowDangerousCharacters: true,
                 allowDangerousHtml: true,
               });
@@ -1148,7 +1184,7 @@ class MdProcessor implements Processor {
           ...this.hastToMdastHandlers,
         },
       })
-      .runSync(hast) as MdastRoot;
+      .runSync(hastClone) as MdastRoot;
 
     return this.parseMdastToMarkdown(mdast);
   }

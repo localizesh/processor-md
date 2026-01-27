@@ -9,19 +9,16 @@
     "/patches"
   ],
   "scripts": {
-    "clean": "rimraf -rf dist",
+    "clean": "rm -rf dist",
     "build": "npm run clean && tsc --project tsconfig.build.json",
-    "test": "vitest run",
-    "postinstall": "patch-package-ignore-missing --ignore-missing"
+    "test": "vitest run"
   },
   "dependencies": {
     "@localizesh/processor-yaml": "^0.3.3",
-    "cheerio": "^1.2.0",
     "hast-util-to-html": "^9.0.5",
+    "rehype-parse": "^9.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-remark": "^10.0.1",
-    "rehype-sanitize": "^6.0.0",
-    "rehype-stringify": "^10.0.1",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
@@ -38,7 +35,6 @@
     "@types/node": "^25.0.10",
     "@types/unist": "^3.0.3",
     "eol": "^0.10.0",
-    "patch-package-ignore-missing": "^7.0.1-2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },

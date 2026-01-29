@@ -29,7 +29,7 @@ import { Root as MdastRoot } from "mdast";
 import type { Info, State } from "mdast-util-to-markdown/lib/types.js";
 import { removePosition } from "unist-util-remove-position";
 import img from "./handlers/hast-to-mdast/img.js";
-import * as cheerio from "cheerio";
+import rehypeParse from "rehype-parse";
 import {
   divHastToMdast,
   headerHastToMdast,
@@ -120,19 +120,36 @@ const convertMdastTagsToHast = (tags: any) => {
 function parseHTMLTags(html: string) {
   if (!html || html.length < 2) return { tagName: "", htmlAttributes: {} };
   const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
-  const $ = cheerio.load(html);
+  
+  const tree = unified()
+    .use(rehypeParse, { fragment: true })
+    .parse(html);
+
   let tagName = "";
   let htmlAttributes = {};
 
-  $("body")
-    .children()
-    .each((index, element: any) => {
-      tagName = $(element).prop("tagName")?.toLowerCase() || "";
+  tree.children.forEach((node: any) => {
+    if (node.type === "element") {
+      tagName = node.tagName;
       if (isUpperCaseCapitalLetter) {
         tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
       }
-      htmlAttributes = $(element).get(0).attribs;
-    });
+      
+      const attributes: any = {};
+      for (const [key, value] of Object.entries(node.properties || {})) {
+        if (key === "className" && Array.isArray(value)) {
+          attributes["class"] = value.join(" ");
+        } else if (key === "htmlFor") {
+          attributes["for"] = value;
+        } else if (value === true) {
+          attributes[key] = "";
+        } else {
+          attributes[key] = String(value);
+        }
+      }
+      htmlAttributes = attributes;
+    }
+  });
 
   return { tagName, htmlAttributes };
 }

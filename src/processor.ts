@@ -3,10 +3,10 @@ import { unified } from "unified";
 import gfm from "remark-gfm";
 import parse from "remark-parse";
 import remark2rehype from "remark-rehype";
-import rehype2remark from "rehype-remark";
 import stringify from "remark-stringify";
 import raw, { Options } from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
+import { toMdast } from "./utils/hast-to-mdast/index.js";
 import {
   Element,
   ElementContent,
@@ -1003,10 +1003,16 @@ class MdProcessor implements Processor {
     const mdast: MdastRoot = unified()
       .use(footNotePlugin)
       .use(convertToHtmlType)
-      .use(rehype2remark, {
-        newlines: true,
+      .use(
+        (options: any) => {
+          return (tree: any) => {
+            return toMdast(tree, options);
+          };
+        },
+        {
+          newlines: true,
         nodeHandlers: {
-          definition: (h, node) => node,
+          definition: (h: any, node: any) => node,
           footnoteDefinition: (h: any, node: any) => {
             const children = h.all(node);
 
@@ -1028,7 +1034,7 @@ class MdProcessor implements Processor {
               children: children,
             };
           },
-          html: (h, node) => {
+          html: (h: any, node: any) => {
             node?.properties?.marker === "html" &&
               delete node?.properties?.marker;
 
@@ -1086,7 +1092,7 @@ class MdProcessor implements Processor {
             };
             return htmlLevel;
           },
-          yaml: (h, node) => {
+          yaml: (h: any, node: any) => {
             const yamlStr = this.yamlProcessor.stringify(data);
 
             return {
@@ -1102,7 +1108,7 @@ class MdProcessor implements Processor {
           },
         },
         handlers: {
-          pre: (h, node: any) => {
+          pre: (h: any, node: any) => {
             const isPreCodeWrapper =
               node.children.length === 1 && node.children[0].tagName === "code";
             if (isPreCodeWrapper) {
@@ -1126,7 +1132,7 @@ class MdProcessor implements Processor {
               };
             }
           },
-          code: (h, node) => {
+          code: (h: any, node: any) => {
             const inlineCode: any = {
               properties: node.properties,
               type: "inlineCode",
@@ -1134,8 +1140,8 @@ class MdProcessor implements Processor {
             };
             return inlineCode;
           },
-          img: (h, node, parent) => img(node, parent),
-          em: (h, node) => {
+          img: (h: any, node: any, parent: any) => img(node, parent),
+          em: (h: any, node: any) => {
             let emphasis: any = {
               properties: node.properties,
               type: "emphasis",
@@ -1143,7 +1149,7 @@ class MdProcessor implements Processor {
             };
             return emphasis;
           },
-          strong: (h, node) => {
+          strong: (h: any, node: any) => {
             let strong: any = {
               properties: node.properties,
               type: "strong",
@@ -1151,19 +1157,19 @@ class MdProcessor implements Processor {
             };
             return strong;
           },
-          ol: (h, node) => listToMdast(h, node, ListTypes.ol),
-          ul: (h, node) => listToMdast(h, node, ListTypes.ul),
-          a: (h, node) => linkHastToMdast(h, node, hast),
-          table: (h, node) => tableHastToMdast(h, node),
-          div: (h, node) => divHastToMdast(h, node),
-          hr: (h, node) => {
+          ol: (h: any, node: any) => listToMdast(h, node, ListTypes.ol),
+          ul: (h: any, node: any) => listToMdast(h, node, ListTypes.ul),
+          a: (h: any, node: any) => linkHastToMdast(h, node, hast),
+          table: (h: any, node: any) => tableHastToMdast(h, node),
+          div: (h: any, node: any) => divHastToMdast(h, node),
+          hr: (h: any, node: any) => {
             return { type: "thematicBreak", properties: node.properties };
           },
-          br: (h, node) => {
+          br: (h: any, node: any) => {
             return { type: "break", properties: node.properties };
           },
-          h2: (h, node) => headerHastToMdast(h, node),
-          h1: (h, node) => headerHastToMdast(h, node),
+          h2: (h: any, node: any) => headerHastToMdast(h, node),
+          h1: (h: any, node: any) => headerHastToMdast(h, node),
           ...this.hastToMdastHandlers,
         },
       })

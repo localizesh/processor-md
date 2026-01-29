@@ -48,6 +48,7 @@ import {
   segmentParentNodeToHast,
 } from "./handlers/mdast-to-hast/handlers.js";
 import { hastToString } from "./utils/hast.js";
+import { toHtmlSafe } from "./utils/toHtmlSafe.js";
 import {
   AVOID_HTML_TAGS,
   AVOID_HTML_TYPE,
@@ -117,6 +118,7 @@ const convertMdastTagsToHast = (tags: any) => {
 };
 
 function parseHTMLTags(html: string) {
+  if (!html || html.length < 2) return { tagName: "", htmlAttributes: {} };
   const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
   const $ = cheerio.load(html);
   let tagName = "";
@@ -1038,7 +1040,7 @@ class MdProcessor implements Processor {
                 },
               );
             }
-            const outerHtml: string = toHtml(
+            const outerHtml: string = toHtmlSafe(
               {
                 ...node,
                 type: "element",
@@ -1096,7 +1098,7 @@ class MdProcessor implements Processor {
                 marker: codeNode.properties?.marker,
               };
             } else {
-              const htmlValue = toHtml(node, {
+              const htmlValue = toHtmlSafe(node, {
                 allowDangerousCharacters: true,
                 allowDangerousHtml: true,
               });

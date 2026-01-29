@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@localizesh/processor-yaml": "^0.3.3",
-    "cheerio": "^1.2.0",
     "hast-util-to-html": "^9.0.5",
+    "rehype-parse": "^9.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-remark": "^10.0.1",
     "rehype-sanitize": "^6.0.0",

@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@localizesh/processor-yaml": "^0.3.3",
+    "@localizesh/processor-yaml": "^1.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-to-mdast": "^10.1.2",
     "rehype-parse": "^9.0.1",

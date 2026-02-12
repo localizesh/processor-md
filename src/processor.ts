@@ -21,9 +21,12 @@ import {
   LayoutRoot,
   Processor,
   Segment,
-  TagAttributes,
-  Tags,
+  Tag,
+  root,
+  element,
+  segment,
 } from "@localizesh/sdk";
+
 import { SegmentsMap } from "./types";
 import { Root as MdastRoot } from "mdast";
 import type { Info, State } from "mdast-util-to-markdown/lib/types.js";
@@ -78,7 +81,7 @@ const convertMdastTagToHast = (node: any) => {
 };
 
 const convertMdastTagsToHast = (tags: any) => {
-  let newTags: Tags = {};
+  let newTags: Record<string, Tag> = {};
   const tagsMapLinks: Record<string, string> = {
     url: "href",
   };
@@ -89,7 +92,7 @@ const convertMdastTagsToHast = (tags: any) => {
   for (const key in tags) {
     if (tags.hasOwnProperty(key)) {
       const innerObject = tags[key];
-      const transformedInnerObject: TagAttributes = {};
+      const transformedInnerObject: Tag = {};
       const tagsMap = key.includes("img") ? tagsMapImg : tagsMapLinks;
 
       for (const innerKey in innerObject) {
@@ -120,7 +123,7 @@ const convertMdastTagsToHast = (tags: any) => {
 function parseHTMLTags(html: string) {
   if (!html || html.length < 2) return { tagName: "", htmlAttributes: {} };
   const isUpperCaseCapitalLetter = html[1] === html[1].toUpperCase();
-  
+
   const tree = unified()
     .use(rehypeParse, { fragment: true })
     .parse(html);
@@ -134,7 +137,7 @@ function parseHTMLTags(html: string) {
       if (isUpperCaseCapitalLetter) {
         tagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
       }
-      
+
       const attributes: any = {};
       for (const [key, value] of Object.entries(node.properties || {})) {
         if (key === "className" && Array.isArray(value)) {
@@ -157,7 +160,7 @@ function parseHTMLTags(html: string) {
 function convertMdastNodeToText(node: any, mdast?: any) {
   let resultNodeText = "";
   let tagCount = 0;
-  let tags: Tags = {};
+  let tags: Record<string, Tag> = {};
   const htmlTags: number[] = [];
 
   const nodeToString = (node: any): string => {
@@ -319,9 +322,9 @@ function parseStringToStructure(segment: Segment): Element[] {
         }
       } else {
         if (segment.tags) {
-          const tagAttributes: TagAttributes = segment.tags[tagWithIndex];
-          for (const tagAttrKey in tagAttributes) {
-            const tagAttr = tagAttributes[tagAttrKey];
+          const tag: Tag = segment.tags[tagWithIndex];
+          for (const tagAttrKey in tag) {
+            const tagAttr = tag[tagAttrKey];
             const isStringifiedObject: boolean =
               (typeof tagAttr === "string" &&
                 tagAttr?.charAt(0) === "{" &&
@@ -331,7 +334,7 @@ function parseStringToStructure(segment: Segment): Element[] {
                 tagAttr?.charAt(tagAttr.length - 1) === "]");
 
             if (isStringifiedObject) {
-              tagAttributes[tagAttrKey] = JSON.parse(tagAttr);
+              tag[tagAttrKey] = JSON.parse(tagAttr);
             }
           }
           properties = segment.tags[tagWithIndex];
@@ -604,7 +607,7 @@ const footNotePlugin = () => {
   return transformer;
 };
 
-class MdProcessor implements Processor {
+class MdProcessor extends Processor {
   private yamlProcessor: YamlProcessor;
   private mdastToHastHandlers: Record<string, Function> = {};
   private hastToMdastHandlers: Record<string, Function> = {};
@@ -612,6 +615,7 @@ class MdProcessor implements Processor {
   protected mdast: any = {};
 
   constructor() {
+    super();
     this.yamlProcessor = new YamlProcessor();
   }
 
@@ -1204,7 +1208,7 @@ class MdProcessor implements Processor {
   private hastToSegments(tree: HastRoot, ctx: Context): Document {
     const idGenerator = new IdGenerator();
     let segments: Segment[] = [];
-    const layout: LayoutRoot = { type: "root", children: [] };
+    const layout: LayoutRoot = root([]);
 
     const addSegment = (node: any): string => {
       const tags = node.tags;
@@ -1235,7 +1239,7 @@ class MdProcessor implements Processor {
         if (node.value?.trim() === "") {
           return node;
         } else {
-          return { type: "segment", id: addSegment(node) };
+          return segment(addSegment(node));
         }
       }
 
@@ -1260,20 +1264,12 @@ class MdProcessor implements Processor {
 
           const { text, tags } = hastToString(node);
 
-          const resultNode: Element = {
+          const resultNode: LayoutElement = {
             ...node,
             children: [
-              {
-                type: "element",
-                tagName: "p",
-                properties: {},
-                children: [
-                  {
-                    type: "segment",
-                    id: addSegment({ ...node, value: text, tags }),
-                  },
-                ],
-              },
+              element("p", {},
+                segment(addSegment({ ...node, value: text, tags })),
+              ),
             ],
           };
 
@@ -1291,17 +1287,9 @@ class MdProcessor implements Processor {
             rootContext: { index: 0 },
           });
 
-          return {
-            type: "element",
-            tagName: "p",
-            properties: {},
-            children: [
-              {
-                type: "segment",
-                id: addSegment({ ...node, value: text, tags }),
-              },
-            ],
-          };
+          return element("p", {},
+            segment(addSegment({ ...node, value: text, tags })),
+          );
         }
       }
 

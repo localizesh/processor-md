@@ -1,19 +1,31 @@
 {
   "name": "@localizesh/processor-md",
   "repository": "localizesh/processor-md",
+  "license": "Apache-2.0",
+  "author": "Localize.sh",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "localize-processor-md": "dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "/dist"
   ],
   "scripts": {
-    "clean": "rimraf -rf dist",
+    "clean": "rm -rf dist",
     "build": "npm run clean && tsc --project tsconfig.build.json",
     "test": "vitest run"
   },
   "dependencies": {
-    "@localizesh/processor-yaml": "^0.3.3",
+    "@localizesh/sdk": "^2.1.0",
+    "@localizesh/processor-yaml": "^1.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-to-mdast": "^10.1.2",
     "rehype-parse": "^9.0.1",
@@ -34,13 +46,10 @@
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^25.1.0",
+    "@types/node": "^25.2.3",
     "@types/unist": "^3.0.3",
     "eol": "^0.10.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
-  },
-  "peerDependencies": {
-    "@localizesh/sdk": "^0.3.2"
   }
 }

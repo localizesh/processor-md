@@ -24,7 +24,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@localizesh/sdk": "^2.1.0",
+    "@localizesh/sdk": "^2.2.0",
     "@localizesh/processor-yaml": "^1.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-to-mdast": "^10.1.2",

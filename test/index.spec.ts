@@ -24,23 +24,17 @@ function processAndCompare(filename: string) {
   console.log(filename);
 }
 
-function processAndCompareWithExpected(filename: string) {
-  const inDoc = eol.lf(
+function processAndCompareRoundtrip(filename: string) {
+  const input = eol.lf(
     fs.readFileSync(path.join("test", "fixtures", filename), {
       encoding: "utf-8",
     }),
   );
-  const inDocExpected = eol.lf(
-    fs.readFileSync(path.join("test", "expected", filename), {
-      encoding: "utf-8",
-    }),
-  );
 
-  const doc = processor.parse(inDoc);
-  const outDoc = processor.stringify(doc);
+  const doc = processor.parse(input);
+  const output = eol.lf(processor.stringify(doc));
 
-  assert.equal(outDoc, inDocExpected);
-  console.log(filename);
+  assert.equal(output, input);
 }
 
 describe("MdProcessorTest", function () {
@@ -70,6 +64,21 @@ describe("MdProcessorTest", function () {
   files.forEach((filename) => {
     it(`should process ${filename} correctly`, function () {
       processAndCompare(filename);
+    });
+  });
+
+  const roundtripFiles = [
+    "link.md",
+    "images.md",
+    "images-html.md",
+    "break.md",
+    "description-list.md",
+    "inline-styles.md",
+  ];
+
+  roundtripFiles.forEach((filename) => {
+    it(`should roundtrip ${filename} exactly`, function () {
+      processAndCompareRoundtrip(filename);
     });
   });
 });

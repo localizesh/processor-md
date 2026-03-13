@@ -426,6 +426,24 @@ const keepMarkerPlugin = (option: { doc: string }) => {
   return transformer;
 };
 
+const restoreEscapes = (option: { doc: string }) => {
+  const { doc } = option;
+  const transformer = (ast: HastRoot) => {
+    visitParents(
+      ast,
+      (node) => node.type === "text" && !!node.position,
+      (node: any, _parent: any) => {
+        const { start, end } = node.position;
+        const original = doc.slice(start.offset, end.offset);
+        if (original.includes("\\") && original.replace(/\\/g, "") === node.value) {
+          node.value = original;
+        }
+      },
+    );
+  };
+  return transformer;
+};
+
 const postProcessHtmlMarker = (option: { doc: string }) => {
   const { doc } = option;
   const allowHtmlTags = ["summary"];
@@ -852,6 +870,7 @@ class MdProcessor extends Processor {
 
     const hast = unified()
       .use(keepMarkerPlugin, { doc: newDoc })
+      .use(restoreEscapes, { doc: newDoc })
       .use(prepareMdast, { contentsAvoidMarkdown })
       .use(remark2rehype, {
         passThrough: ["definition"],

@@ -14,9 +14,7 @@ import {
   Text as HastText,
 } from "hast";
 import {
-  Context,
   Document,
-  IdGenerator,
   LayoutElement,
   LayoutRoot,
   Processor,
@@ -843,7 +841,7 @@ class MdProcessor extends Processor {
       .stringify(mdast) as string;
   }
 
-  public parse(doc: string, ctx?: Context): Document {
+  public parse(doc: string): Document {
     const { docWithHtmlPlaceholders, contentsAvoidMarkdown } =
       replaceHtmlBeforeMdast(doc);
 
@@ -994,14 +992,14 @@ class MdProcessor extends Processor {
       .use(postProcessHtmlMarker, { doc: docWithHtmlPlaceholders })
       .runSync(mdast) as HastRoot;
 
-    const { layout, segments } = this.hastToSegments(hast, ctx);
+    const { layout, segments } = this.hastToSegments(hast);
 
     removePosition(layout);
 
     return { layout: layout, segments };
   }
 
-  public stringify(data: Document, ctx?: Context): string {
+  public stringify(data: Document): string {
     const hast = this.segmentsToHast(data);
 
     const mdast: MdastRoot = unified()
@@ -1205,17 +1203,15 @@ class MdProcessor extends Processor {
     return null;
   }
 
-  private hastToSegments(tree: HastRoot, ctx: Context): Document {
-    const idGenerator = new IdGenerator();
+  private hastToSegments(tree: HastRoot): Document {
     let segments: Segment[] = [];
     const layout: LayoutRoot = root([]);
 
     const addSegment = (node: any): string => {
       const tags = node.tags;
-      const id: string = idGenerator.generateId(
+      const id: string = this.id(
         node.value as string,
         tags,
-        ctx,
       );
       const segment: Segment = {
         id,
@@ -1224,6 +1220,7 @@ class MdProcessor extends Processor {
       };
 
       segments.push(segment);
+
       return segment.id;
     };
 
